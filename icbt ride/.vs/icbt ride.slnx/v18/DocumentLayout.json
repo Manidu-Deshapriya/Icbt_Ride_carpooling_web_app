@@ -1,0 +1,101 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\Projects\\.NET\\icbtride\\icbt ride\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\wwwroot\\manifest.webmanifest||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|solutionrelative:icbt ride\\wwwroot\\manifest.webmanifest||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|solutionrelative:icbt ride\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|solutionrelative:icbt ride\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|solutionrelative:icbt ride\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|solutionrelative:icbt ride\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "index.html",
+              "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\index.html",
+              "RelativeDocumentMoniker": "icbt ride\\wwwroot\\index.html",
+              "ToolTip": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\index.html",
+              "RelativeToolTip": "icbt ride\\wwwroot\\index.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-08-04T05:40:41.324Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "icbt ride\\Layout\\MainLayout.razor",
+              "ToolTip": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "icbt ride\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-04T05:31:30.966Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "bootstrap.js",
+              "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+              "RelativeDocumentMoniker": "icbt ride\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+              "ToolTip": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+              "RelativeToolTip": "icbt ride\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+              "ViewState": "AgIAAHIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-08-04T04:56:52.988Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "manifest.webmanifest",
+              "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\manifest.webmanifest",
+              "RelativeDocumentMoniker": "icbt ride\\wwwroot\\manifest.webmanifest",
+              "ToolTip": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\manifest.webmanifest",
+              "RelativeToolTip": "icbt ride\\wwwroot\\manifest.webmanifest",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-08-03T16:08:17.472Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "bootstrap-grid.css",
+              "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+              "RelativeDocumentMoniker": "icbt ride\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+              "ToolTip": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+              "RelativeToolTip": "icbt ride\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-07-30T05:19:36.521Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
