@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("icbt ride")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+656f388d8a81566271fd8d5ce673f7f143e13368")]
 [assembly: System.Reflection.AssemblyProductAttribute("icbt ride")]
 [assembly: System.Reflection.AssemblyTitleAttribute("icbt ride")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
