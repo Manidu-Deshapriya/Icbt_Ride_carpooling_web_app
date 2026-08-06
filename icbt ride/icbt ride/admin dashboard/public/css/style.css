@@ -1,0 +1,283 @@
+:root {
+  /* Colors from provided UI image */
+  --bg-main: #0B111E;
+  --bg-sidebar: #0f172a;
+  --bg-card: #151F32;
+  --bg-card-header: #1E293B;
+  
+  --text-main: #E2E8F0;
+  --text-muted: #94A3B8;
+  
+  --accent-primary: #0EA5E9;
+  --accent-secondary: #0891B2;
+  --accent-success: #10B981;
+  --accent-danger: #EF4444;
+  --accent-warning: #F59E0B;
+  
+  --border-color: rgba(255, 255, 255, 0.05);
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Glass/Card Panels */
+.custom-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+}
+
+.custom-card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border-color);
+  padding: 15px 20px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.custom-card-body {
+  padding: 20px;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  background-color: var(--bg-sidebar);
+  min-height: 100vh;
+  border-right: 1px solid var(--border-color);
+  padding-top: 20px;
+}
+
+.sidebar .brand {
+  color: var(--accent-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  padding: 12px 20px;
+  margin: 5px 15px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link:hover, .nav-link.active {
+  background-color: rgba(14, 165, 233, 0.1);
+  color: var(--text-main);
+}
+
+.nav-link.active {
+  border-left: 4px solid var(--accent-primary);
+}
+
+/* Inputs and Forms */
+.form-control, .form-select {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-primary);
+  color: var(--text-main);
+  box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+}
+
+.btn-success {
+  background-color: var(--accent-success);
+  border-color: var(--accent-success);
+}
+
+.btn-danger {
+  background-color: var(--accent-danger);
+  border-color: var(--accent-danger);
+}
+
+/* Utilities */
+.text-muted-custom {
+  color: var(--text-muted) !important;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.badge-custom {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+/* Login Screen specific */
+.login-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN (Mobile & Tablet)
+   ========================================= */
+@media (max-width: 992px) {
+  /* Bottom Navigation Bar for Mobile */
+  .wrapper {
+    flex-direction: column !important;
+  }
+  
+  #sidebar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    min-height: 70px !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: row;
+    border-right: none !important;
+    border-top: 1px solid var(--border-color);
+    z-index: 1000;
+    background-color: var(--bg-sidebar);
+  }
+  
+  /* Hide the brand text in bottom nav */
+  .sidebar .brand {
+    display: none !important;
+  }
+  
+  #sidebar ul {
+    display: flex !important;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 0 !important;
+    padding: 0;
+  }
+  
+  .nav-link {
+    margin: 0 !important;
+    padding: 10px 5px !important;
+    border-left: none !important;
+    border-bottom: none !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.65rem;
+    flex: 1;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  
+  .nav-link i {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+  }
+  
+  .nav-link.active {
+    color: var(--accent-primary) !important;
+    background-color: transparent !important;
+  }
+
+  /* Move logout button to top right corner on mobile */
+  #sidebar > div[style*="absolute"] {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    bottom: auto !important;
+    width: auto !important;
+    display: block !important;
+    z-index: 1050;
+  }
+  
+  #logoutBtn {
+    margin: 0 !important;
+    padding: 8px 15px !important;
+    background-color: rgba(239, 68, 68, 0.1);
+    border-radius: 8px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem !important;
+    color: var(--accent-danger) !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+  }
+  #logoutBtn i { font-size: 1rem; margin-bottom: 0; }
+  #logoutBtn::after { content: none; }
+
+  /* Content Area */
+  #content {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding: 15px !important;
+    padding-bottom: 80px !important; /* Space for bottom nav */
+  }
+
+  /* Grid layouts */
+  .main-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .row > .col-md-5, .row > .col-md-7 {
+    width: 100% !important;
+    margin-bottom: 20px;
+  }
+
+  /* Responsive Headers & Banners */
+  .top-header {
+    flex-direction: column !important;
+    gap: 15px;
+    align-items: flex-start !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .glass-box {
+    padding: 15px !important;
+  }
+  
+  /* Tables */
+  .table-responsive {
+    border: 0;
+  }
+}
