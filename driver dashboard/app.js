@@ -61,41 +61,47 @@ function renderActiveRides(ridesData) {
     if (historyContainer) historyContainer.innerHTML = html;
 }
 
-function renderPassengerRequests() {
-    const container = document.getElementById('passengerRequestsContainer');
-    if (!container) return;
+function renderPassengerRequests(requestsData) {
+    const dashContainer = document.getElementById('passengerRequestsContainer');
+    const allContainer = document.getElementById('allRequestsContainer');
+    
+    if (!dashContainer && !allContainer) return;
 
-    if (mockPassengerRequests.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 15px;">No passenger requests yet.</p>';
+    if (!requestsData || requestsData.length === 0) {
+        const emptyMsg = '<p style="color: var(--text-muted); text-align: center; margin-top: 15px;">No passenger requests yet.</p>';
+        if (dashContainer) dashContainer.innerHTML = emptyMsg;
+        if (allContainer) allContainer.innerHTML = emptyMsg;
         return;
     }
 
     let html = '';
-    mockPassengerRequests.forEach(req => {
+    requestsData.forEach(req => {
         let buttons = '';
         let badge = '';
 
         if (req.status === 'pending') {
             badge = '<span class="badge" style="background: rgba(239, 68, 68, 0.2); color: var(--danger-color);">Pending</span>';
             buttons = `
-                <button class="btn btn-sm btn-success" onclick="acceptRequest(${req.id})">Accept</button>
-                <button class="btn btn-sm btn-danger" onclick="rejectRequest(${req.id})">Reject</button>
+                <button class="btn btn-sm btn-success" onclick="acceptRequest('${req.id}', '${req.rideId}')">Accept</button>
+                <button class="btn btn-sm btn-danger" onclick="rejectRequest('${req.id}')">Reject</button>
             `;
         } else if (req.status === 'accepted') {
             badge = '<span class="badge" style="background: rgba(16, 185, 129, 0.2); color: var(--success-color);">Accepted</span>';
             buttons = `
-                <button class="btn btn-sm btn-primary" onclick="contactPassenger(${req.id})">Contact</button>
+                <button class="btn btn-sm btn-primary" onclick="contactPassenger('${req.id}')">Contact</button>
             `;
+        } else if (req.status === 'rejected') {
+            return; // Don't show rejected
         }
 
         html += `
             <div class="list-item">
                 <div class="list-item-header">
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="avatar" style="width: 35px; height: 35px; font-size: 0.9rem;">${req.name.charAt(0)}</div>
+                        <div class="avatar" style="width: 35px; height: 35px; font-size: 0.9rem;">${(req.passengerName || 'P').charAt(0)}</div>
                         <div>
-                            <div style="font-weight: 600;">${req.name}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted);">For Ride ID: ${req.rideId}</div>
+                            <div style="font-weight: 600;">${req.passengerName || 'Passenger'}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">From: ${req.start || '?'} <i class="fa-solid fa-arrow-right"></i> ${req.dest || '?'}</div>
                         </div>
                     </div>
                     ${badge}
@@ -106,7 +112,9 @@ function renderPassengerRequests() {
             </div>
         `;
     });
-    container.innerHTML = html;
+    
+    if (dashContainer) dashContainer.innerHTML = html;
+    if (allContainer) allContainer.innerHTML = html;
 }
 
 function renderNotifications() {
@@ -138,16 +146,59 @@ function renderNotifications() {
 }
 
 // Dummy Action Functions
-function acceptRequest(id) {
-    alert('Request ' + id + ' Accepted! (Mock Action)');
+function acceptRequest(reqId, rideId) {
+    db.collection('requests').doc(reqId).update({
+        status: 'accepted'
+    }).then(() => {
+        const rideRef = db.collection('rides').doc(rideId);
+        return db.runTransaction((transaction) => {
+            return transaction.get(rideRef).then((sfDoc) => {
+                if (!sfDoc.exists) throw "Ride does not exist!";
+                const newSeats = Math.max(0, (sfDoc.data().seats || 0) - 1);
+                transaction.update(rideRef, { seats: newSeats });
+            });
+        });
+    }).then(() => {
+        showSuccessModal("Request Accepted", "The passenger has been notified.");
+    }).catch((error) => {
+        console.error("Error accepting request: ", error);
+        alert("Failed to accept request.");
+    });
 }
 
-function rejectRequest(id) {
-    alert('Request ' + id + ' Rejected! (Mock Action)');
+function rejectRequest(reqId) {
+    db.collection('requests').doc(reqId).update({
+        status: 'rejected'
+    }).then(() => {
+        showSuccessModal("Request Rejected", "The passenger has been notified.");
+    }).catch((error) => {
+        console.error("Error rejecting request: ", error);
+    });
 }
 
 function contactPassenger(id) {
     alert('Contacting passenger ' + id + '... (Mock Action)');
+}
+
+function calculateSustainabilityMetrics(requestsData) {
+    if (!requestsData) return;
+    
+    const acceptedCount = requestsData.filter(req => req.status === 'accepted').length;
+    
+    const co2Saved = acceptedCount * 2;
+    const fuelSaved = acceptedCount * 1.5;
+    const moneySaved = acceptedCount * 500;
+    const treesPlanted = Math.floor(co2Saved / 10);
+    
+    const co2El = document.getElementById('co2Saved');
+    const fuelEl = document.getElementById('fuelSaved');
+    if (co2El) co2El.innerText = co2Saved;
+    if (fuelEl) fuelEl.innerText = fuelSaved.toFixed(1);
+    
+    const treesEl = document.getElementById('treesPlantedText');
+    const moneyEl = document.getElementById('moneySavedText');
+    if (treesEl) treesEl.innerText = `Equivalent to planting ${treesPlanted} trees.`;
+    if (moneyEl) moneyEl.innerText = `Estimated Rs. ${moneySaved}.00 saved on fuel.`;
 }
 
 function contactAdminForDocs(docName) {
@@ -173,8 +224,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Render other mock data
-    renderPassengerRequests();
+    // 2. Setup Firestore Real-time Listener for Requests
+    const requestsRef = db.collection('requests').orderBy('createdAt', 'desc');
+    requestsRef.onSnapshot((snapshot) => {
+        const requests = [];
+        snapshot.forEach((doc) => {
+            requests.push({ id: doc.id, ...doc.data() });
+        });
+        renderPassengerRequests(requests);
+        calculateSustainabilityMetrics(requests);
+    }, (error) => {
+        console.error("Error fetching requests: ", error);
+    });
     
     // Load Profile Data from Firestore
     const profileNameEl = document.getElementById('profileName');
@@ -494,3 +555,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// FOR TESTING ONLY: Run this in the browser console to create a fake passenger request
+window.addFakeRequest = function(rideId) {
+    if (!rideId) {
+        console.warn("Please provide a rideId. Example: addFakeRequest('abc123xyz')");
+        return;
+    }
+    db.collection('requests').add({
+        passengerName: 'Nimal Perera',
+        start: 'Kandy',
+        dest: 'Colombo',
+        status: 'pending',
+        rideId: rideId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => console.log('✅ Fake request added! Check your Requests page.'));
+};
