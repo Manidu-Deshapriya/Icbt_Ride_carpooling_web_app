@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICBT Ride - Login</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0f172a">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <ul class="bg-slideshow">
+        <li style="background-image: url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070&auto=format&fit=crop')"></li>
+        <li style="background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop')"></li>
+        <li style="background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop')"></li>
+        <li style="background-image: url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=2075&auto=format&fit=crop')"></li>
+    </ul>
+
+    <div class="login-container">
+        <div class="glass-box">
+            
+            <h2 class="brand-title">
+                <img src="/icon-192.png" alt="ICBT Ride"> ICBT Ride
+            </h2>
+
+            <!-- Role Selector -->
+            <ul class="nav nav-pills justify-content-center mb-4" id="roleTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="passenger-tab" data-bs-toggle="pill" data-bs-target="#passenger-pane" type="button" role="tab">Passenger</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="driver-tab" data-bs-toggle="pill" data-bs-target="#driver-pane" type="button" role="tab">Driver</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="roleTabsContent">
+                
+                <!-- PASSENGER SECTION -->
+                <div class="tab-pane fade show active" id="passenger-pane" role="tabpanel" tabindex="0">
+                    <!-- Passenger Login Form -->
+                    <form id="passengerLoginForm">
+                        <h4 class="text-center mb-3">Passenger Login</h4>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <input type="email" class="form-control" id="p-login-email" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" class="form-control" id="p-login-password" required>
+                        </div>
+                        <div class="error-msg" id="p-login-error"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="p-login-btn">Log In</button>
+                        
+                        <div class="auth-switch">
+                            Don't have an account? <a href="register.html">Register here</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- DRIVER SECTION -->
+                <div class="tab-pane fade" id="driver-pane" role="tabpanel" tabindex="0">
+                    <!-- Driver Login Form -->
+                    <form id="driverLoginForm">
+                        <h4 class="text-center mb-3">Driver Login</h4>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <input type="email" class="form-control" id="d-login-email" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" class="form-control" id="d-login-password" required>
+                        </div>
+                        <div class="error-msg" id="d-login-error"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="d-login-btn">Log In</button>
+                        
+                        <div class="auth-switch">
+                            Want to drive with us? <a href="register.html">Apply here</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase Authentication Logic -->
+    <script type="module">
+        import "/admin-dashboard/js/firebase-config.js";
+
+        async function verifyLogin(formId, btnId, errorId, role, redirectUrl) {
+            const form = document.getElementById(formId);
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const email = e.target.querySelector('input[type="email"]').value;
+                const password = e.target.querySelector('input[type="password"]').value;
+                
+                const btn = document.getElementById(btnId);
+                const errorMsg = document.getElementById(errorId);
+                
+                errorMsg.style.display = 'none';
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Verifying...';
+                btn.disabled = true;
+
+                try {
+                    const usersRef = window.fsCollection(window.firebaseDb, "users");
+                    const snapshot = await window.fsGetDocs(usersRef);
+                    let foundUser = null;
+                    
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        if (data.email === email && data.password === password && data.role === role) {
+                            foundUser = data;
+                        }
+                    });
+
+                    if (foundUser) {
+                        if (role === 'driver' && foundUser.status !== 'verified') {
+                            errorMsg.innerText = "Account is pending admin verification.";
+                            errorMsg.style.display = 'block';
+                            btn.innerHTML = 'Log In';
+                            btn.disabled = false;
+                        } else {
+                            btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
+                            btn.classList.replace('btn-primary', 'btn-success');
+                            setTimeout(() => {
+                                window.location.href = redirectUrl;
+                            }, 1000);
+                        }
+                    } else {
+                        errorMsg.innerText = "Invalid email or password.";
+                        errorMsg.style.display = 'block';
+                        btn.innerHTML = 'Log In';
+                        btn.disabled = false;
+                    }
+                } catch(error) {
+                    console.error("Login Error:", error);
+                    errorMsg.innerText = "An error occurred. Try again.";
+                    errorMsg.style.display = 'block';
+                    btn.innerHTML = 'Log In';
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        verifyLogin('passengerLoginForm', 'p-login-btn', 'p-login-error', 'passenger', '/passenger-dashboard/index.html');
+        verifyLogin('driverLoginForm', 'd-login-btn', 'd-login-error', 'driver', '/driver-dashboard/driver_dashboard.html');
+
+        // Register Service Worker for PWA Installation
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js');
+            });
+        }
+    </script>
+</body>
+</html>
+
+

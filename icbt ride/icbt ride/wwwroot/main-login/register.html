@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICBT Ride - Register</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0f172a">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <ul class="bg-slideshow">
+        <li style="background-image: url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070&auto=format&fit=crop')"></li>
+        <li style="background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop')"></li>
+        <li style="background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop')"></li>
+        <li style="background-image: url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=2075&auto=format&fit=crop')"></li>
+    </ul>
+
+    <div class="login-container">
+        <div class="glass-box">
+            
+            <h2 class="brand-title">
+                <img src="/icon-192.png" alt="ICBT Ride"> ICBT Ride
+            </h2>
+
+            <!-- Role Selector -->
+            <ul class="nav nav-pills justify-content-center mb-4" id="roleTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="passenger-tab" data-bs-toggle="pill" data-bs-target="#passenger-pane" type="button" role="tab">Passenger</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="driver-tab" data-bs-toggle="pill" data-bs-target="#driver-pane" type="button" role="tab">Driver</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="roleTabsContent">
+                
+                <!-- PASSENGER SECTION -->
+                <div class="tab-pane fade show active" id="passenger-pane" role="tabpanel" tabindex="0">
+                    <!-- Passenger Register Form -->
+                    <form id="passengerRegisterForm">
+                        <h4 class="text-center mb-3">Create Passenger Account</h4>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Full Name</label>
+                            <input type="text" class="form-control" id="p-reg-name" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" placeholder="e.g. John Doe" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Phone Number</label>
+                            <input type="tel" class="form-control" id="p-reg-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  pattern="07[0-9]{8}" title="Phone number must start with 07 and contain exactly 10 digits" placeholder="07xxxxxxxx" maxlength="10" required>
+                        </div>
+                                                <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <input type="email" class="form-control" id="p-reg-email" placeholder="e.g. passenger@example.com" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">User Type</label>
+                                <select class="form-select" id="p-reg-usertype">
+                                    <option value="Student">Student</option>
+                                    <option value="Staff">Staff</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">ID Number (Optional)</label>
+                                <input type="text" class="form-control" id="p-reg-studentid" placeholder="Student or Staff ID">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" class="form-control" id="p-reg-password" placeholder="Enter a secure password" required minlength="6">
+                        </div>
+                        <div class="error-msg" id="p-reg-error"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="p-reg-btn">Register</button>
+                        
+                        <div class="auth-switch">
+                            Already have an account? <a href="login.html">Log in here</a>
+                        </div>
+                    </form>
+                </div>
+
+
+                <!-- DRIVER SECTION -->
+                <div class="tab-pane fade" id="driver-pane" role="tabpanel" tabindex="0">
+                    <!-- Driver Register Form -->
+                    <form id="driverRegisterForm">
+                        <h4 class="text-center mb-3">Driver Application</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Full Name</label>
+                                <input type="text" class="form-control" id="d-reg-name" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" placeholder="e.g. Kamal De Silva" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Phone Number</label>
+                                <input type="tel" class="form-control" id="d-reg-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  pattern="07[0-9]{8}" title="Phone number must start with 07 and contain exactly 10 digits" placeholder="07xxxxxxxx" maxlength="10" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">NIC Number</label>
+                                <input type="text" class="form-control" id="d-reg-nic" pattern="^([0-9]{9}[vVxX]|[0-9]{12})$" title="Enter a valid Sri Lankan NIC (e.g. 123456789V or 199012345678)" placeholder="e.g. 901234567V" maxlength="12" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Vehicle Plate</label>
+                                <input type="text" class="form-control" id="d-reg-plate" placeholder="e.g. WP ABC-1234" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Profile Picture</label>
+                            <input type="file" class="form-control" id="d-reg-image" accept="image/*" required>
+                        </div>
+                                                <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <input type="email" class="form-control" id="d-reg-email" placeholder="e.g. driver@example.com" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">User Type</label>
+                                <select class="form-select" id="d-reg-usertype">
+                                    <option value="Student">Student</option>
+                                    <option value="Staff">Staff</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">ID Number (Optional)</label>
+                                <input type="text" class="form-control" id="d-reg-studentid" placeholder="Student or Staff ID">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" class="form-control" id="d-reg-password" placeholder="Enter a secure password" required minlength="6">
+                        </div>
+                        
+                        <p class="text-muted small mb-3"><i class="fa-solid fa-circle-info text-primary"></i> Note: Your account will be pending until an admin verifies your documents.</p>
+
+                        <div class="error-msg" id="d-reg-error"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="d-reg-btn">Submit Application</button>
+                        
+                        <div class="auth-switch">
+                            Already applied? <a href="login.html">Log in here</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase Config & Registration Logic -->
+    <script type="module">
+        import "/admin-dashboard/js/firebase-config.js"; // This loads window.firebaseDb and functions
+
+        document.getElementById('passengerRegisterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('p-reg-btn');
+            const errorMsg = document.getElementById('p-reg-error');
+            errorMsg.style.display = 'none';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Registering...';
+            btn.disabled = true;
+
+            const name = document.getElementById('p-reg-name').value;
+            const phone = document.getElementById('p-reg-phone').value;
+            const email = document.getElementById('p-reg-email').value;
+            const userType = document.getElementById('p-reg-usertype').value;
+            const studentId = document.getElementById('p-reg-studentid').value;
+            const password = document.getElementById('p-reg-password').value;
+
+            try {
+                // Save to Firestore 'users' collection
+                await window.fsAddDoc(window.fsCollection(window.firebaseDb, "users"), {
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    userType: userType,
+                    studentId: studentId,
+                    password: password,
+                    role: 'passenger',
+                    status: 'active', // Passengers are active immediately
+                    createdAt: new Date().toISOString()
+                });
+
+                // Show success message
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Registration Successful!';
+                btn.classList.replace('btn-primary', 'btn-success');
+                
+                setTimeout(() => {
+                    alert("Account created successfully. Please login.");
+                    window.location.href = '/main-login/login.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                errorMsg.innerText = "Error creating account. Please try again.";
+                errorMsg.style.display = 'block';
+                btn.innerHTML = 'Register';
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('driverRegisterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('d-reg-btn');
+            const errorMsg = document.getElementById('d-reg-error');
+            errorMsg.style.display = 'none';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+            btn.disabled = true;
+
+            const name = document.getElementById('d-reg-name').value;
+            const phone = document.getElementById('d-reg-phone').value;
+            const nic = document.getElementById('d-reg-nic').value;
+            const vehiclePlate = document.getElementById('d-reg-plate').value;
+            const email = document.getElementById('d-reg-email').value;
+            const password = document.getElementById('d-reg-password').value;
+            const userType = document.getElementById('d-reg-usertype').value;
+            const studentId = document.getElementById('d-reg-studentid').value;
+            const imageFile = document.getElementById('d-reg-image').files[0];
+
+            // Client-side Image Compression function (Outputs Base64)
+            const compressImage = (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const MAX_WIDTH = 400; // Reduced for smaller Base64 string
+                            const scaleSize = MAX_WIDTH / img.width;
+                            canvas.width = MAX_WIDTH;
+                            canvas.height = img.height * scaleSize;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            // Get Base64 string (hash format as requested)
+                            const base64String = canvas.toDataURL('image/jpeg', 0.6); // 60% quality
+                            resolve(base64String);
+                        };
+                        img.onerror = (error) => reject(error);
+                    };
+                    reader.onerror = (error) => reject(error);
+                });
+            };
+
+            // Note: Password should be handled via Firebase Auth in a real app, 
+            // but for this demo, we'll just save the data to Firestore.
+
+            try {
+                // Generate Base64 Image directly for Firestore
+                let profileImageUrl = "";
+                if (imageFile) {
+                    try {
+                        profileImageUrl = await compressImage(imageFile);
+                    } catch (uploadError) {
+                        console.error("Error generating image hash: ", uploadError);
+                        throw new Error("Failed to process profile picture.");
+                    }
+                }
+
+                // Save to Firestore 'users' collection
+                await window.fsAddDoc(window.fsCollection(window.firebaseDb, "users"), {
+                    name: name,
+                    phone: phone,
+                    nic: nic,
+                    vehiclePlate: vehiclePlate,
+                    email: email,
+                    password: password,
+                    userType: userType,
+                    studentId: studentId,
+                    profileImageUrl: profileImageUrl,
+                    role: 'driver',
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                });
+
+                // Show success message
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Application Submitted!';
+                btn.classList.replace('btn-primary', 'btn-success');
+                
+                setTimeout(() => {
+                    alert("Your application has been submitted and is pending admin approval.");
+                    window.location.href = '/main-login/login.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                errorMsg.innerText = "Error submitting application. Please try again.";
+                errorMsg.style.display = 'block';
+                btn.innerHTML = 'Submit Application';
+                btn.disabled = false;
+            }
+        });
+
+        // Register Service Worker for PWA Installation
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js');
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
+
