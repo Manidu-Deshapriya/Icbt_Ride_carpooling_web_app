@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICBT Ride - Admin Dashboard</title>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Specific layout styles for the dashboard to match the image */
+        body { overflow-x: hidden; }
+        .wrapper { display: flex; width: 100%; }
+        
+        #sidebar {
+            width: 250px;
+            min-height: 100vh;
+            flex-shrink: 0;
+            position: fixed;
+            z-index: 100;
+        }
+        
+        #content {
+            width: calc(100% - 250px);
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background-color: var(--accent-secondary); /* purple-ish like the K in image */
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .profile-text {
+            font-size: 0.9rem;
+            line-height: 1.2;
+        }
+        
+        .verified-badge {
+            color: var(--accent-success);
+            font-size: 0.8rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        
+                /* Custom card styling matching the screenshot */
+        .glass-box {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            height: 100%;
+        }
+
+        .box-title {
+            color: var(--accent-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 992px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .top-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .glass-box.mb-4 {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 15px;
+            }
+            .glass-box.mb-4 .text-end {
+                text-align: left !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-car-side"></i> ICBT Ride
+            </div>
+            
+            <ul class="list-unstyled">
+                <li>
+                    <a href="dashboard.html" class="nav-link active text-decoration-none">
+                        <i class="fa-solid fa-house"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="users.html" class="nav-link text-decoration-none">
+                        <i class="fa-solid fa-users"></i> Users & Drivers
+                    </a>
+                </li>
+                <li>
+                    <a href="rides.html" class="nav-link text-decoration-none">
+                        <i class="fa-solid fa-route"></i> Ride Management
+                    </a>
+                </li>
+                <li>
+                    <a href="complaints.html" class="nav-link text-decoration-none">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Complaints
+                    </a>
+                </li>
+                <li>
+                    <a href="announcements.html" class="nav-link text-decoration-none">
+                        <i class="fa-solid fa-bullhorn"></i> Announcements
+                    </a>
+                </li>
+            </ul>
+            
+            <div style="position: absolute; bottom: 30px; width: 100%;">
+                <a href="#" id="logoutBtn" class="nav-link text-decoration-none text-danger">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            
+            <div class="top-header">
+                <div>
+                    <h2 class=" fw-bold mb-1">Welcome Admin</h2>
+                    <p class="text-muted-custom">Welcome to your admin dashboard. Monitor system activity here!</p>
+                    <button class="btn btn-primary btn-sm mt-2 rounded-pill px-3 shadow-sm d-print-none" onclick="window.print()"><i class="fa-solid fa-file-export me-1"></i> Export Report</button>
+                </div>
+                <div class="user-profile">
+                    <a href="users.html" class="position-relative me-3 text-decoration-none">
+                        <i class="fa-regular fa-bell  fs-5"></i>
+                        <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.6rem;">0</span>
+                    </a>
+                    <div class="avatar" id="userInitial">A</div>
+                    <div class="profile-text  text-end">
+                        <span id="userEmail" class="d-block fw-bold">Admin</span>
+                        <span class="verified-badge">Super Admin <i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date and Odd/Even Banner -->
+            <div class="glass-box mb-4 d-flex justify-content-between align-items-center" style="padding: 10px 20px; height: auto;">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="background: rgba(14, 165, 233, 0.2); padding: 8px 12px; border-radius: 8px; color: var(--accent-primary);">
+                        <i class="fa-regular fa-calendar-days fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class=" mb-0" id="currentDateDisplay">Loading Date...</h6>
+                        <small class="text-muted-custom" style="font-size: 0.75rem;">ICBT Transport Schedule</small>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted-custom d-block mb-1" style="font-size: 0.75rem;">Today's Allowed Vehicles</small>
+                    <span id="oddEvenBadge" class="badge px-3 py-1" style="border: 1px solid var(--border-color); font-size: 0.85rem;">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="main-grid">
+                
+                <!-- Box 1 -->
+                <div class="glass-box">
+                    <div class="box-title">
+                        <i class="fa-solid fa-chart-pie"></i> System Stats
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Total Users</p>
+                        <h3 class=" fw-bold" id="totalUsersCount"><span class="spinner-border spinner-border-sm fs-6"></span></h3>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Active Drivers</p>
+                        <h3 class=" fw-bold" id="activeDriversCount"><span class="spinner-border spinner-border-sm fs-6"></span></h3>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-5">
+                        <span class="">System Status:</span>
+                        <span class="text-success"><i class="fa-solid fa-circle"></i> Online</span>
+                    </div>
+                </div>
+
+                <!-- Box 2 (Environmental & Ride Stats) -->
+                <div class="glass-box">
+                    <div class="box-title">
+                        <i class="fa-solid fa-leaf text-success"></i> Sustainability Impact
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Total Rides Completed</p>
+                        <h3 class=" fw-bold" id="totalRidesCount"><span class="spinner-border spinner-border-sm fs-6"></span></h3>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">COâ‚‚ Saved Platform-Wide</p>
+                        <h3 class=" fw-bold text-success"><span id="totalCo2Saved"><span class="spinner-border spinner-border-sm fs-6"></span></span> <span style="font-size: 1rem; font-weight: 500;">kg</span></h3>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Fuel Saved Platform-Wide</p>
+                        <h3 class=" fw-bold text-primary"><span id="totalFuelSaved"><span class="spinner-border spinner-border-sm fs-6"></span></span> <span style="font-size: 1rem; font-weight: 500;">L</span></h3>
+                    </div>
+                </div>
+
+                <!-- Box 3 (User Distribution Chart) -->
+                <div class="glass-box">
+                    <div class="box-title">
+                        <i class="fa-solid fa-chart-pie"></i> User Distribution
+                    </div>
+                    <div style="position: relative; height: 180px; width: 100%; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="userRolesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Pending Approvals (Moved to new row) -->
+                <div class="glass-box" style="grid-column: 1 / -1;">
+                    <div class="box-title">
+                        <i class="fa-solid fa-users-gear"></i> Pending Approvals
+                    </div>
+                    
+                    <!-- Dynamic Request Items Container -->
+                    <div id="pendingApprovalsList" class="d-flex gap-3 flex-wrap">
+                        <div class="text-center text-muted py-4 w-100"><span class="spinner-border spinner-border-sm"></span> Loading...</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+        <!-- Firebase Script (Module) -->
+    <script type="module">
+        import "./js/firebase-config.js";
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log('Service Worker registration failed: ', err);
+                });
+            });
+        }
+
+        // Date and Odd/Even Logic
+        const dateObj = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDateDisplay').textContent = dateObj.toLocaleDateString('en-US', options);
+        
+        const dayNumber = dateObj.getDate();
+        const badge = document.getElementById('oddEvenBadge');
+        if (dayNumber % 2 === 0) {
+            badge.innerHTML = '<i class="fa-solid fa-car-side me-2"></i> EVEN NUMBERS';
+            badge.style.borderColor = 'var(--accent-success)';
+            badge.style.color = 'var(--accent-success)';
+            badge.style.background = 'rgba(16, 185, 129, 0.1)';
+        } else {
+            badge.innerHTML = '<i class="fa-solid fa-car-side me-2"></i> ODD NUMBERS';
+            badge.style.borderColor = 'var(--accent-warning)';
+            badge.style.color = 'var(--accent-warning)';
+            badge.style.background = 'rgba(245, 158, 11, 0.1)';
+        }
+
+        window.allUsersData = []; // Store real-time data for search
+
+        // Fetch Real Data for Dashboard
+        window.loadDashboardData = function() {
+            try {
+                const usersCol = window.fsCollection(window.firebaseDb, 'users');
+                
+                // Real-time listener for users
+                window.fsOnSnapshot(usersCol, (snapshot) => {
+                    let totalUsers = 0;
+                    let activeDrivers = 0;
+                    let driverCount = 0;
+                    let passengerCount = 0;
+                    
+                    const pendingList = document.getElementById('pendingApprovalsList');
+                    pendingList.innerHTML = ''; // clear loading
+                    let hasPending = false;
+                    window.allUsersData = []; // Clear array to re-populate
+
+                    snapshot.forEach((doc) => {
+                        totalUsers++;
+                        const data = doc.data();
+                        data.id = doc.id; // Save doc id
+                        window.allUsersData.push(data);
+                        
+                        if(data.role === 'driver') {
+                            driverCount++;
+                            if (data.status === 'verified') activeDrivers++;
+                        } else {
+                            passengerCount++;
+                        }
+
+                        // Populate Pending Approvals
+                        if(data.role === 'driver' && data.status === 'pending') {
+                            hasPending = true;
+                            const div = document.createElement('div');
+                            div.className = 'p-3 rounded mb-3';
+                            div.style.cssText = 'background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); min-width: 250px; flex: 1;';
+                            div.innerHTML = `
+                                <div class="d-flex justify-content-between mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar" style="width:30px; height:30px; font-size: 0.8rem; background: var(--accent-secondary); overflow: hidden;">
+                                            ${data.profileImageUrl ? `<img src="${data.profileImageUrl}" alt="Profile" style="width:100%; height:100%; object-fit: cover;">` : (data.name || '?').charAt(0).toUpperCase()}
+                                        </div>
+                                        <span class=" small fw-bold">${data.name || 'Unknown User'}</span>
+                                    </div>
+                                </div>
+                                <p class="text-muted-custom mb-2" style="font-size: 0.75rem;">Req: Verification &bull; ${data.vehiclePlate || 'No Plate'}</p>
+                                <div class="d-flex gap-2 mt-2">
+                                    <button onclick="openReviewModal('${doc.id}', '${encodeURIComponent(JSON.stringify(data))}')" class="btn btn-success btn-sm w-100 rounded-pill text-nowrap"><i class="fa-solid fa-eye"></i> Review</button>
+                                </div>
+                            `;
+                            pendingList.appendChild(div);
+                        }
+                    });
+
+                    document.getElementById('totalUsersCount').textContent = totalUsers;
+                    document.getElementById('activeDriversCount').textContent = activeDrivers;
+
+                    if(!hasPending) {
+                        pendingList.innerHTML = '<div class="text-center text-muted py-3 small w-100">No pending approvals!</div>';
+                    }
+
+                    // Render/Update User Distribution Chart
+                    if (window.userRolesChartInstance) {
+                        window.userRolesChartInstance.data.datasets[0].data = [driverCount, passengerCount];
+                        window.userRolesChartInstance.update();
+                    } else {
+                        const ctx = document.getElementById('userRolesChart').getContext('2d');
+                        window.userRolesChartInstance = new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Drivers', 'Passengers'],
+                                datasets: [{
+                                    data: [driverCount, passengerCount],
+                                    backgroundColor: ['#10B981', '#3b82f6'],
+                                    borderWidth: 0,
+                                    hoverOffset: 4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { position: 'bottom', labels: { color: '#4caf50' } }
+                                }
+                            }
+                        });
+                    }
+
+                }, (error) => {
+                    console.error("Error listening to dashboard users data:", error);
+                });
+
+                // Real-time listener for rides
+                const ridesCol = window.fsCollection(window.firebaseDb, 'rides');
+                window.fsOnSnapshot(ridesCol, (snapshot) => {
+                    let totalCompletedRides = 0;
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        if (data.status === 'completed') {
+                            totalCompletedRides++;
+                        }
+                    });
+
+                    // Update UI with calculated sustainability metrics
+                    document.getElementById('totalRidesCount').textContent = totalCompletedRides;
+                    document.getElementById('totalCo2Saved').textContent = (totalCompletedRides * 2.5).toFixed(1);
+                    document.getElementById('totalFuelSaved').textContent = (totalCompletedRides * 1.5).toFixed(1);
+                }, (error) => {
+                    console.error("Error listening to rides data:", error);
+                });
+
+            } catch (error) {
+                console.error("Error setting up snapshots:", error);
+            }
+        }
+
+        // Call loadDashboardData after auth check
+        window.onAuthStateChanged(window.firebaseAuth, (user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+            } else {
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userInitial').textContent = user.email.charAt(0).toUpperCase();
+                loadDashboardData();
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await window.signOut(window.firebaseAuth);
+                // Redirect will happen via onAuthStateChanged
+            } catch (error) {
+                console.error("Error signing out: ", error);
+            }
+        });
+
+        let currentReviewDocId = null;
+        let reviewModalInstance = null;
+
+        window.openReviewModal = function(docId, encodedData) {
+            currentReviewDocId = docId;
+            const data = JSON.parse(decodeURIComponent(encodedData));
+            
+            const avatarDiv = document.getElementById('modalAvatar');
+            if(data.profileImageUrl) {
+                avatarDiv.innerHTML = `<img src="${data.profileImageUrl}" alt="Profile" style="width:100%; height:100%; object-fit: cover;">`;
+            } else {
+                avatarDiv.textContent = (data.name || '?').charAt(0).toUpperCase();
+            }
+
+            document.getElementById('modalName').textContent = data.name || 'Unknown User';
+            document.getElementById('modalEmail').textContent = data.email || 'No email provided';
+            document.getElementById('modalPhone').textContent = data.phone || 'No phone provided';
+            document.getElementById('modalNic').textContent = data.nic || 'No NIC provided';
+            document.getElementById('modalUserType').textContent = data.userType || 'Student';
+            document.getElementById('modalStudentId').textContent = data.studentId || 'N/A';
+            document.getElementById('modalPlate').textContent = data.vehiclePlate || 'No Plate provided';
+            
+            if(!reviewModalInstance) {
+                reviewModalInstance = new bootstrap.Modal(document.getElementById('reviewModal'));
+            }
+            reviewModalInstance.show();
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const approveBtn = document.getElementById('modalApproveBtn');
+            const rejectBtn = document.getElementById('modalRejectBtn');
+            if(approveBtn) approveBtn.addEventListener('click', () => {
+                if(currentReviewDocId) window.updateDriverStatus(currentReviewDocId, 'verified');
+            });
+            if(rejectBtn) rejectBtn.addEventListener('click', () => {
+                if(currentReviewDocId) window.updateDriverStatus(currentReviewDocId, 'rejected');
+            });
+
+
+        });
+
+        // Inline Update Status Logic
+        window.updateDriverStatus = async function(docId, newStatus) {
+            if(await window.customConfirm('Are you sure you want to ' + (newStatus === 'verified' ? 'Approve' : 'Reject') + ' this driver?')) {
+                try {
+                    const userRef = window.fsDoc(window.firebaseDb, 'users', docId);
+                    await window.fsUpdateDoc(userRef, { status: newStatus });
+                    
+                    if(reviewModalInstance) {
+                        reviewModalInstance.hide();
+                    }
+                    window.customAlert('Driver has been ' + newStatus + '.', 'success');
+                    // We don't need to manually call loadDashboardData() here anymore because onSnapshot is active.
+                } catch(error) {
+                    console.error("Error updating driver:", error);
+                    window.customAlert("Error updating status.", "error");
+                }
+            }
+        }
+    </script>
+
+    <!-- Bootstrap JS for Modals -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Review Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--bg-card); border: 1px solid var(--border-color);">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title "><i class="fa-solid fa-id-card"></i> Review Driver Application</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body ">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="avatar me-3" id="modalAvatar" style="width: 60px; height: 60px; font-size: 2rem; background: var(--accent-secondary); display: flex; align-items: center; justify-content: center; border-radius: 50%; overflow: hidden;">?</div>
+                        <div>
+                            <h4 class="mb-0 fw-bold" id="modalName">Name</h4>
+                            <span class="text-muted-custom" id="modalEmail">email@example.com</span>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-box p-3 mb-3">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <small class="text-muted-custom d-block mb-1">Phone Number</small>
+                                <span id="modalPhone" class="fw-bold">-</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted-custom d-block mb-1">NIC Number</small>
+                                <span id="modalNic" class="fw-bold">-</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted-custom d-block mb-1">User Type</small>
+                                <span id="modalUserType" class="fw-bold">-</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted-custom d-block mb-1">ID Number</small>
+                                <span id="modalStudentId" class="fw-bold">-</span>
+                            </div>
+                            <div class="col-12">
+                                <small class="text-muted-custom d-block mb-1">Vehicle Plate Number</small>
+                                <span id="modalPlate" class="fw-bold fs-5 text-warning">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 d-flex gap-2">
+                    <button type="button" class="btn btn-danger flex-grow-1 rounded-pill" id="modalRejectBtn"><i class="fa-solid fa-xmark"></i> Reject Driver</button>
+                    <button type="button" class="btn btn-success flex-grow-1 rounded-pill" id="modalApproveBtn"><i class="fa-solid fa-check"></i> Approve Driver</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

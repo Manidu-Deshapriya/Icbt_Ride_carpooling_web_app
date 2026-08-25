@@ -1,10 +1,9 @@
 {
   "version": 2,
-  "dgSpecHash": "5Qfl1dXy8fI=",
+  "dgSpecHash": "f453l7l0vew=",
   "success": true,
   "projectFilePath": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\icbt ride.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\ManiYa\\.nuget\\packages\\microsoft.aspnetcore.app.internal.assets\\10.0.9\\microsoft.aspnetcore.app.internal.assets.10.0.9.nupkg.sha512",
     "C:\\Users\\ManiYa\\.nuget\\packages\\microsoft.aspnetcore.authorization\\10.0.9\\microsoft.aspnetcore.authorization.10.0.9.nupkg.sha512",
     "C:\\Users\\ManiYa\\.nuget\\packages\\microsoft.aspnetcore.components\\10.0.9\\microsoft.aspnetcore.components.10.0.9.nupkg.sha512",
     "C:\\Users\\ManiYa\\.nuget\\packages\\microsoft.aspnetcore.components.analyzers\\10.0.9\\microsoft.aspnetcore.components.analyzers.10.0.9.nupkg.sha512",

@@ -3,16 +3,19 @@
   "WorkspaceRootPath": "E:\\Projects\\.NET\\icbtride\\icbt ride\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ManiYa\\AppData\\Local\\Temp\\.vsdbgsrc\\04a22ff52154f1d9dbdab8feb72f692c20a2c681e33a2424715b186fda7f4fdb\\AddressBinder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|solutionrelative:icbt ride\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\wwwroot\\manifest.webmanifest||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|solutionrelative:icbt ride\\wwwroot\\manifest.webmanifest||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|solutionrelative:icbt ride\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|solutionrelative:icbt ride\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{99517FE7-14FF-CC14-EA34-233CAEE2E605}|icbt ride\\icbt ride.csproj|e:\\projects\\.net\\icbtride\\icbt ride\\icbt ride\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
@@ -30,11 +33,34 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AddressBinder.cs",
+              "DocumentMoniker": "C:\\Users\\ManiYa\\AppData\\Local\\Temp\\.vsdbgsrc\\04a22ff52154f1d9dbdab8feb72f692c20a2c681e33a2424715b186fda7f4fdb\\AddressBinder.cs",
+              "ToolTip": "C:\\Users\\ManiYa\\AppData\\Local\\Temp\\.vsdbgsrc\\04a22ff52154f1d9dbdab8feb72f692c20a2c681e33a2424715b186fda7f4fdb\\AddressBinder.cs",
+              "ViewState": "AgIAAL4AAAAAAAAAAAAAwLwAAAADAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-08T10:36:29.7Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "app.css",
+              "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\css\\app.css",
+              "RelativeDocumentMoniker": "icbt ride\\wwwroot\\css\\app.css",
+              "ToolTip": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\css\\app.css",
+              "RelativeToolTip": "icbt ride\\wwwroot\\css\\app.css",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-08-08T09:50:51.789Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "index.html",
               "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\index.html",
               "RelativeDocumentMoniker": "icbt ride\\wwwroot\\index.html",
@@ -46,19 +72,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "MainLayout.razor",
-              "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\Layout\\MainLayout.razor",
-              "RelativeDocumentMoniker": "icbt ride\\Layout\\MainLayout.razor",
-              "ToolTip": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\Layout\\MainLayout.razor",
-              "RelativeToolTip": "icbt ride\\Layout\\MainLayout.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-08-04T05:31:30.966Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "bootstrap.js",
               "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
               "RelativeDocumentMoniker": "icbt ride\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
@@ -70,20 +84,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "manifest.webmanifest",
               "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\manifest.webmanifest",
               "RelativeDocumentMoniker": "icbt ride\\wwwroot\\manifest.webmanifest",
               "ToolTip": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\manifest.webmanifest",
               "RelativeToolTip": "icbt ride\\wwwroot\\manifest.webmanifest",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-08-03T16:08:17.472Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-03T16:08:17.472Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "bootstrap-grid.css",
               "DocumentMoniker": "E:\\Projects\\.NET\\icbtride\\icbt ride\\icbt ride\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
               "RelativeDocumentMoniker": "icbt ride\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
