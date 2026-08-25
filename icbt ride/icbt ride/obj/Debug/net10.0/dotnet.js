@@ -5,7 +5,7 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
   "mainAssemblyName": "icbt ride",
   "applicationEnvironment": "Development",
   "resources": {
-    "hash": "sha256-52d7LcQh6z6s7A+G6jAKhpvoSCFu9ebA73FClLjngMo=",
+    "hash": "sha256-TCi9dZC51kAurtii4iLSxKyEcCvOzjb487h4CElM1O0=",
     "jsModuleNative": [
       {
         "name": "dotnet.native.ikrs475e5v.js"
@@ -1242,16 +1242,16 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
       },
       {
         "virtualPath": "icbt ride.wasm",
-        "name": "icbt ride.2w57ma9c00.wasm",
-        "hash": "sha256-kucVEjZE2BNFLzWC01VUqds2nh8irjjyX9wzPZRcFsQ=",
+        "name": "icbt ride.42a9a4w0ks.wasm",
+        "hash": "sha256-LHUnxMD0Xt9tvs5Kv6PbAcrPE9wLqZ0OYy8g2i6Kb7g=",
         "cache": "force-cache"
       }
     ],
     "pdb": [
       {
         "virtualPath": "icbt ride.pdb",
-        "name": "icbt ride.aa7n4a7s4c.pdb",
-        "hash": "sha256-ouCdgX1kDWUZP4QYJiztq9oCkToA2JqfkG04HoU/Rkk=",
+        "name": "icbt ride.l2sko1z6gq.pdb",
+        "hash": "sha256-48iCcOK6MXyOiMK0fQ/YopNlY6qFQEDqyXpSguKrYME=",
         "cache": "force-cache"
       }
     ],

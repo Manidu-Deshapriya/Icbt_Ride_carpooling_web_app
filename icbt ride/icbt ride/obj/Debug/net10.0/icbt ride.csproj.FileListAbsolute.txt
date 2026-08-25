@@ -207,9 +207,6 @@ E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framewo
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\Microsoft.DotNet.HotReload.WebAssembly.Browser.r0uvx0ebhi.wasm
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icbt ride.2w57ma9c00.wasm
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icbt ride.aa7n4a7s4c.pdb
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\dotnet.4rxy4yucd1.js
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\service-worker.js
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\service-worker-assets.js
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\blazor.webassembly.958z1vx7fr.js.gz
@@ -420,14 +417,8 @@ E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framewo
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\Microsoft.DotNet.HotReload.WebAssembly.Browser.r0uvx0ebhi.wasm.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icbt ride.2w57ma9c00.wasm.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icbt ride.aa7n4a7s4c.pdb.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\dotnet.4rxy4yucd1.js.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\service-worker.js.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\service-worker-assets.js.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\admin dashboard\package-lock.json
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\admin dashboard\package.json
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\admin dashboard\public\manifest.json
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\icbt ride.staticwebassets.runtime.json
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\icbt ride.staticwebassets.endpoints.json
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\icbt ride.dll
@@ -863,7 +854,6 @@ E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\s8xtw
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\wmkef692pl-{0}-s9w698g8d2-s9w698g8d2.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\y04mlvacm7-{0}-howydtdk42-howydtdk42.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\l4s2ped3gh-{0}-nk9bgqz024-nk9bgqz024.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\8baiss639f-{0}-koe3cunc4d-koe3cunc4d.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\oa4ee5wy0g-{0}-bqjiyaj88i-bqjiyaj88i.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\hu2az3wk6d-{0}-c2jlpeoesf-c2jlpeoesf.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\t78rjk0mqx-{0}-erw9l3u2r3-erw9l3u2r3.gz
@@ -1116,9 +1106,6 @@ E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\gbnn5
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\2oveak1bb7-{0}-tptq2av103-tptq2av103.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\h4u9l694lq-{0}-lfu7j35m59-lfu7j35m59.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\iv9fyolbid-{0}-r0uvx0ebhi-r0uvx0ebhi.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\690xs1la8z-{0}-2w57ma9c00-2w57ma9c00.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\939z6u2c21-{0}-aa7n4a7s4c-aa7n4a7s4c.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\kb6phqt189-{0}-4rxy4yucd1-4rxy4yucd1.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\staticwebassets.build.json
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\staticwebassets.build.json.cache
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\staticwebassets.development.json
@@ -1130,24 +1117,28 @@ E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\icbt ride.dll
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\refint\icbt ride.dll
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\icbt ride.pdb
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\ref\icbt ride.dll
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\hciy4vskqq-{0}-kyioqqs65w-kyioqqs65w.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\5kluitbo3b-{0}-lc3kwtjbw8-lc3kwtjbw8.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\wbm9you6zo-{0}-px082c7c95-px082c7c95.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\cqavqiblzo-{0}-cbqaj21mun-cbqaj21mun.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\l2uhtw7n8e-{0}-0zpttictrm-0zpttictrm.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\iy2nb46r4v-{0}-awo3nwew0a-awo3nwew0a.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\knukn9dpkr-{0}-dtdk3fijwa-dtdk3fijwa.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\jqo2odgnm1-{0}-a0svvodmip-a0svvodmip.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\6olaqjmm9s-{0}-s3v7kp6o9s-s3v7kp6o9s.gz
 E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\4dbyvolbtr-{0}-kyy4ckt1k6-kyy4ckt1k6.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\zobke4ixak-{0}-j1sdnbanto-j1sdnbanto.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\kdyp4fv6xx-{0}-lpvu0x6cso-lpvu0x6cso.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\3p1urmgqrm-{0}-zl99f4iv74-zl99f4iv74.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\fvdw4vc306-{0}-vl0so6lkus-vl0so6lkus.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\7px0rmk69y-{0}-lz9i1anv14-lz9i1anv14.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\arzca5fk6t-{0}-xpjr087r1h-xpjr087r1h.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\65ffpefx34-{0}-f6hvvfomak-f6hvvfomak.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\m4cntjssfk-{0}-epsjf5qfk9-epsjf5qfk9.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\l3i351n352-{0}-uwi7480zs3-uwi7480zs3.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\0xakdwxlkq-{0}-jkqcrdtzf7-jkqcrdtzf7.gz
-E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\a02knuyk3a-{0}-csclfi63v3-csclfi63v3.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icbt ride.42a9a4w0ks.wasm
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icbt ride.l2sko1z6gq.pdb
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\dotnet.z10jqxtn62.js
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icbt ride.42a9a4w0ks.wasm.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\icbt ride.l2sko1z6gq.pdb.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\bin\Debug\net10.0\wwwroot\_framework\dotnet.z10jqxtn62.js.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\staticwebassets\htmlassetplaceholders\build\1w069l53fu.html
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\l2uhtw7n8e-{0}-za8j65eglm-za8j65eglm.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\l3i351n352-{0}-5y6wk47lac-5y6wk47lac.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\wbm9you6zo-{0}-ut96w3lpp3-ut96w3lpp3.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\m4cntjssfk-{0}-6iiqd69mwg-6iiqd69mwg.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\hciy4vskqq-{0}-t4wt8avy8l-t4wt8avy8l.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\65ffpefx34-{0}-hua0elxyq8-hua0elxyq8.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\5kluitbo3b-{0}-dm7rl0wctr-dm7rl0wctr.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\690xs1la8z-{0}-42a9a4w0ks-42a9a4w0ks.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\939z6u2c21-{0}-l2sko1z6gq-l2sko1z6gq.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\kb6phqt189-{0}-z10jqxtn62-z10jqxtn62.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\iajlki4m1l-{0}-pi5jntp2qe-pi5jntp2qe.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\0xakdwxlkq-{0}-nhzacykq94-nhzacykq94.gz
+E:\Projects\.NET\icbtride\icbt ride\icbt ride\obj\Debug\net10.0\compressed\a02knuyk3a-{0}-383eibijpw-383eibijpw.gz
