@@ -2,16 +2,6 @@
   "version": 4,
   "targets": {
     "net10.0": {
-      "Microsoft.AspNetCore.App.Internal.Assets/10.0.9": {
-        "type": "package",
-        "build": {
-          "build/Microsoft.AspNetCore.App.Internal.Assets.props": {},
-          "buildTransitive/Microsoft.AspNetCore.App.Internal.Assets.targets": {}
-        },
-        "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.AspNetCore.App.Internal.Assets.targets": {}
-        }
-      },
       "Microsoft.AspNetCore.Authorization/10.0.9": {
         "type": "package",
         "dependencies": {
@@ -529,16 +519,6 @@
       }
     },
     "net10.0/browser-wasm": {
-      "Microsoft.AspNetCore.App.Internal.Assets/10.0.9": {
-        "type": "package",
-        "build": {
-          "build/Microsoft.AspNetCore.App.Internal.Assets.props": {},
-          "buildTransitive/Microsoft.AspNetCore.App.Internal.Assets.targets": {}
-        },
-        "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.AspNetCore.App.Internal.Assets.targets": {}
-        }
-      },
       "Microsoft.AspNetCore.Authorization/10.0.9": {
         "type": "package",
         "dependencies": {
@@ -1057,29 +1037,6 @@
     }
   },
   "libraries": {
-    "Microsoft.AspNetCore.App.Internal.Assets/10.0.9": {
-      "sha512": "E9Wp/LPKAYkGOVBv4lt5U5TnUA/7pov7QZAwF3eI64kK8AAXqkPDwuadEOwpL1WXEfgecYm0fccluvABp32D8g==",
-      "type": "package",
-      "path": "microsoft.aspnetcore.app.internal.assets/10.0.9",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "THIRD-PARTY-NOTICES.TXT",
-        "_framework/blazor.server.js",
-        "_framework/blazor.server.js.map",
-        "_framework/blazor.web.js",
-        "_framework/blazor.web.js.map",
-        "_framework/blazor.webassembly.js",
-        "_framework/blazor.webassembly.js.map",
-        "build/Microsoft.AspNetCore.App.Internal.Assets.props",
-        "build/Microsoft.AspNetCore.App.Internal.Assets.targets",
-        "buildMultiTargeting/Microsoft.AspNetCore.App.Internal.Assets.targets",
-        "buildTransitive/Microsoft.AspNetCore.App.Internal.Assets.targets",
-        "microsoft.aspnetcore.app.internal.assets.10.0.9.nupkg.sha512",
-        "microsoft.aspnetcore.app.internal.assets.nuspec"
-      ]
-    },
     "Microsoft.AspNetCore.Authorization/10.0.9": {
       "sha512": "p/8NL3otNi5KJdLScn+OWbjlqOEe5WvhD+swFRUG9FNCeZAuu0EWF9DOTJ2SJPaCSnxQ2hrb2941mWg92T6Gpw==",
       "type": "package",
@@ -2078,7 +2035,6 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
-      "Microsoft.AspNetCore.App.Internal.Assets >= 10.0.9",
       "Microsoft.AspNetCore.Components.WebAssembly >= 10.0.9",
       "Microsoft.AspNetCore.Components.WebAssembly.DevServer >= 10.0.9",
       "Microsoft.NET.ILLink.Tasks >= 10.0.9",
@@ -2137,12 +2093,6 @@
         "framework": "net10.0",
         "targetAlias": "net10.0",
         "dependencies": {
-          "Microsoft.AspNetCore.App.Internal.Assets": {
-            "suppressParent": "All",
-            "target": "Package",
-            "version": "[10.0.9, )",
-            "autoReferenced": true
-          },
           "Microsoft.AspNetCore.Components.WebAssembly": {
             "target": "Package",
             "version": "[10.0.9, )"
