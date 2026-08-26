@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -40,6 +40,9 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="driver-tab" data-bs-toggle="pill" data-bs-target="#driver-pane" type="button" role="tab">Driver</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="owner-tab" data-bs-toggle="pill" data-bs-target="#owner-pane" type="button" role="tab">Owner</button>
                 </li>
             </ul>
 
@@ -149,6 +152,40 @@
                         
                         <div class="auth-switch">
                             Already applied? <a href="login.html">Log in here</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- OWNER SECTION -->
+                <div class="tab-pane fade" id="owner-pane" role="tabpanel" tabindex="0">
+                    <!-- Owner Register Form -->
+                    <form id="ownerRegisterForm">
+                        <h4 class="text-center mb-3">Create Owner Account</h4>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Full Name</label>
+                            <input type="text" class="form-control" id="o-reg-name" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" placeholder="e.g. Nimal Perera" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Phone Number</label>
+                            <input type="tel" class="form-control" id="o-reg-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  pattern="07[0-9]{8}" title="Phone number must start with 07 and contain exactly 10 digits" placeholder="07xxxxxxxx" maxlength="10" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">NIC Number</label>
+                            <input type="text" class="form-control" id="o-reg-nic" pattern="^([0-9]{9}[vVxX]|[0-9]{12})$" title="Enter a valid Sri Lankan NIC" placeholder="e.g. 901234567V" maxlength="12" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <input type="email" class="form-control" id="o-reg-email" placeholder="e.g. owner@example.com" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" class="form-control" id="o-reg-password" placeholder="Enter a secure password" required minlength="6">
+                        </div>
+                        <div class="error-msg" id="o-reg-error"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="o-reg-btn">Register</button>
+                        
+                        <div class="auth-switch">
+                            Already have an account? <a href="login.html">Log in here</a>
                         </div>
                     </form>
                 </div>
@@ -303,6 +340,52 @@
                 errorMsg.innerText = "Error submitting application. Please try again.";
                 errorMsg.style.display = 'block';
                 btn.innerHTML = 'Submit Application';
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('ownerRegisterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('o-reg-btn');
+            const errorMsg = document.getElementById('o-reg-error');
+            errorMsg.style.display = 'none';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Registering...';
+            btn.disabled = true;
+
+            const name = document.getElementById('o-reg-name').value;
+            const phone = document.getElementById('o-reg-phone').value;
+            const nic = document.getElementById('o-reg-nic').value;
+            const email = document.getElementById('o-reg-email').value;
+            const password = document.getElementById('o-reg-password').value;
+
+            try {
+                // Save to Firestore 'users' collection
+                await window.fsAddDoc(window.fsCollection(window.firebaseDb, "users"), {
+                    name: name,
+                    phone: phone,
+                    nic: nic,
+                    email: email,
+                    password: password,
+                    role: 'owner',
+                    status: 'active', // Owners are active immediately
+                    createdAt: new Date().toISOString()
+                });
+
+                // Show success message
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Registration Successful!';
+                btn.classList.replace('btn-primary', 'btn-success');
+                
+                setTimeout(() => {
+                    alert("Account created successfully. Please login.");
+                    window.location.href = '/main-login/login.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                errorMsg.innerText = "Error creating account. Please try again.";
+                errorMsg.style.display = 'block';
+                btn.innerHTML = 'Register';
                 btn.disabled = false;
             }
         });

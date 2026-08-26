@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "m5YfVt+Z",
+  "version": "EPXoaH9E",
   "assets": [
     {
       "hash": "sha256-TKbWsc5gCE+04slSkrqeNGTb7K8LiRW72Tm+1gzKxqU=",
@@ -818,16 +818,16 @@ self.assetsManifest = {
       "url": "_framework/dotnet.runtime.js.map"
     },
     {
-      "hash": "sha256-B5VxupT0NXIatvw/CZApzDqTMx3WrRpL9TCzXtbMlAM=",
-      "url": "_framework/dotnet.z10jqxtn62.js"
+      "hash": "sha256-YETvzSFhIHCtXnj9hRig3SWqJq1V/3dYqbxlnmDl79Y=",
+      "url": "_framework/dotnet.w002jznuqh.js"
     },
     {
-      "hash": "sha256-LHUnxMD0Xt9tvs5Kv6PbAcrPE9wLqZ0OYy8g2i6Kb7g=",
-      "url": "_framework/icbt ride.42a9a4w0ks.wasm"
+      "hash": "sha256-tKthmyNllphy6TL87okXxhnFaTwmwnCxx+UTa1c40Dg=",
+      "url": "_framework/icbt ride.oneazoibap.wasm"
     },
     {
-      "hash": "sha256-48iCcOK6MXyOiMK0fQ/YopNlY6qFQEDqyXpSguKrYME=",
-      "url": "_framework/icbt ride.l2sko1z6gq.pdb"
+      "hash": "sha256-M8QE0lmREMIg7a9W6OMohoqGItSJqahIcHRx24EVWgY=",
+      "url": "_framework/icbt ride.v9hv7lsbd7.pdb"
     },
     {
       "hash": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -850,52 +850,76 @@ self.assetsManifest = {
       "url": "_framework/netstandard.qv9s71s9sf.wasm"
     },
     {
-      "hash": "sha256-NogoTZwqQLnjUt6O0BCxcv10i9/D/4sNoWd0GlIjUAE=",
+      "hash": "sha256-cMLpBqJccEbuOr9yJAv97kc4whp+NHFcG4pCzDdXsfE=",
       "url": "admin-dashboard/admin-login.html"
     },
     {
-      "hash": "sha256-Dx6/cy6YGOK/dcrYRRgrts7j753mzJnftlmyGOgiDCA=",
+      "hash": "sha256-i+Rf0mJ/Ktfa4Ky/gYZUgZj0xXoN25JoHt6hpzdPDXQ=",
       "url": "admin-dashboard/announcements.html"
     },
     {
-      "hash": "sha256-djGMJAGQ3jeNDRa7YdTb6niuhttfl7V5b2r9vF8VW+8=",
+      "hash": "sha256-0MPW/Gls1YYFmhLjwr3Twxh+OsHb3YZFr0ustSsRVW8=",
       "url": "admin-dashboard/complaints.html"
     },
     {
-      "hash": "sha256-vuyxIkYQK8uRIzhuXv5O/hZZFdSZC2V4UM3/Ww/Elfc=",
+      "hash": "sha256-TG+OEKcAdK3Ut8+XdsIfSlPO+8kZn/ZpY1NFwXjyoi8=",
       "url": "admin-dashboard/css/style.css"
     },
     {
-      "hash": "sha256-LvVQqwPB3oxVVKQEbxZ23dNV9EY5t5Ad2BGcOwhkZXA=",
+      "hash": "sha256-WIJczGqYsF/axlSexYNj1dns8GkJgZRorxGMiwKIwhY=",
       "url": "admin-dashboard/dashboard.html"
     },
     {
-      "hash": "sha256-IUc+TdLhtOt6/gpmg3bMWgrPev5dWZX1hmZc7uq35VA=",
+      "hash": "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
       "url": "admin-dashboard/icon.svg"
     },
     {
-      "hash": "sha256-VZQTMN8a0jNbbJycqWdRJ8itOKp8/uj4+xONXgTIYRo=",
+      "hash": "sha256-9fFxZGbNlFVR20r0rQ7CiMVQckZjq/mTl5E1WR2Skok=",
       "url": "admin-dashboard/js/firebase-config.js"
     },
     {
-      "hash": "sha256-4LFYBEQunXobDgmceWv62b+4F41u9FZGuqmY5Rjv4aI=",
+      "hash": "sha256-5CkZe4ThW2+pSRwFBFFEis1H16sa8Te5JUyQyKEPMBA=",
       "url": "admin-dashboard/manifest.json"
     },
     {
-      "hash": "sha256-OJHJGA977khgjrF+Y/LEazsI4DRXYqdyu1dBz3QTfCw=",
+      "hash": "sha256-BR4L62NwuQ7zFRsx2VsfBu8B0bHd5MkuHKv8XEgGLKE=",
       "url": "admin-dashboard/rides.html"
     },
     {
-      "hash": "sha256-D5UYLNiTWjDK/6tNuq5XhiGqXVD2hJIsgWxbcPSPFIU=",
+      "hash": "sha256-l0idzFh9iAjHvrHZnm6t5WyQzS7TKfLrYjHi883sBwE=",
       "url": "admin-dashboard/sw.js"
     },
     {
-      "hash": "sha256-BAp1JU6Tm4rAX1is75bM/9097VhMWx4RPkXacHMQISY=",
+      "hash": "sha256-v2T5SYa6xqH+oT/LNFUFHHQf77scblr5ikdnIXn4t3U=",
       "url": "admin-dashboard/users.html"
     },
     {
-      "hash": "sha256-yRJ49z3y3rHi/X6jpbhaZS6+RJBCP3/2qRNriPwlJ3c=",
+      "hash": "sha256-CsChHlHUYGbuIEdR+5X9lxWNazWkgwxEsDPWRPQmRpQ=",
       "url": "css/app.css"
+    },
+    {
+      "hash": "sha256-SJHJ8Kag7n+h90OOcAvpyR98ZNZ5XB7TpwNLVSLNQhU=",
+      "url": "driver-dashboard/app.js"
+    },
+    {
+      "hash": "sha256-V0iPc84g969TCCelD5FEZ3N/BAFy6OfBMyKvVKY9N2U=",
+      "url": "driver-dashboard/driver_dashboard.html"
+    },
+    {
+      "hash": "sha256-VCCN1IZbBV3t0y80ooc3daUjZ7wFgkUimglpC3BpwQ8=",
+      "url": "driver-dashboard/profile.html"
+    },
+    {
+      "hash": "sha256-kEW8TKIoCi+xEAqiw5X00NOzAVF7ExGyxt5iGCHiME8=",
+      "url": "driver-dashboard/requests.html"
+    },
+    {
+      "hash": "sha256-UYnXfg9OJ4D3Fh21V9Ynnwjw3uLCuX7lbW91G4rii8k=",
+      "url": "driver-dashboard/rides.html"
+    },
+    {
+      "hash": "sha256-EDWwyLzOM6XA6apHSQ9CzstNHGz9QId1XKJ4IdbpoWQ=",
+      "url": "driver-dashboard/sustainability.html"
     },
     {
       "hash": "sha256-ZrEKRizdNtop1ajk1u/+LuBuv+L/ciTEkaAjEiZKxnQ=",
@@ -910,8 +934,12 @@ self.assetsManifest = {
       "url": "icon-512.png"
     },
     {
-      "hash": "sha256-T0Lpz1a8F5zDlCH6Aefz5VeECBtGuc543Pr+D2IjKGg=",
+      "hash": "sha256-mv70aaa+4uQYfw0aOERLCKegEal6Q0aJvIBtSDEqi9A=",
       "url": "index.html"
+    },
+    {
+      "hash": "sha256-ieOV597a3rlODGe6Rp/+z5HjYJ5dLASDVr0v4O3DYS0=",
+      "url": "js/firebase-config.js"
     },
     {
       "hash": "sha256-Yy5/hBqRmmU2MJ1TKwP2aXoTO6+OjzrLmJIsC2Wy4H8=",
@@ -1090,20 +1118,68 @@ self.assetsManifest = {
       "url": "lib/bootstrap/dist/js/bootstrap.min.js.map"
     },
     {
-      "hash": "sha256-NXV/nl3qHSevIMByjbgx7SLT03kr4aMqfciz+VfDjHE=",
+      "hash": "sha256-VbOTmds0s7X3K/pJiPIEfDX4pB+VoexyVDfefbn6MAk=",
       "url": "main-login/css/style.css"
     },
     {
-      "hash": "sha256-F/cJhjNs4eniEwtjsvxMVOERw/VEQzB4+2c3pDY6wVw=",
+      "hash": "sha256-FODnumPQtBU1k3CXIq+ImiElV8OKJlYwlmsEdafQZXw=",
       "url": "main-login/login.html"
     },
     {
-      "hash": "sha256-Lb+QwJTOhswlI+kFuASX4gH7fbeER+/2Egla7USyx5U=",
+      "hash": "sha256-q/jEY9kNMJIHOCpqaG02ANGWCppiO6hSYRkg9/chpYM=",
       "url": "main-login/register.html"
     },
     {
-      "hash": "sha256-E9iv1EOwMYXLTDab3VTbv4te7/lWQnANikWTjNpIAOM=",
+      "hash": "sha256-H6MZO7kf2bgTF4lMAVpo6oI1nl0C2Wte1eM/O5gea2A=",
       "url": "manifest.webmanifest"
+    },
+    {
+      "hash": "sha256-7OZ7Pk5x/8L9WyjbIIXDOCxgTuZ78f3bF6fzzx/RU4U=",
+      "url": "owner-dashboard/drivers.html"
+    },
+    {
+      "hash": "sha256-PjJ7TEL+u4aCoDbYWYOp1dBoFjiVBTJ2yZd3C9aHgT8=",
+      "url": "owner-dashboard/js/owner-app.js"
+    },
+    {
+      "hash": "sha256-gDYmPIS+QJ5AP2TZDuo5e6TZaL4lH+w9gi4u88bvs+o=",
+      "url": "owner-dashboard/owner_dashboard.html"
+    },
+    {
+      "hash": "sha256-hsbIFEVm3MxiShlhqAgDCriYh9aISR092QvzwkbUwM0=",
+      "url": "owner-dashboard/profile.html"
+    },
+    {
+      "hash": "sha256-Wvbyw9Xc0lo2pHnz4KMcDdCAu1f5d549sSdDHhy8060=",
+      "url": "owner-dashboard/rides.html"
+    },
+    {
+      "hash": "sha256-vKHRhkGpcFjpcOtJjHoG2Ay/HTMNN+4lEne+0163nJY=",
+      "url": "owner-dashboard/vehicles.html"
+    },
+    {
+      "hash": "sha256-yRZ013LJkyskO1aXRAXDgiZxRfdioQACqWVMFf3vMqM=",
+      "url": "passenger-dashboard/app.js"
+    },
+    {
+      "hash": "sha256-/jDIAx7KhQqm2vsRJuwWHr10vMHPeNmPmGr3MLJOWpQ=",
+      "url": "passenger-dashboard/bookings.html"
+    },
+    {
+      "hash": "sha256-U7uhmP1/2j/dWSj4dEx65dCR+8r4304zHI/ia5GUWsM=",
+      "url": "passenger-dashboard/logo.png"
+    },
+    {
+      "hash": "sha256-2nSJ+W/DkiHk1m+2YWShT05N7od1DXndAIJ3LzmeQ9Y=",
+      "url": "passenger-dashboard/passenger_dashboard.html"
+    },
+    {
+      "hash": "sha256-XCUjNkU/lPpIuTbOHbgEpka12hcYMVtpWSmDrMtcuos=",
+      "url": "passenger-dashboard/profile.html"
+    },
+    {
+      "hash": "sha256-U+ZforEBrlDeonCSXvxZjO8RhVZ5BmfX9OQlYGqIzR0=",
+      "url": "passenger-dashboard/search_rides.html"
     }
   ]
 };

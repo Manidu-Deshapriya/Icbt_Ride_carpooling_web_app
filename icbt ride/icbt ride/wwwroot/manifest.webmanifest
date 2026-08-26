@@ -1,6 +1,6 @@
 {
-  "name": "icbt ride",
-  "short_name": "icbt ride",
+  "name": "Icbt Ride",
+  "short_name": "Icbt Ride",
   "id": "./",
   "start_url": "./",
   "display": "standalone",

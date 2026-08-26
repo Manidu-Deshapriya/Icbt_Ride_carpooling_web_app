@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICBT Ride - Ride History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #E8F5E9;
+            --surface-color: #ffffff;
+            --border-color: #A5D6A7;
+            --primary-color: #1B5E20;
+            --secondary-color: #66BB6A;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --info-color: #3B82F6;
+            --text-main: #1B5E20;
+            --text-muted: #4caf50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #F9FBF9;
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-links li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links li a:hover, .nav-links li a.active {
+            background: #E8F5E9;
+            color: var(--primary-color);
+        }
+
+        /* Bottom Nav (Hidden on PC) */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 20px;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
+
+        .bottom-nav-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bottom-nav-links a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 8px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-nav-links a span {
+            font-size: 0.65rem;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .bottom-nav-links a.active, .bottom-nav-links a:hover {
+            color: var(--primary-color);
+            background: #E8F5E9;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2rem 3rem;
+            padding-bottom: 50px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .greeting h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+        
+        .greeting p {
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .mobile-header-logo {
+            display: none;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: auto;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mobile-logout-btn {
+            display: none;
+            color: var(--danger-color);
+            font-size: 1.4rem;
+            text-decoration: none;
+        }
+
+        /* Ride History Styles */
+        .filters-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            color: var(--text-main);
+            outline: none;
+            background: rgba(232, 245, 233, 0.2);
+        }
+        .filter-group select:focus, .filter-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .card-container {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-bottom: 2px solid var(--border-color);
+            background: rgba(232, 245, 233, 0.2);
+        }
+
+        td {
+            font-weight: 500;
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+        .status-completed { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
+        .status-cancelled { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+        .status-ongoing { background: rgba(59, 130, 246, 0.1); color: var(--info-color); }
+
+        .location-col {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        .location-col .pickup {
+            color: var(--primary-color);
+        }
+        .location-col .dropoff {
+            color: var(--danger-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .bottom-nav { display: block; }
+            .main-content { margin-left: 0; padding: 1.5rem; padding-bottom: 90px; }
+            .mobile-header-logo { display: flex; }
+            .mobile-logout-btn { display: block; position: absolute; right: 0; top: 0; }
+            .greeting { display: none; }
+            .header { align-items: center; justify-content: center; position: relative; margin-bottom: 1.5rem; }
+            .user-profile { width: 100%; justify-content: space-between; background: rgba(255,255,255,0.4); padding: 10px 15px; border-radius: 12px; }
+            
+            .filters-container { flex-direction: column; }
+            .table-wrapper { padding: 0 10px 15px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar (Desktop) -->
+    <aside class="sidebar">
+        <div class="logo"><img src="/icon-192.png" alt="ICBT Ride"> ICBT Ride</div>
+        <ul class="nav-links">
+            <li><a href="owner_dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="vehicles.html"><i class="fa-solid fa-car"></i> My Vehicles</a></li>
+            <li><a href="drivers.html"><i class="fa-solid fa-user-tie"></i> Drivers & Assignments</a></li>
+            <li><a href="rides.html" class="active"><i class="fa-solid fa-route"></i> Ride History</a></li>
+            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i> Profile</a></li>
+        </ul>
+        <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
+            <a href="#" id="logoutBtn" style="color: var(--danger-color); text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; padding: 12px 15px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Bottom Nav (Mobile) -->
+    <nav class="bottom-nav">
+        <ul class="bottom-nav-links">
+            <li><a href="owner_dashboard.html"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
+            <li><a href="vehicles.html"><i class="fa-solid fa-car"></i><span>Vehicles</span></a></li>
+            <li><a href="drivers.html"><i class="fa-solid fa-user-tie"></i><span>Drivers</span></a></li>
+            <li><a href="rides.html" class="active"><i class="fa-solid fa-route"></i><span>Rides</span></a></li>
+            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i><span>Profile</span></a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="mobile-header-logo"><img src="/icon-192.png" alt="Logo" style="height: 30px;"> ICBT Ride</div>
+            <div class="greeting">
+                <h1>Ride History</h1>
+                <p>Track rides completed by your vehicles.</p>
+            </div>
+            <div class="user-profile">
+                <a href="#" class="mobile-logout-btn"><i class="fa-solid fa-right-from-bracket"></i></a>
+                <div style="text-align: right; display: flex; flex-direction: column;" class="d-none d-md-flex">
+                    <span style="font-weight: 600;">Vehicle Owner</span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">owner@icbtride.com</span>
+                </div>
+                <div class="avatar">O</div>
+            </div>
+        </header>
+
+        <!-- Filters -->
+        <div class="filters-container">
+            <div class="filter-group">
+                <label>Date Filter</label>
+                <select>
+                    <option>Today</option>
+                    <option>This Week</option>
+                    <option selected>This Month</option>
+                    <option>All Time</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Select Vehicle</label>
+                <select>
+                    <option>All Vehicles</option>
+                    <option>CAB-1234 (Toyota Prius)</option>
+                    <option>CAA-9988 (Honda Fit)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Select Driver</label>
+                <select>
+                    <option>All Drivers</option>
+                    <option>Kasun Perera</option>
+                    <option>John Smith</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Rides Table -->
+        <div class="card-container">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ride ID</th>
+                            <th>Date & Time</th>
+                            <th>Vehicle & Driver</th>
+                            <th>Locations</th>
+                            <th>Distance</th>
+                            <th>Fare</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#R1054</td>
+                            <td>
+                                <div>2023-11-20</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">08:30 AM</div>
+                            </td>
+                            <td>
+                                <div>CAB-1234</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">Kasun P.</div>
+                            </td>
+                            <td class="location-col">
+                                <span class="pickup"><i class="fa-solid fa-location-dot"></i> ICBT Campus</span>
+                                <span class="dropoff"><i class="fa-solid fa-flag-checkered"></i> Nugegoda</span>
+                            </td>
+                            <td>12.5 km</td>
+                            <td style="color: var(--primary-color); font-weight: 700;">Rs. 850</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>#R1053</td>
+                            <td>
+                                <div>2023-11-20</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">07:15 AM</div>
+                            </td>
+                            <td>
+                                <div>CAB-1234</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">Kasun P.</div>
+                            </td>
+                            <td class="location-col">
+                                <span class="pickup"><i class="fa-solid fa-location-dot"></i> Maharagama</span>
+                                <span class="dropoff"><i class="fa-solid fa-flag-checkered"></i> ICBT Campus</span>
+                            </td>
+                            <td>8.2 km</td>
+                            <td style="color: var(--primary-color); font-weight: 700;">Rs. 500</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>#R1052</td>
+                            <td>
+                                <div>2023-11-19</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">05:30 PM</div>
+                            </td>
+                            <td>
+                                <div>CAA-9988</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">John S.</div>
+                            </td>
+                            <td class="location-col">
+                                <span class="pickup"><i class="fa-solid fa-location-dot"></i> Colombo 03</span>
+                                <span class="dropoff"><i class="fa-solid fa-flag-checkered"></i> Mount Lavinia</span>
+                            </td>
+                            <td>15.0 km</td>
+                            <td style="color: var(--primary-color); font-weight: 700;">Rs. 1,200</td>
+                            <td><span class="status-badge status-cancelled">Cancelled</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Custom Owner Logic -->
+    <script type="module" src="js/owner-app.js"></script>
+</body>
+</html>
