@@ -247,7 +247,7 @@
                                       '<span class="badge bg-warning text-dark">Pending</span>';
 
                     let actions = '';
-                    if(data.role === 'driver' && data.status !== 'verified') {
+                    if((data.role === 'driver' || data.role === 'passenger') && data.status !== 'verified') {
                         actions += `<button class="btn btn-success btn-sm rounded-pill px-3 me-2 mb-1 text-nowrap" onclick="openReviewModal('${id}', '${encodeURIComponent(JSON.stringify(data))}')"><i class="fa-solid fa-eye"></i> Review</button>`;
                     }
                     if(data.status !== 'suspended') {
@@ -292,6 +292,21 @@
             document.getElementById('modalNic').textContent = data.nic || 'No NIC provided';
             document.getElementById('modalPlate').textContent = data.vehiclePlate || 'No Plate provided';
             
+            const roleText = data.role === 'passenger' ? 'Passenger' : 'Driver';
+            const modalTitle = document.querySelector('#reviewModal .modal-title');
+            if (modalTitle) modalTitle.innerHTML = `<i class="fa-solid fa-id-card"></i> Review ${roleText} Application`;
+            
+            const rejectBtn = document.getElementById('modalRejectBtn');
+            if (rejectBtn) rejectBtn.innerHTML = `<i class="fa-solid fa-xmark"></i> Reject ${roleText}`;
+            
+            const approveBtn = document.getElementById('modalApproveBtn');
+            if (approveBtn) approveBtn.innerHTML = `<i class="fa-solid fa-check"></i> Approve ${roleText}`;
+
+            const plateContainer = document.getElementById('modalPlate').closest('.col-12');
+            if (plateContainer) {
+                plateContainer.style.display = data.role === 'passenger' ? 'none' : 'block';
+            }
+
             if(!reviewModalInstance) {
                 reviewModalInstance = new bootstrap.Modal(document.getElementById('reviewModal'));
             }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -40,6 +40,9 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="driver-tab" data-bs-toggle="pill" data-bs-target="#driver-pane" type="button" role="tab">Driver</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="owner-tab" data-bs-toggle="pill" data-bs-target="#owner-pane" type="button" role="tab">Owner</button>
                 </li>
             </ul>
 
@@ -89,6 +92,28 @@
                     </form>
                 </div>
 
+                <!-- OWNER SECTION -->
+                <div class="tab-pane fade" id="owner-pane" role="tabpanel" tabindex="0">
+                    <!-- Owner Login Form -->
+                    <form id="ownerLoginForm">
+                        <h4 class="text-center mb-3">Owner Login</h4>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <input type="email" class="form-control" id="o-login-email" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" class="form-control" id="o-login-password" required>
+                        </div>
+                        <div class="error-msg" id="o-login-error"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="o-login-btn">Log In</button>
+                        
+                        <div class="auth-switch">
+                            Want to register your vehicle? <a href="register.html">Apply here</a>
+                        </div>
+                    </form>
+                </div>
+
             </div>
 
         </div>
@@ -123,7 +148,7 @@
                     snapshot.forEach((doc) => {
                         const data = doc.data();
                         if (data.email === email && data.password === password && data.role === role) {
-                            foundUser = data;
+                            foundUser = { id: doc.id, ...data };
                         }
                     });
 
@@ -134,6 +159,10 @@
                             btn.innerHTML = 'Log In';
                             btn.disabled = false;
                         } else {
+                            // Store user ID in localStorage for the dashboards to use
+                            localStorage.setItem('loggedInUserId', foundUser.id);
+                            localStorage.setItem('loggedInUserRole', role);
+                            
                             btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
                             btn.classList.replace('btn-primary', 'btn-success');
                             setTimeout(() => {
@@ -156,8 +185,9 @@
             });
         }
 
-        verifyLogin('passengerLoginForm', 'p-login-btn', 'p-login-error', 'passenger', '/passenger-dashboard/index.html');
+        verifyLogin('passengerLoginForm', 'p-login-btn', 'p-login-error', 'passenger', '/passenger-dashboard/passenger_dashboard.html');
         verifyLogin('driverLoginForm', 'd-login-btn', 'd-login-error', 'driver', '/driver-dashboard/driver_dashboard.html');
+        verifyLogin('ownerLoginForm', 'o-login-btn', 'o-login-error', 'owner', '/owner-dashboard/owner_dashboard.html');
 
         // Register Service Worker for PWA Installation
         if ('serviceWorker' in navigator) {

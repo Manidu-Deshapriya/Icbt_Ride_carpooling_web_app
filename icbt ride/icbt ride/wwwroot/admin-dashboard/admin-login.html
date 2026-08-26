@@ -11,7 +11,7 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/main-login/css/style.css">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.webmanifest">
@@ -33,62 +33,21 @@
                 <img src="/icon-192.png" alt="ICBT Ride"> ICBT Ride
             </h2>
 
-            <!-- Role Selector -->
-            <ul class="nav nav-pills justify-content-center mb-4" id="roleTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="passenger-tab" data-bs-toggle="pill" data-bs-target="#passenger-pane" type="button" role="tab">Passenger</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="driver-tab" data-bs-toggle="pill" data-bs-target="#driver-pane" type="button" role="tab">Driver</button>
-                </li>
-            </ul>
-
-            <div class="tab-content" id="roleTabsContent">
-                
-                <!-- PASSENGER SECTION -->
-                <div class="tab-pane fade show active" id="passenger-pane" role="tabpanel" tabindex="0">
-                    <!-- Passenger Login Form -->
-                    <form id="passengerLoginForm">
-                        <h4 class="text-center mb-3">Passenger Login</h4>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Email Address</label>
-                            <input type="email" class="form-control" id="p-login-email" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted">Password</label>
-                            <input type="password" class="form-control" id="p-login-password" required>
-                        </div>
-                        <div class="error-msg" id="p-login-error"></div>
-                        <button type="submit" class="btn btn-primary w-100" id="p-login-btn">Log In</button>
-                        
-                        <div class="auth-switch">
-                            Don't have an account? <a href="register.html">Register here</a>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- DRIVER SECTION -->
-                <div class="tab-pane fade" id="driver-pane" role="tabpanel" tabindex="0">
-                    <!-- Driver Login Form -->
-                    <form id="driverLoginForm">
-                        <h4 class="text-center mb-3">Driver Login</h4>
-                        <div class="mb-3">
-                            <label class="form-label text-muted">Email Address</label>
-                            <input type="email" class="form-control" id="d-login-email" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted">Password</label>
-                            <input type="password" class="form-control" id="d-login-password" required>
-                        </div>
-                        <div class="error-msg" id="d-login-error"></div>
-                        <button type="submit" class="btn btn-primary w-100" id="d-login-btn">Log In</button>
-                        
-                        <div class="auth-switch">
-                            Want to drive with us? <a href="register.html">Apply here</a>
-                        </div>
-                    </form>
-                </div>
-
+            <!-- Admin Login Form -->
+            <div class="p-4">
+                <form id="adminLoginForm">
+                    <h4 class="text-center mb-3">Admin Login</h4>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Email Address</label>
+                        <input type="email" class="form-control" id="a-login-email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted">Password</label>
+                        <input type="password" class="form-control" id="a-login-password" required>
+                    </div>
+                    <div class="error-msg" id="a-login-error"></div>
+                    <button type="submit" class="btn btn-primary w-100" id="a-login-btn">Log In</button>
+                </form>
             </div>
 
         </div>
@@ -101,7 +60,7 @@
     <script type="module">
         import "/admin-dashboard/js/firebase-config.js";
 
-        async function verifyLogin(formId, btnId, errorId, role, redirectUrl) {
+        async function verifyLogin(formId, btnId, errorId, redirectUrl) {
             const form = document.getElementById(formId);
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -116,39 +75,15 @@
                 btn.disabled = true;
 
                 try {
-                    const usersRef = window.fsCollection(window.firebaseDb, "users");
-                    const snapshot = await window.fsGetDocs(usersRef);
-                    let foundUser = null;
-                    
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        if (data.email === email && data.password === password && data.role === role) {
-                            foundUser = data;
-                        }
-                    });
-
-                    if (foundUser) {
-                        if (role === 'driver' && foundUser.status !== 'verified') {
-                            errorMsg.innerText = "Account is pending admin verification.";
-                            errorMsg.style.display = 'block';
-                            btn.innerHTML = 'Log In';
-                            btn.disabled = false;
-                        } else {
-                            btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
-                            btn.classList.replace('btn-primary', 'btn-success');
-                            setTimeout(() => {
-                                window.location.href = redirectUrl;
-                            }, 1000);
-                        }
-                    } else {
-                        errorMsg.innerText = "Invalid email or password.";
-                        errorMsg.style.display = 'block';
-                        btn.innerHTML = 'Log In';
-                        btn.disabled = false;
-                    }
+                    await window.signInWithEmailAndPassword(window.firebaseAuth, email, password);
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
+                    btn.classList.replace('btn-primary', 'btn-success');
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 1000);
                 } catch(error) {
                     console.error("Login Error:", error);
-                    errorMsg.innerText = "An error occurred. Try again.";
+                    errorMsg.innerText = "Invalid email or password.";
                     errorMsg.style.display = 'block';
                     btn.innerHTML = 'Log In';
                     btn.disabled = false;
@@ -156,8 +91,7 @@
             });
         }
 
-        verifyLogin('passengerLoginForm', 'p-login-btn', 'p-login-error', 'passenger', '/passenger-dashboard/index.html');
-        verifyLogin('driverLoginForm', 'd-login-btn', 'd-login-error', 'driver', '/driver-dashboard/driver_dashboard.html');
+        verifyLogin('adminLoginForm', 'a-login-btn', 'a-login-error', 'dashboard.html');
 
         // Register Service Worker for PWA Installation
         if ('serviceWorker' in navigator) {
