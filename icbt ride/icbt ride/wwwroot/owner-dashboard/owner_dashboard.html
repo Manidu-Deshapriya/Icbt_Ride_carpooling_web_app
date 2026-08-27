@@ -336,58 +336,142 @@
             <div class="mobile-header-logo"><img src="/icon-192.png" alt="Logo" style="height: 30px;"> ICBT Ride</div>
             <div class="greeting">
                 <h1>Owner Dashboard</h1>
-                <p>Welcome back, manage your vehicles and drivers.</p>
+                <p>Welcome back! Monitor your vehicle fleet, drivers, and revenue in real-time.</p>
             </div>
             <div class="user-profile">
                 <a href="#" class="mobile-logout-btn"><i class="fa-solid fa-right-from-bracket"></i></a>
-                <div style="text-align: right; display: flex; flex-direction: column;">
-                    <span style="font-weight: 600;">Vehicle Owner</span>
-                    <span style="font-size: 0.85rem; color: var(--text-muted);">owner@icbtride.com</span>
+                <!-- Notifications Bell -->
+                <div style="position: relative; cursor: pointer; margin-right: 15px;" id="ownerNotifBell">
+                    <i class="fa-regular fa-bell" style="font-size: 1.3rem; color: var(--primary-color);"></i>
+                    <span id="ownerNotifBadge" style="position: absolute; top: -6px; right: -8px; background: var(--danger-color); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.65rem; font-weight: bold; display: none;">0</span>
+                    <div id="ownerNotifDropdown" style="display: none; position: absolute; right: 0; top: 35px; width: 320px; background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid var(--border-color); z-index: 100; max-height: 320px; overflow-y: auto;">
+                        <div style="padding: 12px 15px; border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--primary-color);">Notifications</div>
+                        <div id="ownerNotifList"><p style="padding: 15px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">No notifications</p></div>
+                    </div>
                 </div>
-                <div class="avatar">O</div>
+                <div style="text-align: right; display: flex; flex-direction: column;">
+                    <span style="font-weight: 600;" id="ownerNameDisplay">Vehicle Owner</span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);" id="ownerEmailDisplay">owner@icbtride.com</span>
+                </div>
+                <div class="avatar" id="ownerAvatarDisplay">O</div>
             </div>
         </header>
 
-        <!-- Dashboard Metrics -->
-        <div class="dashboard-grid">
+        <!-- Dashboard Metrics (Top Row) -->
+        <div class="dashboard-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
             <div class="card">
                 <div class="metric-box">
                     <i class="fa-solid fa-car-side"></i>
-                    <div class="metric-value">03</div>
-                    <div class="metric-title">Total Vehicles</div>
+                    <div class="metric-value" id="statTotalVehicles">0</div>
+                    <div class="metric-title">Total Vehicles Owned</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;" id="statActiveVehicles">0 Active on Fleet</div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="metric-box">
-                    <i class="fa-solid fa-circle-check" style="color: var(--success-color);"></i>
-                    <div class="metric-value">02</div>
-                    <div class="metric-title">Active Vehicles</div>
+                    <i class="fa-solid fa-user-group" style="color: var(--secondary-color);"></i>
+                    <div class="metric-value" id="statAssignedDrivers">0</div>
+                    <div class="metric-title">Hired / Active Drivers</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;" id="statPendingDrivers">0 pending applications</div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="metric-box">
-                    <i class="fa-solid fa-users"></i>
-                    <div class="metric-value">04</div>
-                    <div class="metric-title">Assigned Drivers</div>
+                    <i class="fa-solid fa-route" style="color: var(--info-color, #3B82F6);"></i>
+                    <div class="metric-value" id="statTotalRides">0</div>
+                    <div class="metric-title">Total Fleet Rides</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;" id="statTotalPassengers">0 passengers served</div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="metric-box">
-                    <i class="fa-solid fa-wallet" style="color: var(--secondary-color);"></i>
-                    <div class="metric-value">Rs. 8,500</div>
-                    <div class="metric-title">Today's Earnings</div>
+                    <i class="fa-solid fa-wallet" style="color: var(--primary-color);"></i>
+                    <div class="metric-value" style="font-size: 1.9rem; color: var(--primary-color);">Rs. <span id="statOwnerEarnings">0</span></div>
+                    <div class="metric-title">Owner Net Earnings</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;" id="statGrossRevenue">Rs. 0 Total Fleet Gross</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Row: Pending Applications & Top Performers -->
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; margin-bottom: 24px;">
+            
+            <!-- Pending Driver Applications -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+                    <h3 style="font-size: 1.15rem; color: var(--primary-color); font-weight: 700;">
+                        <i class="fa-solid fa-user-clock text-warning me-1"></i> Pending Driver Applications
+                    </h3>
+                    <a href="drivers.html" style="font-size: 0.85rem; color: var(--primary-color); text-decoration: none; font-weight: 600;">View All Drivers →</a>
+                </div>
+                <div id="pendingDriversContainer" style="max-height: 260px; overflow-y: auto;">
+                    <p style="text-align: center; color: var(--text-muted); padding: 25px 10px; font-size: 0.9rem;">
+                        <i class="fa-solid fa-circle-check text-success me-1"></i> No pending driver applications right now.
+                    </p>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="metric-box">
-                    <i class="fa-solid fa-money-bill-trend-up" style="color: var(--secondary-color);"></i>
-                    <div class="metric-value">Rs. 185,000</div>
-                    <div class="metric-title">Monthly Earnings</div>
+            <!-- Top Performers (Vehicle & Driver) -->
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Top Vehicle -->
+                <div class="card" style="padding: 18px;">
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; margin-bottom: 8px;">
+                        <i class="fa-solid fa-trophy text-warning me-1"></i> Top Performing Vehicle
+                    </div>
+                    <div id="topVehicleCard">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.15rem; color: var(--primary-color);" id="topVehiclePlate">No Rides Yet</h4>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);" id="topVehicleModel">Toyota Prius / Fit</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 700; color: var(--primary-color); font-size: 1.1rem;" id="topVehicleEarnings">Rs. 0</div>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);" id="topVehicleRides">0 rides completed</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Top Driver -->
+                <div class="card" style="padding: 18px;">
+                    <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; margin-bottom: 8px;">
+                        <i class="fa-solid fa-star text-warning me-1"></i> Top Performing Driver
+                    </div>
+                    <div id="topDriverCard">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.15rem; color: var(--primary-color);" id="topDriverName">No Rides Yet</h4>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);" id="topDriverPhone">Active Fleet Member</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 700; color: var(--success-color); font-size: 1.1rem;" id="topDriverEarnings">Rs. 0</div>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);" id="topDriverRides">0 rides completed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Quick Actions & Recent Fleet Rides -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+                <h3 style="font-size: 1.15rem; color: var(--primary-color); font-weight: 700;">
+                    <i class="fa-solid fa-route text-success me-1"></i> Recent Fleet Rides & Earnings Breakdown
+                </h3>
+                <div style="display: flex; gap: 10px;">
+                    <a href="vehicles.html" class="btn" style="background: var(--primary-color); color: #fff; text-decoration: none; padding: 6px 14px; font-size: 0.85rem; border-radius: 8px;"><i class="fa-solid fa-plus me-1"></i> Add Vehicle</a>
+                    <a href="rides.html" style="font-size: 0.85rem; color: var(--primary-color); text-decoration: none; font-weight: 600; padding: 6px 10px;">Full History →</a>
+                </div>
+            </div>
+            <div id="recentFleetRidesContainer" style="max-height: 280px; overflow-y: auto;">
+                <p style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.9rem;">
+                    <i class="fa-solid fa-spinner fa-spin me-1"></i> Loading fleet rides...
+                </p>
             </div>
         </div>
 
