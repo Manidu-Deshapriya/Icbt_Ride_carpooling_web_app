@@ -113,7 +113,13 @@
                         </div>
                     </form>
                 </div>
+            </div>
 
+            <!-- Install App Guide Button inside Glass Box -->
+            <div class="mt-4 pt-3 border-top text-center">
+                <button type="button" id="helpInstallBtn" class="btn btn-outline-success w-100" style="border-radius: 8px; font-weight: 600; padding: 10px;">
+                    <i class="fa-solid fa-mobile-screen-button me-2"></i> Install App Guide
+                </button>
             </div>
 
         </div>
@@ -130,7 +136,7 @@
             const form = document.getElementById(formId);
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                const email = e.target.querySelector('input[type="email"]').value;
+                const email = e.target.querySelector('input[type="email"]').value.trim();
                 const password = e.target.querySelector('input[type="password"]').value;
                 
                 const btn = document.getElementById(btnId);
@@ -145,30 +151,51 @@
                     const snapshot = await window.fsGetDocs(usersRef);
                     let foundUser = null;
                     
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        if (data.email === email && data.password === password && data.role === role) {
-                            foundUser = { id: doc.id, ...data };
+                    snapshot.forEach(doc => {
+                        const user = doc.data();
+                        if (user.email && user.email.toLowerCase() === email.toLowerCase() && user.password === password && user.role === role) {
+                            foundUser = { id: doc.id, ...user };
                         }
                     });
 
                     if (foundUser) {
-                        if (role === 'driver' && foundUser.status !== 'verified') {
-                            errorMsg.innerText = "Account is pending admin verification.";
+                        if (foundUser.status === 'pending') {
+                            errorMsg.innerText = "Your account is pending admin verification.";
                             errorMsg.style.display = 'block';
                             btn.innerHTML = 'Log In';
                             btn.disabled = false;
-                        } else {
-                            // Store user ID in localStorage for the dashboards to use
-                            localStorage.setItem('loggedInUserId', foundUser.id);
-                            localStorage.setItem('loggedInUserRole', role);
-                            
-                            btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
-                            btn.classList.replace('btn-primary', 'btn-success');
-                            setTimeout(() => {
-                                window.location.href = redirectUrl;
-                            }, 1000);
+                            return;
+                        } else if (foundUser.status === 'suspended') {
+                            errorMsg.innerText = "Your account has been suspended. Please contact admin.";
+                            errorMsg.style.display = 'block';
+                            btn.innerHTML = 'Log In';
+                            btn.disabled = false;
+                            return;
                         }
+
+                        // Store full user object so all pages can access name, photo, wallet etc.
+                        const userSession = {
+                            uid: foundUser.id,
+                            name: foundUser.name || 'User',
+                            email: foundUser.email || '',
+                            role: foundUser.role || role,
+                            phone: foundUser.phone || '',
+                            profilePicUrl: foundUser.profilePicUrl || '',
+                            walletBalance: foundUser.walletBalance || 0,
+                            status: foundUser.status || 'verified'
+                        };
+                        localStorage.setItem('loggedInUser', JSON.stringify(userSession));
+                        localStorage.setItem(`loggedInUser_${foundUser.role || role}`, JSON.stringify(userSession));
+                        // Keep legacy keys for backwards compatibility
+                        localStorage.setItem('loggedInUserId', foundUser.id);
+                        localStorage.setItem('loggedInUserRole', foundUser.role || role);
+                        
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
+                        btn.classList.replace('btn-primary', 'btn-success');
+                        
+                        setTimeout(() => {
+                            window.location.href = redirectUrl;
+                        }, 1000);
                     } else {
                         errorMsg.innerText = "Invalid email or password.";
                         errorMsg.style.display = 'block';
@@ -195,6 +222,76 @@
                 navigator.serviceWorker.register('/service-worker.js');
             });
         }
+    </script>
+
+    <!-- Install App Guide Modal -->
+    <div id="instructionModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>App Installation Guide</h2>
+                <span class="close-modal" id="closeInstModal">&times;</span>
+            </div>
+            <div id="instBody" class="modal-body" style="line-height:1.6; color: var(--text-muted); max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 20px; padding: 15px; background: rgba(27, 94, 32, 0.05); border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                    <h4 style="color: var(--primary-color); font-size: 1.1rem; margin-top: 0;"><i class="fa-brands fa-android"></i> Android Guide</h4>
+                    <ul style="padding-left: 20px; margin-bottom: 0; color: #333;">
+                        <li style="margin-bottom: 5px;">Open your browser.</li>
+                        <li style="margin-bottom: 5px;">Navigate to the web app's URL.</li>
+                        <li style="margin-bottom: 5px;">Look for an automatic pop-up prompt at the bottom.</li>
+                        <li style="margin-bottom: 5px;">Tap <strong>Add to Home screen</strong> if prompted.</li>
+                        <li style="margin-bottom: 5px;">Alternatively, tap the browser's <strong>menu icon</strong> (usually three dots or lines).</li>
+                        <li style="margin-bottom: 5px;">Select <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
+                        <li>Confirm the installation when requested.</li>
+                    </ul>
+                </div>
+                
+                <div style="padding: 15px; background: rgba(0, 0, 0, 0.03); border-radius: 10px; border-left: 4px solid #333;">
+                    <h4 style="color: #333; font-size: 1.1rem; margin-top: 0;"><i class="fa-brands fa-apple"></i> iPhone Guide</h4>
+                    <ul style="padding-left: 20px; margin-bottom: 0; color: #333;">
+                        <li style="margin-bottom: 5px;">Open your browser.</li>
+                        <li style="margin-bottom: 5px;">Navigate to the web app's URL.</li>
+                        <li style="margin-bottom: 5px;">Tap the <strong>Share button</strong> (the square icon with an upward arrow).</li>
+                        <li style="margin-bottom: 5px;">Scroll down the menu options.</li>
+                        <li style="margin-bottom: 5px;">Tap <strong>Add to Home Screen</strong>.</li>
+                        <li style="margin-bottom: 5px;">Type a custom name if desired.</li>
+                        <li>Tap <strong>Add</strong> in the top right corner.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .custom-modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .custom-modal.active { display: flex !important; }
+        .modal-content { background-color: #fff; padding: 25px; border-radius: 16px; width: 90%; max-width: 480px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .modal-header h2 { font-size: 1.3rem; color: var(--primary-color); font-weight: 600; margin: 0; }
+        .close-modal { font-size: 1.8rem; cursor: pointer; color: var(--danger-color); line-height: 1; }
+    </style>
+
+    <script>
+        const helpBtn = document.getElementById('helpInstallBtn');
+        const instModal = document.getElementById('instructionModal');
+        const closeInst = document.getElementById('closeInstModal');
+
+        if (helpBtn) {
+            helpBtn.addEventListener('click', () => {
+                instModal.classList.add('active');
+            });
+        }
+
+        if (closeInst) {
+            closeInst.addEventListener('click', () => {
+                instModal.classList.remove('active');
+            });
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target === instModal) {
+                instModal.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html>
