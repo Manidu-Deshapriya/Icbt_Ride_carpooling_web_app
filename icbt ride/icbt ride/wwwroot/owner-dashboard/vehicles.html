@@ -378,139 +378,125 @@
         </header>
 
         <div class="top-action-bar">
-            <h3>Registered Vehicles (2)</h3>
-            <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add New Vehicle</button>
+            <h3>Registered Vehicles (<span id="vehicleCountDisplay">0</span>)</h3>
+            <button class="btn btn-primary" id="openAddVehicleBtn"><i class="fa-solid fa-plus me-1"></i> Add New Vehicle</button>
         </div>
 
-        <!-- Vehicle List -->
-        <div class="vehicle-list">
-            
-            <!-- Vehicle 1 -->
-            <div class="vehicle-card">
-                <div class="vehicle-header">
-                    <div class="vehicle-title">
-                        <h3>CAB-1234</h3>
-                        <p>Toyota Prius (2015)</p>
-                    </div>
-                    <div class="status-badge status-on-ride">
-                        <i class="fa-solid fa-route"></i> On Ride
-                    </div>
-                </div>
-                <div class="vehicle-details">
-                    <div class="detail-item">
-                        <label>Vehicle Type</label>
-                        <span>Car</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Color</label>
-                        <span>Pearl White</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>No. of Seats</label>
-                        <span>4</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Assigned Driver</label>
-                        <span>Kasun Perera</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Revenue License Exp.</label>
-                        <span>2027-10-15</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Insurance Exp.</label>
-                        <span>2027-08-01</span>
-                    </div>
-                </div>
-                <div class="vehicle-actions">
-                    <button class="btn btn-outline"><i class="fa-solid fa-eye"></i> View Details</button>
-                    <button class="btn btn-outline"><i class="fa-solid fa-pen"></i> Edit</button>
-                    <button class="btn btn-outline" style="color: var(--danger-color); border-color: var(--danger-color);"><i class="fa-solid fa-trash"></i> Remove</button>
-                </div>
-            </div>
-
-            <!-- Vehicle 2 -->
-            <div class="vehicle-card">
-                <div class="vehicle-header">
-                    <div class="vehicle-title">
-                        <h3>CAA-9988</h3>
-                        <p>Honda Fit (2018)</p>
-                    </div>
-                    <div class="status-badge status-available">
-                        <i class="fa-solid fa-circle-check"></i> Available
-                    </div>
-                </div>
-                <div class="vehicle-details">
-                    <div class="detail-item">
-                        <label>Vehicle Type</label>
-                        <span>Car</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Color</label>
-                        <span>Black</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>No. of Seats</label>
-                        <span>4</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Assigned Driver</label>
-                        <span style="color: var(--warning-color);">Unassigned</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Revenue License Exp.</label>
-                        <span>2027-12-01</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Insurance Exp.</label>
-                        <span>2027-11-20</span>
-                    </div>
-                </div>
-                <div class="vehicle-actions">
-                    <button class="btn btn-outline"><i class="fa-solid fa-eye"></i> View Details</button>
-                    <button class="btn btn-outline"><i class="fa-solid fa-pen"></i> Edit</button>
-                    <button class="btn btn-outline" style="color: var(--danger-color); border-color: var(--danger-color);"><i class="fa-solid fa-trash"></i> Remove</button>
-                </div>
-            </div>
-
+        <!-- Vehicle List Container (Rendered dynamically by owner-app.js) -->
+        <div class="vehicle-list" id="vehiclesContainer">
+            <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">
+                <i class="fa-solid fa-spinner fa-spin me-1"></i> Loading vehicles...
+            </p>
         </div>
 
     </main>
 
     <!-- Add Vehicle Modal -->
     <div id="addVehicleModal" class="custom-modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 520px;">
             <div class="modal-header">
-                <h2>Add New Vehicle</h2>
+                <h2><i class="fa-solid fa-car text-success me-1"></i> Add New Vehicle</h2>
                 <span class="close-modal">&times;</span>
             </div>
             <form id="addVehicleForm">
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="display:block; margin-bottom: 5px; color: var(--text-muted);">Make & Model</label>
-                    <input type="text" id="v-model" placeholder="e.g. Toyota Prius" required style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Vehicle Plate Number</label>
+                        <input type="text" id="v-plate" placeholder="e.g. WP CAB-1234" required style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Make & Model</label>
+                        <input type="text" id="v-model" placeholder="e.g. Toyota Prius" required style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
                 </div>
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="display:block; margin-bottom: 5px; color: var(--text-muted);">Plate Number</label>
-                    <input type="text" id="v-plate" placeholder="e.g. CAB-1234" required style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Vehicle Type</label>
+                        <select id="v-type" required style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: white;">
+                            <option value="Car">Car</option>
+                            <option value="Van">Van</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Tuk Tuk">Tuk Tuk</option>
+                            <option value="Bus">Bus / Mini-bus</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Passenger Seats</label>
+                        <input type="number" id="v-seats" min="1" max="20" value="4" required style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
                 </div>
-                <div class="form-group" style="margin-bottom: 25px;">
-                    <label style="display:block; margin-bottom: 5px; color: var(--text-muted);">Vehicle Type</label>
-                    <select id="v-type" required style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: white;">
-                        <option value="Car">Car</option>
-                        <option value="Van">Van</option>
-                        <option value="Tuk Tuk">Tuk Tuk</option>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Fuel Type</label>
+                    <select id="v-fuel" required style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: white;">
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Hybrid">Hybrid</option>
+                        <option value="Electric">Electric</option>
                     </select>
                 </div>
-                <button type="submit" id="addVehicleBtn" class="btn btn-primary" style="width:100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor:pointer; font-weight: 600; font-size: 1.1rem;">Add Vehicle</button>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Insurance Expiry Date</label>
+                        <input type="date" id="v-insurance" style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Revenue License Expiry</label>
+                        <input type="date" id="v-reg-date" style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
+                </div>
+
+                <button type="submit" id="addVehicleBtn" class="btn btn-primary" style="width:100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor:pointer; font-weight: 600; font-size: 1.05rem;">
+                    <i class="fa-solid fa-plus-circle me-1"></i> Register Vehicle to Fleet
+                </button>
             </form>
         </div>
     </div>
+
+    <!-- Quick Assign Driver Modal -->
+    <div id="quickAssignModal" class="custom-modal">
+        <div class="modal-content" style="max-width: 460px;">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-user-plus text-success me-1"></i> Assign Driver</h2>
+                <span class="close-modal" id="closeQuickAssignBtn">&times;</span>
+            </div>
+            <form id="quickAssignForm">
+                <input type="hidden" id="qa-vehicle-id">
+                <div style="margin-bottom: 12px; padding: 10px; background: rgba(27,94,32,0.06); border-radius: 8px;">
+                    <strong id="qa-vehicle-name">Vehicle</strong>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);" id="qa-vehicle-plate">Plate</div>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Select Driver</label>
+                    <select id="qa-driver-select" required style="width:100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: white;">
+                        <option value="">Loading available drivers...</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Driver Share (%)</label>
+                        <input type="number" id="qa-driver-share" min="0" max="100" value="70" required style="width:100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted);">Owner Share (%)</label>
+                        <input type="number" id="qa-owner-share" min="0" max="100" value="30" readonly style="width:100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; background: #f3f4f6;">
+                    </div>
+                </div>
+                <button type="submit" id="qaSubmitBtn" class="btn btn-primary" style="width:100%; padding: 10px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor:pointer; font-weight: 600;">
+                    Confirm Driver Assignment
+                </button>
+            </form>
+        </div>
+    </div>
+
     <style>
         .custom-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
         .custom-modal.active { display: flex; }
-        .modal-content { background-color: #fff; padding: 30px; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .modal-header h2 { font-size: 1.5rem; color: var(--primary-color); font-weight: 600; }
+        .modal-content { background-color: #fff; padding: 26px; border-radius: 16px; width: 90%; max-width: 480px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 1.35rem; color: var(--primary-color); font-weight: 600; margin: 0; }
         .close-modal { font-size: 1.8rem; cursor: pointer; color: var(--danger-color); line-height: 1; }
     </style>
 

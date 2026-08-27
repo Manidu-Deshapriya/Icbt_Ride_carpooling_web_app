@@ -389,32 +389,32 @@
                 </div>
             </div>
 
-            <form>
+            <form id="ownerProfileForm">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Full Name</label>
-                        <input type="text" class="form-control" value="Vehicle Owner">
+                        <input type="text" id="ownerProfileName" class="form-control" placeholder="e.g. Nimal Perera" required>
                     </div>
                     <div class="form-group">
                         <label>NIC / Passport Number</label>
-                        <input type="text" class="form-control" value="199012345678">
+                        <input type="text" id="ownerProfileNic" class="form-control" placeholder="e.g. 199012345678">
                     </div>
                     <div class="form-group">
                         <label>Phone Number</label>
-                        <input type="tel" class="form-control" value="+94 77 123 4567">
+                        <input type="tel" id="ownerProfilePhone" class="form-control" placeholder="07xxxxxxxx">
                     </div>
                     <div class="form-group">
                         <label>Email Address</label>
-                        <input type="email" class="form-control" value="owner@icbtride.com" readonly style="background: rgba(0,0,0,0.02);">
+                        <input type="email" id="ownerProfileEmail" class="form-control" readonly style="background: #f3f4f6;">
                     </div>
                     <div class="form-group full-width">
                         <label>Residential Address</label>
-                        <textarea class="form-control" rows="3">123/A, Main Street, Colombo 04</textarea>
+                        <textarea id="ownerProfileAddress" class="form-control" rows="3" placeholder="Enter your registered address"></textarea>
                     </div>
                 </div>
 
-                <div style="text-align: right;">
-                    <button type="button" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                <div style="text-align: right; margin-top: 15px;">
+                    <button type="submit" id="saveOwnerProfileBtn" class="btn btn-primary" style="padding: 10px 24px; border-radius: 8px; font-weight: 600; width: auto;"><i class="fa-solid fa-floppy-disk me-1"></i> Save Changes</button>
                 </div>
             </form>
         </div>

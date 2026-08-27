@@ -362,102 +362,50 @@
         <!-- Filters -->
         <div class="filters-container">
             <div class="filter-group">
-                <label>Date Filter</label>
-                <select>
-                    <option>Today</option>
-                    <option>This Week</option>
-                    <option selected>This Month</option>
-                    <option>All Time</option>
+                <label>Filter by Status</label>
+                <select id="rideStatusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="completed">Completed</option>
+                    <option value="active">Active / In Progress</option>
+                    <option value="cancelled">Cancelled</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Select Vehicle</label>
-                <select>
-                    <option>All Vehicles</option>
-                    <option>CAB-1234 (Toyota Prius)</option>
-                    <option>CAA-9988 (Honda Fit)</option>
+                <label>Filter by Vehicle</label>
+                <select id="rideVehicleFilter">
+                    <option value="all">All Fleet Vehicles</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Select Driver</label>
-                <select>
-                    <option>All Drivers</option>
-                    <option>Kasun Perera</option>
-                    <option>John Smith</option>
+                <label>Filter by Driver</label>
+                <select id="rideDriverFilter">
+                    <option value="all">All Fleet Drivers</option>
                 </select>
             </div>
         </div>
 
         <!-- Rides Table -->
         <div class="card-container">
+            <div class="card-header" style="padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin:0; font-size: 1.15rem;"><i class="fa-solid fa-clock-rotate-left me-2"></i> Fleet Ride Transactions & Earnings Split</h3>
+                <span style="font-size: 0.85rem; color: var(--text-muted);" id="fleetRidesCount">0 rides recorded</span>
+            </div>
             <div class="table-wrapper">
-                <table>
+                <table id="ownerRidesTable">
                     <thead>
                         <tr>
                             <th>Ride ID</th>
                             <th>Date & Time</th>
-                            <th>Vehicle & Driver</th>
-                            <th>Locations</th>
-                            <th>Distance</th>
-                            <th>Fare</th>
+                            <th>Driver & Vehicle</th>
+                            <th>Route</th>
+                            <th>Total Fare</th>
+                            <th>Driver Payout</th>
+                            <th>Owner Revenue</th>
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>#R1054</td>
-                            <td>
-                                <div>2023-11-20</div>
-                                <div style="font-size: 0.85rem; color: var(--text-muted);">08:30 AM</div>
-                            </td>
-                            <td>
-                                <div>CAB-1234</div>
-                                <div style="font-size: 0.85rem; color: var(--text-muted);">Kasun P.</div>
-                            </td>
-                            <td class="location-col">
-                                <span class="pickup"><i class="fa-solid fa-location-dot"></i> ICBT Campus</span>
-                                <span class="dropoff"><i class="fa-solid fa-flag-checkered"></i> Nugegoda</span>
-                            </td>
-                            <td>12.5 km</td>
-                            <td style="color: var(--primary-color); font-weight: 700;">Rs. 850</td>
-                            <td><span class="status-badge status-completed">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>#R1053</td>
-                            <td>
-                                <div>2023-11-20</div>
-                                <div style="font-size: 0.85rem; color: var(--text-muted);">07:15 AM</div>
-                            </td>
-                            <td>
-                                <div>CAB-1234</div>
-                                <div style="font-size: 0.85rem; color: var(--text-muted);">Kasun P.</div>
-                            </td>
-                            <td class="location-col">
-                                <span class="pickup"><i class="fa-solid fa-location-dot"></i> Maharagama</span>
-                                <span class="dropoff"><i class="fa-solid fa-flag-checkered"></i> ICBT Campus</span>
-                            </td>
-                            <td>8.2 km</td>
-                            <td style="color: var(--primary-color); font-weight: 700;">Rs. 500</td>
-                            <td><span class="status-badge status-completed">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>#R1052</td>
-                            <td>
-                                <div>2023-11-19</div>
-                                <div style="font-size: 0.85rem; color: var(--text-muted);">05:30 PM</div>
-                            </td>
-                            <td>
-                                <div>CAA-9988</div>
-                                <div style="font-size: 0.85rem; color: var(--text-muted);">John S.</div>
-                            </td>
-                            <td class="location-col">
-                                <span class="pickup"><i class="fa-solid fa-location-dot"></i> Colombo 03</span>
-                                <span class="dropoff"><i class="fa-solid fa-flag-checkered"></i> Mount Lavinia</span>
-                            </td>
-                            <td>15.0 km</td>
-                            <td style="color: var(--primary-color); font-weight: 700;">Rs. 1,200</td>
-                            <td><span class="status-badge status-cancelled">Cancelled</span></td>
-                        </tr>
+                    <tbody id="ownerRidesTbody">
+                        <tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin me-1"></i> Loading fleet ride history...</td></tr>
                     </tbody>
                 </table>
             </div>
