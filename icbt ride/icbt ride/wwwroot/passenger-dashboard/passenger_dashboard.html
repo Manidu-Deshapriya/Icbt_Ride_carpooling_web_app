@@ -4,8 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICBT Ride - Passenger Dashboard</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="../css/chat-widget.css">
     <style>
         :root {
             --bg-color: #E8F5E9;
@@ -137,6 +149,11 @@
             display: block;
         }
 
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -249,6 +266,36 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* Autocomplete Styles */
+        .autocomplete-container { position: relative; }
+        .autocomplete-list { 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            right: 0; 
+            background: white; 
+            border: 1px solid var(--border-color); 
+            border-radius: 0 0 12px 12px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12); 
+            z-index: 999; 
+            max-height: 200px; 
+            overflow-y: auto; 
+            display: none; 
+        }
+        .autocomplete-item { 
+            padding: 10px 14px; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+        .autocomplete-item:hover { 
+            background: rgba(102, 187, 106, 0.15); 
+            color: var(--primary-color); 
+        }
+
         /* List Items (Top Drivers) */
         .list-item {
             background: rgba(255, 255, 255, 0.4);
@@ -350,7 +397,7 @@
         @media (max-width: 768px) {
             body { display: block; overflow-x: hidden; width: 100%; }
             .sidebar { display: none; }
-            .main-content { margin-left: 0; padding: 1rem; padding-bottom: 90px; width: 100%; }
+            .main-content { margin-left: 0; padding: 1rem; padding-bottom: 110px; width: 100%; }
             .dashboard-grid { grid-template-columns: 1fr; }
             
             .header {
@@ -368,7 +415,7 @@
                 width: 100%;
             }
 
-            .bottom-nav { display: block; z-index: 9999; }
+            .bottom-nav { display: block !important; z-index: 10000 !important; }
             .mobile-header-logo { display: flex; font-size: 1.2rem; }
             .mobile-logout-btn { display: block; }
 
@@ -389,8 +436,12 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="logo">
-            <img src="logo.png" alt="ICBT Ride" style="height: 45px; border-radius: 50%;"> ICBT Ride
+        <div class="logo" style="flex-direction: column; align-items: flex-start; gap: 0;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="logo.png" alt="ICBT Ride" style="height: 40px; border-radius: 50%;">
+                <span>ICBT Ride</span>
+            </div>
+            <div style="font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-top: 3px; margin-left: 50px;">PASSENGER</div>
         </div>
         <ul class="nav-links">
             <li><a href="passenger_dashboard.html" class="active"><i class="fa-solid fa-house"></i> Dashboard</a></li>
@@ -399,7 +450,7 @@
             <li><a href="profile.html"><i class="fa-solid fa-id-card"></i> Profile</a></li>
         </ul>
         <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
-            <a href="#" class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color); display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; width: 100%;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <a href="/main-login/login.html" class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color); display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; width: 100%;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </div>
     </aside>
 
@@ -408,12 +459,18 @@
         <header class="header">
             <div class="greeting-container">
                 <div class="greeting">
-                    <h1 id="greeting">Hello, Passenger 👋</h1>
+                    <h1 id="greeting">Hello, Passenger</h1>
                     <p>Ready for your next ride? Search and book now!</p>
                 </div>
             </div>
             <div class="user-profile" style="position: relative;">
-                <div class="mobile-header-logo"><img src="logo.png" alt="Logo" style="height: 30px; border-radius: 50%;"> ICBT Ride</div>
+                <div class="mobile-header-logo" style="flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.1;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <img src="logo.png" alt="Logo" style="height: 26px; border-radius: 50%;"> 
+                        <span>ICBT Ride</span>
+                    </div>
+                    <div style="font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; color: var(--primary-color); margin-top: 2px; margin-left: 32px;">PASSENGER</div>
+                </div>
                 <div style="position: relative;">
                     <i class="fa-regular fa-bell" id="bellIcon" style="font-size: 1.2rem; cursor: pointer;"></i>
                     <span id="notificationBadge" style="position: absolute; top: -5px; right: -5px; background: var(--danger-color); color: white; border-radius: 50%; padding: 2px 5px; font-size: 0.6rem; font-weight: bold;">2</span>
@@ -441,89 +498,118 @@
             </div>
         </header>
 
-        <!-- DASHBOARD SECTION -->
-        <div class="section-container active">
             <div class="dashboard-grid">
-                
-                <!-- 1. Wallet Balance -->
-                <div class="card">
-                    <div class="card-header"><i class="fa-solid fa-wallet"></i> Wallet Balance</div>
-                    <div class="metric-box" style="margin-top: 15px;">
-                        <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px;">Available Funds</div>
-                        <div class="wallet-value">Rs. <span id="walletBalance">2,500</span></div>
+
+                <!-- 0. CURRENT ACTIVE RIDE LIVE TILE (PASSENGER) -->
+                <div class="card" id="passengerActiveRideCard" style="grid-column: 1 / -1; border-radius: 18px; border: 1.5px solid rgba(27,94,32,0.25); background: linear-gradient(135deg, #ffffff 0%, rgba(27,94,32,0.03) 100%); box-shadow: 0 8px 24px rgba(0,0,0,0.04); margin-bottom: 5px; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--primary-color);"></div>
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 12px; margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(27,94,32,0.12); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                <i class="fa-solid fa-car-rear"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a; font-weight: 700;">My Current Active Ride</h3>
+                                <div style="font-size: 0.78rem; color: var(--text-muted);">Assigned driver, vehicle & live route tracking</div>
+                            </div>
+                        </div>
+                        <div id="passengerActiveRideStatusBadge">
+                            <span class="badge" style="background: rgba(0,0,0,0.05); color: var(--text-muted); font-size: 0.78rem;">Checking status...</span>
+                        </div>
                     </div>
-                    <button class="btn btn-primary" style="margin-top: 10px; background: rgba(255,255,255,0.1); color: #fff; box-shadow: none; border: 1px solid var(--border-color);">Top Up Wallet</button>
+
+                    <!-- Active Ride Content Container (populated dynamically by JS) -->
+                    <div id="passengerActiveRideContent">
+                        <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+                            <i class="fa-solid fa-spinner fa-spin me-2"></i> Checking your upcoming rides...
+                        </div>
+                    </div>
                 </div>
 
-                <!-- 2. Quick Find Ride -->
+                <!-- 1. COMPACT WALLET CARD (FIRST) -->
+                <div class="card" style="padding: 20px;">
+                    <div class="card-header" style="font-size: 1.1rem; margin-bottom: 12px; padding-bottom: 8px;">
+                        <i class="fa-solid fa-wallet"></i> My Wallet
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(27, 94, 32, 0.06); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 12px;">
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500;">Available Funds</div>
+                            <div style="font-size: 1.6rem; font-weight: 700; color: var(--primary-color);">Rs. <span id="walletBalance">0</span></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="openTopUpModal()" style="width: auto; padding: 8px 16px; font-size: 0.85rem; border-radius: 8px;">
+                            <i class="fa-solid fa-plus me-1"></i> Top Up
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn" style="flex: 1; padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.04); border: 1px solid var(--border-color); color: var(--text-main);" onclick="window.location.href='bookings.html'">
+                            <i class="fa-solid fa-book-open"></i> My Bookings
+                        </button>
+                        <button class="btn" style="flex: 1; padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.04); border: 1px solid var(--border-color); color: var(--text-main);" onclick="window.location.href='profile.html'">
+                            <i class="fa-solid fa-user-gear"></i> Profile
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. QUICK FIND A RIDE WITH FULL AUTOCOMPLETE SEARCH (SECOND) -->
                 <div class="card" style="grid-row: span 2;">
-                    <div class="card-header"><i class="fa-solid fa-magnifying-glass-location"></i> Quick Find</div>
-                    <form action="search_rides.html">
-                        <div class="form-group">
-                            <label>From</label>
-                            <input type="text" class="form-control" placeholder="e.g. Kandy" required>
+                    <div class="card-header"><i class="fa-solid fa-magnifying-glass-location"></i> Quick Find a Ride</div>
+                    <form action="search_rides.html" method="GET" id="dashSearchForm">
+                        <div class="form-group autocomplete-container">
+                            <label><i class="fa-solid fa-location-dot" style="color:var(--primary-color);"></i> Leaving From</label>
+                            <input type="text" name="from" id="dashFromInput" class="form-control" placeholder="e.g. Kandy, Peradeniya" autocomplete="off" required>
+                            <div id="dashFromSuggestions" class="autocomplete-list"></div>
                         </div>
-                        <div class="form-group">
-                            <label>To</label>
-                            <input type="text" class="form-control" placeholder="e.g. ICBT Campus" required>
+                        <div class="form-group autocomplete-container">
+                            <label><i class="fa-solid fa-flag-checkered" style="color:var(--secondary-color);"></i> Going To</label>
+                            <input type="text" name="to" id="dashToInput" class="form-control" placeholder="e.g. ICBT Campus, Colombo" autocomplete="off" required>
+                            <div id="dashToSuggestions" class="autocomplete-list"></div>
                         </div>
-                        <div class="form-group">
-                            <label>Date</label>
-                            <input type="date" class="form-control" required>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label><i class="fa-regular fa-calendar"></i> Travel Date</label>
+                                <input type="date" name="date" id="dashDateInput" class="form-control">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label><i class="fa-regular fa-clock"></i> Preferred Time</label>
+                                <input type="time" name="time" id="dashTimeInput" class="form-control">
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Search Rides</button>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 5px;"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Match Available Rides</button>
                     </form>
 
-                    <div class="card-header" style="margin-top: 30px;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Searches</div>
-                    <div class="list-item" style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(102, 187, 106, 0.15)'" onmouseout="this.style.background='rgba(15, 23, 42, 0.4)'">
-                        <i class="fa-solid fa-location-arrow" style="color: var(--primary-color);"></i>
+                    <div style="text-align: center; margin: 20px 0 10px 0; padding-top: 15px; border-top: 1px dashed var(--border-color);">
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px;">Need a custom pickup or time?</p>
+                        <button class="btn btn-primary" style="background: rgba(27, 94, 32, 0.08); color: var(--primary-color); border: 2px dashed var(--primary-color); box-shadow: none; padding: 9px 18px; font-size: 0.9rem;" onclick="document.getElementById('requestRideModal').style.display='flex'">
+                            <i class="fa-solid fa-bullhorn me-1"></i> Request a Custom Ride
+                        </button>
+                    </div>
+
+                    <div class="card-header" style="margin-top: 18px; font-size: 1rem;"><i class="fa-solid fa-bolt"></i> Popular Campus Routes</div>
+                    <div class="list-item" style="cursor: pointer; transition: 0.2s; padding: 10px 12px; margin-bottom: 8px; border-radius: 10px; background: rgba(0,0,0,0.02); border: 1px solid var(--border-color);" onclick="window.location.href='search_rides.html?from=Kandy&to=ICBT+Campus'">
+                        <i class="fa-solid fa-location-arrow" style="color: var(--primary-color); margin-right: 8px;"></i>
                         <div>
-                            <div style="font-weight: 500;">Peradeniya &rarr; ICBT Campus</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted);">Yesterday</div>
+                            <div style="font-weight: 600; font-size: 0.9rem;">Kandy &rarr; ICBT Campus</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Daily frequent carpools</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. Top Drivers -->
-                <div class="card">
-                    <div class="card-header"><i class="fa-solid fa-star"></i> Top Drivers</div>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Highly rated drivers on your common routes.</p>
+                <!-- 3. VERIFIED DRIVERS (Real Data) -->
+                <div class="card" style="padding: 20px;">
+                    <div class="card-header" style="font-size: 1.1rem; margin-bottom: 10px; padding-bottom: 8px;"><i class="fa-solid fa-shield-halved"></i> Active Verified Drivers</div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px;">Drivers available for instant ride sharing.</p>
                     
-                    <div class="list-item">
-                        <div class="list-item-avatar">S</div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 500;">Saman Kumara</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted);">Toyota Prius</div>
-                        </div>
-                        <div style="color: #facc15;"><i class="fa-solid fa-star"></i> 4.9</div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="list-item-avatar">N</div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 500;">Nuwan Perera</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted);">Honda Vezel</div>
-                        </div>
-                        <div style="color: #facc15;"><i class="fa-solid fa-star"></i> 4.8</div>
+                    <div id="topDriversContainer" style="max-height: 220px; overflow-y: auto;">
+                        <p style="color: var(--text-muted); text-align: center; padding: 15px; font-size: 0.85rem;">Loading verified drivers...</p>
                     </div>
                 </div>
 
-                <!-- 4. Sustainability & Analytics -->
-                <div class="card">
-                    <div class="card-header"><i class="fa-solid fa-leaf"></i> Your Eco Impact</div>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; text-align: center;">By sharing rides, you've saved</p>
-                    
-                    <div class="metric-box">
-                        <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px;"><i class="fa-solid fa-cloud"></i> CO₂ Saved</div>
-                        <div class="metric-value"><span id="co2SavedPassenger">12.5</span> <span style="font-size: 1.2rem; font-weight: 500;">kg</span></div>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
 
     <!-- Floating SOS Button -->
-    <button id="sosButton" style="position: fixed; bottom: 80px; right: 20px; background: var(--danger-color); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); cursor: pointer; z-index: 999; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+    <button id="sosButton" style="position: fixed; bottom: 155px; right: 25px; background: var(--danger-color); color: white; border: none; border-radius: 50%; width: 55px; height: 55px; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); cursor: pointer; z-index: 999; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Emergency SOS">
         <i class="fa-solid fa-phone-volume"></i>
     </button>
 
@@ -536,29 +622,872 @@
             <li><a href="profile.html"><i class="fa-solid fa-id-card"></i><span>Profile</span></a></li>
         </ul>
     </nav>
-    
+
+    <!-- Top Up Wallet & Mock Card Payment Gateway Modal -->
+    <div id="topUpModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); z-index:10000; align-items:center; justify-content:center; padding: 15px; overflow-y: auto;">
+        <div style="background: var(--surface-color); border-radius: 24px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid var(--border-color); position: relative; max-height: 90vh; overflow-y: auto;">
+            
+            <!-- Close Button -->
+            <button type="button" onclick="closeTopUpModal()" style="position: absolute; top: 18px; right: 18px; background: rgba(0,0,0,0.05); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--text-muted); cursor: pointer;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- STEP 1: Enter / Select Amount Screen -->
+            <div id="topUpStepAmount">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                    <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(27,94,32,0.12); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--primary-color); font-size: 1.25rem; font-weight: 700; margin: 0;">Top Up Wallet</h3>
+                        <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0;">Add funds instantly via Secure Card Gateway</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 18px; margin-bottom: 15px;">
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; display:block; margin-bottom: 8px;">Select Quick Amount (Rs.)</label>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;">
+                        <button type="button" class="btn-preset-amount" onclick="setPresetAmount(500)" style="padding: 10px 4px; border-radius: 10px; border: 1px solid var(--border-color); background: #ffffff; color: var(--text-main); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">500</button>
+                        <button type="button" class="btn-preset-amount" onclick="setPresetAmount(1000)" style="padding: 10px 4px; border-radius: 10px; border: 1px solid var(--border-color); background: #ffffff; color: var(--text-main); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">1,000</button>
+                        <button type="button" class="btn-preset-amount" onclick="setPresetAmount(2500)" style="padding: 10px 4px; border-radius: 10px; border: 1px solid var(--border-color); background: #ffffff; color: var(--text-main); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">2,500</button>
+                        <button type="button" class="btn-preset-amount" onclick="setPresetAmount(5000)" style="padding: 10px 4px; border-radius: 10px; border: 1px solid var(--border-color); background: #ffffff; color: var(--text-main); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">5,000</button>
+                    </div>
+
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; display:block; margin-bottom: 8px;">Or Enter Custom Amount (Rs.)</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-weight: 700; color: var(--primary-color);">Rs.</span>
+                        <input type="number" id="topUpAmount" class="form-control" placeholder="e.g. 500" min="100" max="50000" style="padding-left: 45px; font-size: 1.1rem; font-weight: 700;" oninput="onAmountChanged()">
+                    </div>
+                    <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; display: block;">Min: Rs. 100 • Max: Rs. 50,000</small>
+                </div>
+
+                <div style="background: rgba(27,94,32,0.05); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Current Balance:</div>
+                    <div style="font-weight: 700; color: var(--primary-color);">Rs. <span id="modalCurrentWalletBal">0</span></div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="closeTopUpModal()" style="flex:1; padding:12px; border:1px solid var(--border-color); border-radius:12px; background:transparent; color:var(--text-muted); cursor:pointer; font-weight:600;">Cancel</button>
+                    <button type="button" onclick="proceedToPaymentGateway()" style="flex:1.6; padding:12px; border:none; border-radius:12px; background:linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color:#fff; cursor:pointer; font-weight:600; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(27,94,32,0.25);">
+                        <span>Proceed to Pay</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Mock Card Payment Gateway Screen -->
+            <div id="topUpStepGateway" style="display: none;">
+                
+                <!-- Gateway Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" onclick="backToAmountStep()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem;">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.95rem; color: var(--primary-color);">Mock Card Gateway</div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);"><i class="fa-solid fa-shield-halved text-success"></i> 256-Bit SSL Encrypted Mock Sandbox</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 6px; font-size: 1.2rem; color: #1e293b;">
+                        <i class="fa-brands fa-cc-visa" style="color: #1a1f71;"></i>
+                        <i class="fa-brands fa-cc-mastercard" style="color: #eb001b;"></i>
+                        <i class="fa-brands fa-cc-amex" style="color: #006fcf;"></i>
+                    </div>
+                </div>
+
+                <!-- Visual Interactive Debit/Credit Card -->
+                <div id="visualCreditCard" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1b5e20 100%); border-radius: 16px; padding: 18px 20px; color: #ffffff; box-shadow: 0 10px 25px rgba(30, 60, 114, 0.35); margin-bottom: 16px; position: relative; overflow: hidden;">
+                    <!-- Hologram effect overlay -->
+                    <div style="position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); border-radius: 50%;"></div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 34px; height: 26px; background: linear-gradient(135deg, #ffd700, #d4af37); border-radius: 5px; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-microchip" style="color: #855800; font-size: 0.9rem;"></i>
+                            </div>
+                            <i class="fa-solid fa-wifi" style="transform: rotate(90deg); font-size: 0.85rem; opacity: 0.8;"></i>
+                        </div>
+                        <span id="cardBrandIcon" style="font-size: 1.4rem; font-weight: 700; letter-spacing: 1px;">VISA</span>
+                    </div>
+
+                    <!-- Card Number Preview -->
+                    <div id="cardPreviewNumber" style="font-family: 'Courier New', monospace; font-size: 1.15rem; font-weight: 700; letter-spacing: 2.5px; margin-bottom: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+                        •••• •••• •••• ••••
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75;">Cardholder Name</div>
+                            <div id="cardPreviewName" style="font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                PASSENGER NAME
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75;">Expires</div>
+                            <div id="cardPreviewExpiry" style="font-family: 'Courier New', monospace; font-size: 0.85rem; font-weight: 700;">
+                                MM/YY
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Test Card Button -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">Card Details</span>
+                    <button type="button" onclick="fillTestCardDetails()" style="background: rgba(27,94,32,0.1); border: 1px dashed var(--primary-color); color: var(--primary-color); border-radius: 6px; padding: 3px 8px; font-size: 0.72rem; font-weight: 600; cursor: pointer;">
+                        <i class="fa-solid fa-bolt"></i> Auto-fill Test Card
+                    </button>
+                </div>
+
+                <!-- Card Form -->
+                <form id="mockCardPaymentForm" onsubmit="event.preventDefault(); submitCardPayment();">
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block;">Cardholder Name</label>
+                        <input type="text" id="cardHolderName" class="form-control" placeholder="e.g. Manidu Deshapriya" required oninput="updateCardPreview()" style="font-size: 0.9rem; padding: 8px 12px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block;">Card Number</label>
+                        <div style="position: relative;">
+                            <input type="text" id="cardNumber" class="form-control" placeholder="4111 2222 3333 4444" maxlength="19" required oninput="formatCardNumber(this)" style="font-size: 0.9rem; padding: 8px 12px; font-family: 'Courier New', monospace; letter-spacing: 1px;">
+                            <span id="inputCardBrand" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 1rem; color: var(--text-muted);">
+                                <i class="fa-regular fa-credit-card"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block;">Expiry Date</label>
+                            <input type="text" id="cardExpiry" class="form-control" placeholder="MM/YY" maxlength="5" required oninput="formatCardExpiry(this)" style="font-size: 0.9rem; padding: 8px 12px; font-family: 'Courier New', monospace; text-align: center;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block;">CVV / CVC</label>
+                            <input type="password" id="cardCvv" class="form-control" placeholder="•••" maxlength="4" required style="font-size: 0.9rem; padding: 8px 12px; font-family: 'Courier New', monospace; text-align: center;">
+                        </div>
+                    </div>
+
+                    <!-- Payment Summary Box -->
+                    <div style="background: rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Total Amount to Charge:</span>
+                            <div style="font-size: 0.72rem; color: var(--success-color);"><i class="fa-solid fa-check-circle"></i> No transaction fee</div>
+                        </div>
+                        <strong style="font-size: 1.15rem; color: var(--primary-color);">Rs. <span id="gatewayPayAmountText">0.00</span></strong>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="gatewaySubmitPayBtn" style="width: 100%; padding: 13px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: #fff; cursor: pointer; font-weight: 700; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(27,94,32,0.3); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-lock"></i> <span>Pay Rs. <span id="gatewayBtnAmountText">0</span> & Add Funds</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- STEP 3: Processing & Success Animation State -->
+            <div id="topUpStepProcessing" style="display: none; text-align: center; padding: 30px 10px;">
+                <div id="gatewayProcessingSpinner">
+                    <div style="width: 65px; height: 65px; border: 4px solid rgba(27,94,32,0.15); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                    <h4 style="color: var(--primary-color); font-weight: 700; margin-bottom: 6px;">Processing Payment...</h4>
+                    <p id="gatewayProgressStatusText" style="color: var(--text-muted); font-size: 0.85rem;">Contacting Mock Bank Gateway...</p>
+                </div>
+
+                <div id="gatewaySuccessCheckmark" style="display: none;">
+                    <div style="width: 70px; height: 70px; background: rgba(16,185,129,0.15); color: var(--success-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 16px;">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h3 style="color: var(--success-color); font-weight: 700; margin-bottom: 6px;">Payment Successful!</h3>
+                    <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 18px;">
+                        Rs. <strong id="successAddedAmountText" style="color: var(--text-main);">0</strong> has been successfully credited to your wallet.
+                    </p>
+                    <div style="background: rgba(27,94,32,0.06); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Updated Wallet Balance</div>
+                        <div style="font-size: 1.4rem; font-weight: 700; color: var(--primary-color);">Rs. <span id="successNewWalletBalText">0</span></div>
+                    </div>
+                    <button type="button" onclick="closeTopUpModal()" class="btn btn-primary" style="width: 100%; padding: 12px; border-radius: 10px; font-weight: 600;">
+                        Done & Continue
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Request Custom Ride Modal -->
+    <div id="requestRideModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); z-index:10000; align-items:center; justify-content:center; padding: 15px; overflow-y: auto;">
+        <div style="background: var(--surface-color, #ffffff); border-radius: 20px; padding: 26px 28px; width: 100%; max-width: 460px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid var(--border-color); position: relative; max-height: 90vh; overflow-y: auto;">
+            <button onclick="document.getElementById('requestRideModal').style.display='none'" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color: var(--primary-color); margin-bottom: 5px; font-size: 1.25rem;"><i class="fa-solid fa-bullhorn text-success me-1"></i> Request a Custom Ride</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 18px;">Tell campus drivers your custom route, seats and schedule.</p>
+            
+            <div class="form-group autocomplete-container" style="margin-bottom: 12px;">
+                <label style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-location-dot text-success me-1"></i> Leaving from (Pickup Location)</label>
+                <input type="text" id="dashReqOrigin" class="form-control" placeholder="e.g. Kandy, Nugegoda, Maharagama" autocomplete="off" required>
+                <div id="dashReqOriginSuggestions" class="autocomplete-list"></div>
+            </div>
+            <div class="form-group autocomplete-container" style="margin-bottom: 12px;">
+                <label style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-flag-checkered text-success me-1"></i> Going to (Destination)</label>
+                <input type="text" id="dashReqDest" class="form-control" placeholder="e.g. ICBT Colombo Campus, Bambalapitiya" autocomplete="off" required>
+                <div id="dashReqDestSuggestions" class="autocomplete-list"></div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 600;"><i class="fa-regular fa-calendar me-1"></i> Travel Date</label>
+                    <input type="date" id="dashReqDate" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 600;"><i class="fa-regular fa-clock me-1"></i> Pickup Time</label>
+                    <input type="time" id="dashReqTime" class="form-control" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-users me-1"></i> Seats Needed</label>
+                    <select id="dashReqSeats" class="form-control" style="background: white;" onchange="autoCalculateCustomFare()">
+                        <option value="1" selected>1 Passenger (1 Seat)</option>
+                        <option value="2">2 Passengers (2 Seats)</option>
+                        <option value="3">3 Passengers (3 Seats)</option>
+                        <option value="4">4 Passengers (4 Seats)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-money-bill-wave text-success me-1"></i> Estimated Fare (Rs.)</label>
+                    <input type="number" id="dashReqFare" class="form-control" placeholder="Auto calculated..." value="350" min="100" step="50" required>
+                </div>
+            </div>
+
+            <!-- Auto-Calculated Distance Info Box -->
+            <div id="dashReqDistanceInfo" style="display: none; background: rgba(27,94,32,0.06); border: 1px solid rgba(27,94,32,0.15); border-radius: 10px; padding: 10px 12px; font-size: 0.82rem; color: var(--primary-color); margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 600;">
+                    <span><i class="fa-solid fa-route me-1"></i> <span id="dashReqDistText">Calculating route...</span></span>
+                    <span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981; font-size: 0.72rem;">Map Auto-Priced</span>
+                </div>
+            </div>
+
+            <div style="background: rgba(27,94,32,0.04); border-radius: 10px; padding: 10px 12px; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-hourglass-half text-success"></i>
+                <span>This request will broadcast to drivers with a <strong>20-minute live validity window</strong>.</span>
+            </div>
+
+            <button class="btn btn-primary" id="dashSubmitReqBtn" style="width: 100%; font-size: 1rem; padding: 12px; border-radius: 10px;" onclick="submitCustomRideRequest()">
+                <i class="fa-solid fa-paper-plane me-1"></i> Broadcast Request to Drivers
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom Request Broadcast Success Popup Modal -->
+    <div id="customReqSuccessModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; align-items: center; justify-content: center; padding: 15px;">
+        <div style="background: var(--surface-color, #ffffff); max-width: 420px; width: 100%; text-align: center; border-radius: 24px; padding: 30px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid var(--border-color); animation: modalPop 0.25s ease-out;">
+            <div style="width: 65px; height: 65px; border-radius: 50%; background: rgba(16,185,129,0.12); color: #10b981; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 14px;">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2 style="color: var(--primary-color); font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;">Request Broadcasted!</h2>
+            <p style="color: #475569; font-size: 0.88rem; line-height: 1.5; margin-bottom: 22px;">
+                Your custom ride request has been sent to verified campus drivers. You will receive an instant notification when a driver accepts your schedule!
+            </p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline-light" style="flex: 1; border: 1px solid var(--border-color); color: var(--text-main); font-weight: 600; padding: 10px;" onclick="document.getElementById('customReqSuccessModal').style.display='none'">Done</button>
+                <button class="btn btn-primary" style="flex: 1.4; padding: 10px;" onclick="window.location.href='bookings.html'"><i class="fa-solid fa-book-open me-1"></i> My Bookings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ride Completed / You Have Arrived Celebration Modal -->
+    <div id="passengerRideCompletedModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; padding: 15px;">
+        <div style="background: #ffffff; max-width: 440px; width: 100%; text-align: center; border-radius: 24px; padding: 32px 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); border: 1px solid var(--border-color); animation: modalPop 0.25s ease-out;">
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(16,185,129,0.15); color: #10b981; display: inline-flex; align-items: center; justify-content: center; font-size: 2.2rem; margin-bottom: 16px;">
+                <i class="fa-solid fa-flag-checkered"></i>
+            </div>
+            <h2 style="color: var(--primary-color); font-size: 1.4rem; font-weight: 700; margin-bottom: 6px;">You Have Arrived! 🎉</h2>
+            <p style="color: #475569; font-size: 0.92rem; line-height: 1.5; margin-bottom: 18px;" id="passengerCompletedModalMsg">
+                Your ride has safely reached your destination and has been completed by your driver.
+            </p>
+            <div id="passengerCompletedFareBox" style="background: rgba(27,94,32,0.06); border-radius: 12px; padding: 14px; margin-bottom: 20px; text-align: left; font-size: 0.88rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-muted);">Total Fare:</span>
+                    <strong style="color: var(--text-main);" id="passengerCompletedFare">Rs. 350</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Status:</span>
+                    <span style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-circle-check me-1"></i> Completed & Paid</span>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 600; border-radius: 12px;" onclick="document.getElementById('passengerRideCompletedModal').style.display='none'">
+                <i class="fa-solid fa-thumbs-up me-1"></i> Great, Thanks!
+            </button>
+        </div>
+    </div>
+
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="../js/firebase-config.js"></script>
+    <script src="../js/app-dialogs.js"></script>
+    <script src="../js/rest-api-service.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../js/map-service.js"></script>
+    <script src="../js/pwa-install.js"></script>
+    <script src="../js/emergency-sos-service.js"></script>
+    <script src="../js/in-app-notification-service.js"></script>
     <script src="app.js"></script>
+    <script src="../js/chat-widget.js"></script>
     
-    <!-- UI Mock Scripts -->
     <script>
-        // Toggle Notifications
-        document.getElementById('bellIcon').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const dropdown = document.getElementById('notificationsDropdown');
-            const badge = document.getElementById('notificationBadge');
-            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-                dropdown.style.display = 'block';
-                if(badge) badge.style.display = 'none'; // hide badge when opened
+        // ─── Load User Session (Isolated for Passenger) ───────────────────────
+        function getPassengerSession() {
+            try {
+                const passRaw = localStorage.getItem('loggedInUser_passenger');
+                if (passRaw) return JSON.parse(passRaw);
+                const raw = localStorage.getItem('loggedInUser');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.role === 'passenger') return parsed;
+                }
+                const legacyId = localStorage.getItem('loggedInUserId');
+                const legacyRole = localStorage.getItem('loggedInUserRole');
+                if (legacyId && (!legacyRole || legacyRole === 'passenger')) return { uid: legacyId, name: 'Passenger', role: 'passenger' };
+            } catch (e) {
+                console.error("Error reading passenger session:", e);
+            }
+            return null;
+        }
+
+        const currentUser = getPassengerSession();
+
+        if (!currentUser || !currentUser.uid) {
+            window.location.href = '/main-login/login.html';
+        }
+
+        // ─── Populate Header & Greeting ───────────────────────────────────────
+        function loadUserUI() {
+            if (!currentUser) return;
+            const displayName = currentUser.fullName || currentUser.name || currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Kasun Bandara');
+            const firstName = displayName.split(' ')[0] || 'Passenger';
+
+            // Greeting
+            const greetEl = document.getElementById('greeting');
+            if (greetEl) greetEl.textContent = `Hello, ${firstName}`;
+
+            // Profile picture or initials
+            const avatarEl = document.getElementById('avatarInitials');
+            if (avatarEl) {
+                const picUrl = currentUser.profileImageUrl || currentUser.profilePicUrl;
+                if (picUrl) {
+                    avatarEl.innerHTML = `<img src="${picUrl}" alt="${displayName}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    avatarEl.style.background = 'transparent';
+                } else {
+                    avatarEl.textContent = displayName.charAt(0).toUpperCase();
+                }
+            }
+
+            const nameEl = document.getElementById('profileName');
+            if (nameEl) nameEl.textContent = displayName;
+
+            const roleEl = document.getElementById('userRole');
+            if (roleEl) roleEl.textContent = currentUser.userType || 'Passenger';
+
+            // Restrict date inputs to current and future dates only
+            const todayStr = new Date().toISOString().split('T')[0];
+            const dashDateInput = document.getElementById('dashDateInput');
+            if (dashDateInput) dashDateInput.min = todayStr;
+            const dashReqDate = document.getElementById('dashReqDate');
+            if (dashReqDate) dashReqDate.min = todayStr;
+        }
+
+        // ─── Real-time User & Wallet Sync ─────────────────────────────────────
+        function syncUserProfile() {
+            if (!currentUser || !currentUser.uid || !window.db) return;
+            const balEl = document.getElementById('walletBalance');
+
+            window.db.collection('users').doc(currentUser.uid).onSnapshot(snap => {
+                if (snap.exists) {
+                    const data = snap.data();
+                    currentUser.name = data.name || data.fullName || currentUser.name || (data.email ? data.email.split('@')[0] : 'Passenger');
+                    currentUser.fullName = data.fullName || data.name || currentUser.fullName;
+                    currentUser.userType = data.userType || currentUser.userType || 'Passenger';
+                    currentUser.profilePicUrl = data.profilePicUrl || data.profileImageUrl || currentUser.profilePicUrl || '';
+                    currentUser.walletBalance = data.walletBalance !== undefined ? data.walletBalance : 0;
+                    
+                    const updated = { ...currentUser, ...data };
+                    localStorage.setItem('loggedInUser_passenger', JSON.stringify(updated));
+                    
+                    // Re-render header & avatar
+                    loadUserUI();
+                    if (balEl) balEl.textContent = Number(currentUser.walletBalance || 0).toLocaleString();
+                }
+            }, err => console.error("Error syncing user profile:", err));
+        }
+
+        // ─── Top Up Wallet & Mock Card Payment Gateway ──────────────────────────
+        let selectedTopUpAmount = 500;
+
+        window.openTopUpModal = function() {
+            const modal = document.getElementById('topUpModal');
+            if (!modal) return;
+
+            // Reset modal states
+            document.getElementById('topUpStepAmount').style.display = 'block';
+            document.getElementById('topUpStepGateway').style.display = 'none';
+            document.getElementById('topUpStepProcessing').style.display = 'none';
+            document.getElementById('gatewayProcessingSpinner').style.display = 'block';
+            document.getElementById('gatewaySuccessCheckmark').style.display = 'none';
+
+            // Set current balance display
+            const curBal = currentUser ? (currentUser.walletBalance || 0) : 0;
+            const balDisplay = document.getElementById('modalCurrentWalletBal');
+            if (balDisplay) balDisplay.textContent = Number(curBal).toLocaleString();
+
+            // Default preset
+            setPresetAmount(500);
+
+            modal.style.display = 'flex';
+        };
+
+        window.closeTopUpModal = function() {
+            const modal = document.getElementById('topUpModal');
+            if (modal) modal.style.display = 'none';
+        };
+
+        window.setPresetAmount = function(amt) {
+            selectedTopUpAmount = amt;
+            const input = document.getElementById('topUpAmount');
+            if (input) input.value = amt;
+
+            // Update styling of preset buttons
+            document.querySelectorAll('.btn-preset-amount').forEach(btn => {
+                const btnAmt = parseInt(btn.innerText.replace(/,/g, ''), 10);
+                if (btnAmt === amt) {
+                    btn.style.background = 'var(--primary-color)';
+                    btn.style.color = '#ffffff';
+                    btn.style.borderColor = 'var(--primary-color)';
+                } else {
+                    btn.style.background = '#ffffff';
+                    btn.style.color = 'var(--text-main)';
+                    btn.style.borderColor = 'var(--border-color)';
+                }
+            });
+        };
+
+        window.onAmountChanged = function() {
+            const input = document.getElementById('topUpAmount');
+            const val = parseFloat(input.value);
+            selectedTopUpAmount = isNaN(val) ? 0 : val;
+
+            // Highlight matching preset button if any
+            document.querySelectorAll('.btn-preset-amount').forEach(btn => {
+                const btnAmt = parseInt(btn.innerText.replace(/,/g, ''), 10);
+                if (btnAmt === selectedTopUpAmount) {
+                    btn.style.background = 'var(--primary-color)';
+                    btn.style.color = '#ffffff';
+                    btn.style.borderColor = 'var(--primary-color)';
+                } else {
+                    btn.style.background = '#ffffff';
+                    btn.style.color = 'var(--text-main)';
+                    btn.style.borderColor = 'var(--border-color)';
+                }
+            });
+        };
+
+        window.proceedToPaymentGateway = function() {
+            const input = document.getElementById('topUpAmount');
+            const amt = parseFloat(input.value);
+
+            if (!amt || isNaN(amt) || amt < 100) {
+                alert('Please enter a valid amount of at least Rs. 100.');
+                return;
+            }
+            if (amt > 50000) {
+                alert('Maximum allowed single top-up is Rs. 50,000.');
+                return;
+            }
+
+            selectedTopUpAmount = amt;
+
+            // Pre-fill Gateway details
+            document.getElementById('gatewayPayAmountText').textContent = Number(amt).toLocaleString() + '.00';
+            document.getElementById('gatewayBtnAmountText').textContent = Number(amt).toLocaleString();
+
+            const pName = (currentUser && currentUser.name) ? currentUser.name : 'PASSENGER NAME';
+            const nameInput = document.getElementById('cardHolderName');
+            if (nameInput && !nameInput.value) {
+                nameInput.value = pName;
+            }
+            updateCardPreview();
+
+            // Transition to Gateway Step
+            document.getElementById('topUpStepAmount').style.display = 'none';
+            document.getElementById('topUpStepGateway').style.display = 'block';
+        };
+
+        window.backToAmountStep = function() {
+            document.getElementById('topUpStepGateway').style.display = 'none';
+            document.getElementById('topUpStepAmount').style.display = 'block';
+        };
+
+        window.formatCardNumber = function(input) {
+            let val = input.value.replace(/\D/g, '').substring(0, 16);
+            let formatted = '';
+            for (let i = 0; i < val.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += val[i];
+            }
+            input.value = formatted;
+
+            // Detect card brand
+            const brandIcon = document.getElementById('cardBrandIcon');
+            const inputBrand = document.getElementById('inputCardBrand');
+            if (val.startsWith('4')) {
+                if (brandIcon) brandIcon.innerHTML = '<i class="fa-brands fa-cc-visa"></i> VISA';
+                if (inputBrand) inputBrand.innerHTML = '<i class="fa-brands fa-cc-visa" style="color: #1a1f71;"></i>';
+            } else if (val.startsWith('5') || val.startsWith('2')) {
+                if (brandIcon) brandIcon.innerHTML = '<i class="fa-brands fa-cc-mastercard"></i> MC';
+                if (inputBrand) inputBrand.innerHTML = '<i class="fa-brands fa-cc-mastercard" style="color: #eb001b;"></i>';
+            } else if (val.startsWith('3')) {
+                if (brandIcon) brandIcon.innerHTML = '<i class="fa-brands fa-cc-amex"></i> AMEX';
+                if (inputBrand) inputBrand.innerHTML = '<i class="fa-brands fa-cc-amex" style="color: #006fcf;"></i>';
             } else {
-                dropdown.style.display = 'none';
+                if (brandIcon) brandIcon.innerHTML = 'CARD';
+                if (inputBrand) inputBrand.innerHTML = '<i class="fa-regular fa-credit-card"></i>';
+            }
+
+            updateCardPreview();
+        };
+
+        window.formatCardExpiry = function(input) {
+            let val = input.value.replace(/\D/g, '').substring(0, 4);
+            if (val.length >= 3) {
+                input.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+            } else {
+                input.value = val;
+            }
+            updateCardPreview();
+        };
+
+        window.updateCardPreview = function() {
+            const numInput = document.getElementById('cardNumber');
+            const nameInput = document.getElementById('cardHolderName');
+            const expInput = document.getElementById('cardExpiry');
+
+            const prevNum = document.getElementById('cardPreviewNumber');
+            const prevName = document.getElementById('cardPreviewName');
+            const prevExp = document.getElementById('cardPreviewExpiry');
+
+            if (prevNum) {
+                prevNum.textContent = numInput && numInput.value.trim() ? numInput.value : '•••• •••• •••• ••••';
+            }
+            if (prevName) {
+                prevName.textContent = nameInput && nameInput.value.trim() ? nameInput.value.toUpperCase() : 'PASSENGER NAME';
+            }
+            if (prevExp) {
+                prevExp.textContent = expInput && expInput.value.trim() ? expInput.value : 'MM/YY';
+            }
+        };
+
+        window.fillTestCardDetails = function() {
+            const numInput = document.getElementById('cardNumber');
+            const nameInput = document.getElementById('cardHolderName');
+            const expInput = document.getElementById('cardExpiry');
+            const cvvInput = document.getElementById('cardCvv');
+
+            if (nameInput) nameInput.value = (currentUser && currentUser.name) ? currentUser.name : 'Kasun Perera';
+            if (numInput) {
+                numInput.value = '4242 4242 4242 4242';
+                formatCardNumber(numInput);
+            }
+            if (expInput) expInput.value = '12/28';
+            if (cvvInput) cvvInput.value = '889';
+
+            updateCardPreview();
+        };
+
+        window.submitCardPayment = async function() {
+            const numInput = document.getElementById('cardNumber');
+            const nameInput = document.getElementById('cardHolderName');
+            const expInput = document.getElementById('cardExpiry');
+            const cvvInput = document.getElementById('cardCvv');
+
+            const rawNum = numInput ? numInput.value.replace(/\s/g, '') : '';
+            if (rawNum.length < 15) {
+                alert('Please enter a valid 16-digit card number.');
+                return;
+            }
+            if (!expInput || expInput.value.length < 5) {
+                alert('Please enter a valid expiry date (MM/YY).');
+                return;
+            }
+            if (!cvvInput || cvvInput.value.length < 3) {
+                alert('Please enter a valid 3-digit CVV.');
+                return;
+            }
+            if (!currentUser || !currentUser.uid || !window.db) {
+                alert('Session expired. Please log in again.');
+                return;
+            }
+
+            // Transition to Processing State
+            document.getElementById('topUpStepGateway').style.display = 'none';
+            document.getElementById('topUpStepProcessing').style.display = 'block';
+
+            const statusText = document.getElementById('gatewayProgressStatusText');
+
+            try {
+                // Step 1 Simulation: Contacting Gateway
+                if (statusText) statusText.textContent = 'Connecting to Secure Card Gateway...';
+                await new Promise(r => setTimeout(r, 600));
+
+                // Step 2 Simulation: Authorizing 3D Secure
+                if (statusText) statusText.textContent = 'Authorizing 3D Secure Transaction with Bank...';
+                await new Promise(r => setTimeout(r, 800));
+
+                // Step 3: Perform Firestore Credit
+                const userRef = window.db.collection('users').doc(currentUser.uid);
+                const snap = await userRef.get();
+                const currentBalance = snap.exists ? Number(snap.data().walletBalance || 0) : 0;
+                const newBalance = currentBalance + selectedTopUpAmount;
+
+                await userRef.update({ walletBalance: newBalance });
+
+                // Log Transaction
+                const last4 = rawNum.substring(rawNum.length - 4);
+                await window.db.collection('wallet_transactions').add({
+                    userId: currentUser.uid,
+                    userName: currentUser.name || 'Passenger',
+                    type: 'top_up',
+                    amount: selectedTopUpAmount,
+                    paymentMethod: `Card ending in ${last4}`,
+                    status: 'completed',
+                    balanceAfter: newBalance,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    date: new Date().toISOString()
+                });
+
+                // Update local session
+                currentUser.walletBalance = newBalance;
+                localStorage.setItem('loggedInUser_passenger', JSON.stringify({ ...currentUser, walletBalance: newBalance }));
+                localStorage.setItem('loggedInUser', JSON.stringify({ ...currentUser, walletBalance: newBalance }));
+
+                // Update UI balance
+                const balEl = document.getElementById('walletBalance');
+                if (balEl) balEl.textContent = Number(newBalance).toLocaleString();
+
+                // Step 4: Show Success Screen
+                document.getElementById('gatewayProcessingSpinner').style.display = 'none';
+                document.getElementById('gatewaySuccessCheckmark').style.display = 'block';
+                document.getElementById('successAddedAmountText').textContent = Number(selectedTopUpAmount).toLocaleString();
+                document.getElementById('successNewWalletBalText').textContent = Number(newBalance).toLocaleString();
+
+            } catch (err) {
+                console.error('Payment Gateway Error:', err);
+                alert('Payment processing failed. Please try again.');
+                backToAmountStep();
+            }
+        };
+
+        // ─── Submit Custom Ride Request ───────────────────────────────────────
+        window.submitCustomRideRequest = async function() {
+            const origin = document.getElementById('dashReqOrigin').value.trim();
+            const dest = document.getElementById('dashReqDest').value.trim();
+            const date = document.getElementById('dashReqDate').value;
+            const time = document.getElementById('dashReqTime').value;
+            const seats = parseInt(document.getElementById('dashReqSeats')?.value || '1', 10);
+            const fare = parseFloat(document.getElementById('dashReqFare')?.value || '350');
+            const note = document.getElementById('dashReqNote')?.value.trim() || '';
+
+            if (!origin || !dest || !date || !time) {
+                alert('Please fill in all details (From, To, Date, and Time).');
+                return;
+            }
+
+            const btn = document.getElementById('dashSubmitReqBtn');
+            const orig = btn ? btn.innerHTML : '';
+            if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...'; btn.disabled = true; }
+
+            try {
+                const nowMs = Date.now();
+                const expiresMs = nowMs + (20 * 60 * 1000); // 20-minute live validity window
+                const senderName = currentUser.fullName || currentUser.name || 'Passenger';
+
+                const reqDoc = await window.db.collection('RideRequests').add({
+                    passengerId: currentUser.uid,
+                    passengerName: senderName,
+                    passengerPhone: currentUser.phone || '',
+                    origin: origin,
+                    destination: dest,
+                    date: date,
+                    time: time,
+                    seats: seats,
+                    fare: fare,
+                    note: note,
+                    status: 'pending',
+                    validityMinutes: 20,
+                    createdAtMs: nowMs,
+                    expiresAt: expiresMs,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Send real-time notification to drivers
+                try {
+                    await window.db.collection('notifications').add({
+                        targetRole: 'driver',
+                        type: 'custom_ride_request',
+                        requestId: reqDoc.id,
+                        title: '🚗 New Custom Ride Request',
+                        message: `${senderName} requested a ride (${seats} seat${seats > 1 ? 's' : ''}, Rs. ${fare}) from ${origin} to ${dest} on ${date} at ${time}.`,
+                        origin: origin,
+                        destination: dest,
+                        date: date,
+                        time: time,
+                        seats: seats,
+                        fare: fare,
+                        passengerId: currentUser.uid,
+                        passengerName: senderName,
+                        read: false,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch (notifErr) {
+                    console.warn("Could not create driver broadcast notification:", notifErr);
+                }
+
+                document.getElementById('requestRideModal').style.display = 'none';
+                document.getElementById('dashReqOrigin').value = '';
+                document.getElementById('dashReqDest').value = '';
+                document.getElementById('dashReqDate').value = '';
+                document.getElementById('dashReqTime').value = '';
+                if (document.getElementById('dashReqNote')) document.getElementById('dashReqNote').value = '';
+
+                // Show modern in-app popup modal
+                document.getElementById('customReqSuccessModal').style.display = 'flex';
+            } catch (err) {
+                console.error('Error creating ride request:', err);
+                alert('Failed to submit ride request. Please try again.');
+            } finally {
+                if (btn) { btn.innerHTML = orig; btn.disabled = false; }
+            }
+        };
+
+        // ─── Real Top Drivers Loader (Real-time Firestore) ────────────────────
+        function loadTopDrivers() {
+            const container = document.getElementById('topDriversContainer');
+            if (!container || !window.db) return;
+
+            window.db.collection('users')
+                .where('role', '==', 'driver')
+                .limit(4)
+                .onSnapshot(snapshot => {
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 15px; font-size: 0.9rem;">No drivers registered yet.</p>';
+                        return;
+                    }
+
+                    let html = '';
+                    snapshot.forEach(doc => {
+                        const d = doc.data();
+                        const name = d.name || d.fullName || 'Driver';
+                        const initial = name.charAt(0).toUpperCase();
+                        const vehicle = d.vehicleModel || 'Verified Car';
+                        const pic = d.profilePicUrl || '';
+
+                        const avatarHtml = pic 
+                            ? `<div class="list-item-avatar" style="overflow:hidden; padding:0;"><img src="${pic}" alt="${name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;"></div>`
+                            : `<div class="list-item-avatar">${initial}</div>`;
+
+                        html += `
+                            <div class="list-item" style="padding: 10px 12px; margin-bottom: 8px; border-radius: 12px; background: rgba(0,0,0,0.02); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    ${avatarHtml}
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 0.95rem;">${name}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">${vehicle}</div>
+                                    </div>
+                                </div>
+                                <div style="color: var(--primary-color); font-size: 0.85rem; font-weight: 600;">
+                                    <i class="fa-solid fa-circle-check" style="color: var(--success-color); margin-right: 3px;"></i> Verified
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = html;
+                }, err => {
+                    console.error("Error loading top drivers:", err);
+                    container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 10px; font-size: 0.85rem;">Active ICBT drivers ready for rides.</p>';
+                });
+        }
+
+        // ─── Real-time Notifications ──────────────────────────────────────────
+        function loadNotifications() {
+            if (!currentUser || !currentUser.uid || !window.db) return;
+
+            const badge = document.getElementById('notificationBadge');
+            const dropdown = document.getElementById('notificationsDropdown');
+
+            window.db.collection('notifications')
+                .where('userId', '==', currentUser.uid)
+                .limit(5)
+                .onSnapshot(snapshot => {
+                    let unreadCount = 0;
+                    let html = '<div style="padding: 10px 15px; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--primary-color);">Notifications</div>';
+
+                    if (snapshot.empty) {
+                        html += '<div style="padding: 15px; text-align:center; color:var(--text-muted); font-size:0.9rem;">No notifications yet.</div>';
+                    } else {
+                        const notifs = [];
+                        snapshot.forEach(doc => notifs.push({ id: doc.id, ...doc.data() }));
+                        notifs.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+
+                        notifs.forEach(n => {
+                            if (!n.read) unreadCount++;
+                            html += `
+                                <div style="padding:12px 15px; border-bottom:1px solid rgba(0,0,0,0.05); font-size:0.9rem; cursor:pointer;" 
+                                     onmouseover="this.style.background='rgba(0,0,0,0.02)'" onmouseout="this.style.background='white'"
+                                     onclick="markNotifRead('${n.id}')">
+                                    <div style="font-weight:${n.read ? '400' : '600'};">${n.title || 'Notification'}</div>
+                                    <div style="color:var(--text-muted); font-size:0.8rem;">${n.message || ''}</div>
+                                </div>`;
+                        });
+                    }
+
+                    if (dropdown) dropdown.innerHTML = html;
+                    if (badge) {
+                        badge.textContent = unreadCount > 0 ? unreadCount : '';
+                        badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+                    }
+                }, err => {
+                    if (dropdown) dropdown.innerHTML = '<div style="padding:10px 15px; border-bottom:1px solid var(--border-color); font-weight:600; color:var(--primary-color);">Notifications</div><div style="padding:15px; text-align:center; color:var(--text-muted); font-size:0.9rem;">No notifications yet.</div>';
+                    if (badge) badge.style.display = 'none';
+                });
+        }
+
+        window.markNotifRead = function(docId) {
+            if (!window.db) return;
+            window.db.collection('notifications').doc(docId).update({ read: true }).catch(() => {});
+        };
+
+        // ─── Logout ───────────────────────────────────────────────────────────
+        document.querySelectorAll('.mobile-logout-btn, .sidebar a').forEach(link => {
+            if (link.textContent.includes('Logout') || link.querySelector('.fa-right-from-bracket')) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('loggedInUser');
+                    localStorage.removeItem('loggedInUserId');
+                    localStorage.removeItem('loggedInUserRole');
+                    window.location.href = '/main-login/login.html';
+                });
             }
         });
 
-        // Close dropdown when clicking outside
+        // ─── Notifications Dropdown Toggle ────────────────────────────────────
+        const bellIcon = document.getElementById('bellIcon');
+        if (bellIcon) {
+            bellIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = document.getElementById('notificationsDropdown');
+                if (dropdown) {
+                    dropdown.style.display = (dropdown.style.display === 'none' || dropdown.style.display === '') ? 'block' : 'none';
+                }
+            });
+        }
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('notificationsDropdown');
             if (dropdown && dropdown.style.display === 'block' && !e.target.closest('#bellIcon') && !e.target.closest('#notificationsDropdown')) {
@@ -566,10 +1495,535 @@
             }
         });
 
-        // SOS Button
-        document.getElementById('sosButton').addEventListener('click', function() {
-            alert('🚨 EMERGENCY SOS ACTIVATED 🚨\n\nYour emergency contacts and the nearest authorities have been notified of your location.');
+        // ─── SOS Button ───────────────────────────────────────────────────────
+        const sosBtn = document.getElementById('sosButton');
+        if (sosBtn) {
+            sosBtn.addEventListener('click', function() {
+                alert('EMERGENCY SOS ACTIVATED\n\nYour emergency contacts and the nearest authorities have been notified of your location.');
+            });
+        }
+
+        const defaultCities = [
+            "Kandy", "ICBT Kandy", "Matale", "Matale Town", "Ukuwela", "Palapathwela", "Rattota", "Yatawatta", "Alawatugoda", "Akurana", "Katugastota", 
+            "Peradeniya", "Gelioya", "Hindagala", "Gampola", "Nawalapitiya", "Kundasale", "Digana", "Teldeniya", "Wattegama", "Kadugannawa", "Pilimathalawa",
+            "Dambulla", "Galewela", "Naula", "Kurunegala", "ICBT Kurunegala", "Mawathagama", "Polgahawela", "Kegalle", "Mawanella",
+            "Colombo", "ICBT Campus", "ICBT Colombo", "Dehiwala", "Mount Lavinia", "Ratmalana", "Moratuwa", "Panadura", "Wadduwa", "Kalutara", "Beruwala", "Aluthgama",
+            "Nugegoda", "Maharagama", "Pannipitiya", "Kottawa", "Homagama", "Godagama", "Meegoda", "Hanwella", "Avissawella",
+            "Rajagiriya", "Battaramulla", "Pelawatte", "Thalawathugoda", "Malabe", "Kaduwela", "Peliyagoda", "Kelaniya", "Kiribathgoda", "Mahara", "Kadawatha", "Gampaha", "Yakkala", "Nittambuwa", "Warakapola", "Wattala", "Kandana", "Ja-Ela", "Seeduwa", "Katunayake", "Negombo",
+            "Galle", "Hikkaduwa", "Ambalangoda", "Bentota", "Matara", "Weligama", "Tangalle", "Nuwara Eliya", "Hatton", "Badulla", "Bandarawela", "Ella", "Ratnapura", "Anuradhapura", "Polonnaruwa", "Trincomalee", "Batticaloa", "Jaffna"
+        ];
+        let liveDashboardRoutes = [];
+
+        function fetchLiveDashboardRoutes() {
+            if (!window.db) return;
+            window.db.collection('rides').where('status', '==', 'active').onSnapshot(snap => {
+                const routes = new Set();
+                snap.forEach(doc => {
+                    const r = doc.data();
+                    if (r.start || r.origin) routes.add(r.start || r.origin);
+                    if (r.dest || r.destination) routes.add(r.dest || r.destination);
+                });
+                liveDashboardRoutes = Array.from(routes);
+            });
+        }
+
+        function setupDashAutocomplete(inputId, suggestionsId) {
+            const input = document.getElementById(inputId);
+            const suggestionsList = document.getElementById(suggestionsId);
+            if (!input || !suggestionsList) return;
+
+            let dashDebounce = null;
+
+            input.addEventListener("input", function() {
+                const rawVal = this.value.trim();
+                const val = rawVal.toLowerCase();
+                suggestionsList.innerHTML = "";
+                if (!val || val.length < 1) {
+                    suggestionsList.style.display = "none";
+                    return;
+                }
+
+                // 1. Instant local matches
+                const allPlaces = Array.from(new Set([...liveDashboardRoutes, ...defaultCities]));
+                const matches = allPlaces.filter(p => p.toLowerCase().includes(val));
+
+                function renderSuggestions(placeList) {
+                    if (!placeList || placeList.length === 0) {
+                        suggestionsList.style.display = "none";
+                        return;
+                    }
+                    suggestionsList.innerHTML = "";
+                    suggestionsList.style.display = "block";
+                    placeList.slice(0, 8).forEach(match => {
+                        const div = document.createElement("div");
+                        div.className = "autocomplete-item";
+                        const regex = new RegExp(`(${val})`, "gi");
+                        const highlighted = match.replace(regex, "<strong>$1</strong>");
+                        const isLiveRoute = liveDashboardRoutes.some(lr => lr.toLowerCase() === match.toLowerCase());
+
+                        div.innerHTML = `
+                            <span><i class="fa-solid fa-location-dot" style="color:var(--primary-color); margin-right:8px;"></i>${highlighted}</span>
+                            ${isLiveRoute ? '<span style="font-size:0.7rem; background:rgba(27,94,32,0.1); color:var(--primary-color); padding:2px 6px; border-radius:6px; font-weight:600;">Active Ride</span>' : ''}
+                        `;
+
+                        div.addEventListener("click", function() {
+                            input.value = match;
+                            suggestionsList.style.display = "none";
+                            if (inputId === "dashReqOrigin" || inputId === "dashReqDest") {
+                                window.autoCalculateCustomFare();
+                            }
+                        });
+                        suggestionsList.appendChild(div);
+                    });
+                }
+
+                renderSuggestions(matches);
+
+                // 2. Parallel OpenStreetMap search if few local matches
+                clearTimeout(dashDebounce);
+                dashDebounce = setTimeout(async () => {
+                    if (window.MapService && typeof window.MapService.searchLocationsSriLanka === 'function') {
+                        const osmResults = await window.MapService.searchLocationsSriLanka(rawVal);
+                        if (osmResults && osmResults.length > 0) {
+                            const enriched = Array.from(new Set([...matches, ...osmResults.map(o => o.shortName || o.displayName.split(',')[0].trim())]));
+                            renderSuggestions(enriched);
+                        }
+                    }
+                }, 200);
+
+                if (inputId === "dashReqOrigin" || inputId === "dashReqDest") {
+                    window.autoCalculateCustomFare();
+                }
+            });
+
+            document.addEventListener("click", function(e) {
+                if (e.target !== input && !suggestionsList.contains(e.target)) {
+                    suggestionsList.style.display = "none";
+                }
+            });
+        }
+
+        // ─── Auto-Calculate Dynamic Fare via Map Distance Engine ───────────
+        let autoFareDebounce = null;
+        window.autoCalculateCustomFare = function() {
+            clearTimeout(autoFareDebounce);
+            autoFareDebounce = setTimeout(async () => {
+                const originInput = document.getElementById('dashReqOrigin');
+                const destInput = document.getElementById('dashReqDest');
+                const seatsSelect = document.getElementById('dashReqSeats');
+                const fareInput = document.getElementById('dashReqFare');
+                const distInfoBox = document.getElementById('dashReqDistanceInfo');
+                const distText = document.getElementById('dashReqDistText');
+
+                if (!originInput || !destInput || !fareInput) return;
+
+                const origin = originInput.value.trim();
+                const dest = destInput.value.trim();
+                const seats = parseInt(seatsSelect ? seatsSelect.value : '1', 10) || 1;
+
+                if (!origin || !dest || origin.length < 2 || dest.length < 2) {
+                    if (distInfoBox) distInfoBox.style.display = 'none';
+                    return;
+                }
+
+                if (distInfoBox && distText) {
+                    distInfoBox.style.display = 'block';
+                    distText.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Calculating route distance...';
+                }
+
+                try {
+                    let distanceKm = 15.0; // default estimate
+                    let durationMins = 30;
+
+                    if (window.MapService && typeof window.MapService.geocodeLocation === 'function') {
+                        const c1 = await window.MapService.geocodeLocation(origin);
+                        const c2 = await window.MapService.geocodeLocation(dest);
+                        if (c1 && c2) {
+                            const route = await window.MapService.fetchRoadRoute(c1, c2);
+                            if (route && route.distanceKm) {
+                                distanceKm = route.distanceKm;
+                                durationMins = route.durationMins || Math.round(distanceKm * 2.2);
+                            }
+                        }
+                    }
+
+                    // Sri Lanka Campus Carpooling Fair Rate Matrix:
+                    // Base: Rs. 120 + (Rs. 18 per km)
+                    const baseRate = 120;
+                    const perKmRate = 18;
+                    const perSeatFare = Math.max(150, Math.round((baseRate + (distanceKm * perKmRate)) / 10) * 10);
+                    const totalFare = perSeatFare * seats;
+
+                    fareInput.value = totalFare;
+
+                    if (distInfoBox && distText) {
+                        distInfoBox.style.display = 'block';
+                        distText.innerHTML = `<span><strong>~${distanceKm} km</strong> (${durationMins} mins) &bull; <strong style="color:var(--success-color);">Rs. ${perSeatFare}/seat</strong></span>`;
+                    }
+                } catch (err) {
+                    console.warn("Auto fare calculation error:", err);
+                    if (distInfoBox) distInfoBox.style.display = 'none';
+                }
+            }, 350);
+        };
+
+        // ─── Real-Time Current Active Ride & Live Trip Completion Engine ────
+        let passengerBookingsUnsub = null;
+        let passengerRequestsUnsub = null;
+        let passengerRescueUnsub = null;
+        let passengerLiveNotifUnsub = null;
+        let activeBookingsCache = [];
+        let activeRequestsCache = [];
+        let activePassengerRescueCache = [];
+
+        function renderPassengerActiveState() {
+            const contentEl = document.getElementById('passengerActiveRideContent');
+            const badgeEl = document.getElementById('passengerActiveRideStatusBadge');
+            if (!contentEl) return;
+
+            // 0. Priority: Check if there is an active emergency rescue in progress for this passenger
+            if (activePassengerRescueCache.length > 0) {
+                const rescue = activePassengerRescueCache[0];
+                if (rescue.status === 'open_for_rescue') {
+                    if (badgeEl) {
+                        badgeEl.innerHTML = `<span class="badge" style="background: rgba(220,38,38,0.15); color: #dc2626; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 12px; animation: pulseDot 1s infinite;"><i class="fa-solid fa-triangle-exclamation me-1"></i> Breakdown Reported &bull; Finding Rescue</span>`;
+                    }
+                    contentEl.innerHTML = `
+                        <div style="background: rgba(220,38,38,0.06); border: 1.5px solid rgba(220,38,38,0.25); border-radius: 14px; padding: 16px; margin-bottom: 12px;">
+                            <div style="font-weight: 700; color: #991b1b; font-size: 1.05rem; margin-bottom: 4px;">
+                                <i class="fa-solid fa-bullhorn me-1"></i> Emergency Breakdown Reported
+                            </div>
+                            <p style="font-size: 0.84rem; color: #475569; margin: 0 0 10px 0; line-height: 1.45;">
+                                Your driver encountered a vehicle issue near <strong>${rescue.origin}</strong>. An emergency rescue broadcast has been dispatched to all campus drivers heading towards <strong>${rescue.destination}</strong>.
+                            </p>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button type="button" class="btn" style="flex: 1; padding: 8px 12px; background: #ffffff; color: #dc2626; border: 1px solid #dc2626; border-radius: 8px; font-weight: 600; font-size: 0.82rem;" onclick="window.showRideRouteMap ? window.showRideRouteMap('${(rescue.origin || '').replace(/'/g, "\\'")}', '${(rescue.destination || '').replace(/'/g, "\\'")}') : null">
+                                    <i class="fa-solid fa-location-dot me-1"></i> Current Location
+                                </button>
+                                <button type="button" class="btn" style="flex: 1; padding: 8px 12px; background: #dc2626; color: #ffffff; border: none; border-radius: 8px; font-weight: 600; font-size: 0.82rem;" onclick="window.openEmergencySosModal ? window.openEmergencySosModal({ role: 'passenger', location: '${(rescue.origin || '').replace(/'/g, "\\'")}', dest: '${(rescue.destination || '').replace(/'/g, "\\'")}' }) : null">
+                                    <i class="fa-solid fa-phone-volume me-1"></i> Contact Security
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                } else if (rescue.status === 'rescue_accepted') {
+                    if (badgeEl) {
+                        badgeEl.innerHTML = `<span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 12px;"><i class="fa-solid fa-car-side me-1"></i> Rescue Driver Dispatched</span>`;
+                    }
+                    contentEl.innerHTML = `
+                        <div style="background: rgba(16,185,129,0.06); border: 1.5px solid rgba(16,185,129,0.3); border-radius: 14px; padding: 16px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <div>
+                                    <div style="font-weight: 700; color: #065f46; font-size: 1.05rem;">
+                                        <i class="fa-solid fa-circle-check me-1 text-success"></i> Rescue Driver on the Way!
+                                    </div>
+                                    <div style="font-size: 0.82rem; color: #475569; margin-top: 2px;">
+                                        Driver <strong>${rescue.rescueDriverName || 'Campus Driver'}</strong> (${rescue.rescueDriverPhone || 'Driver'}) has accepted your pickup.
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+                                <i class="fa-solid fa-route me-1"></i> Route: ${rescue.origin} &rarr; ${rescue.destination}
+                            </div>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button type="button" class="btn" style="flex: 1; padding: 8px 12px; background: rgba(27,94,32,0.1); color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 8px; font-weight: 600; font-size: 0.82rem;" onclick="window.showRideRouteMap ? window.showRideRouteMap('${(rescue.origin || '').replace(/'/g, "\\'")}', '${(rescue.destination || '').replace(/'/g, "\\'")}') : null">
+                                    <i class="fa-solid fa-map-location-dot me-1"></i> View Route
+                                </button>
+                                <button type="button" class="btn" style="flex: 1; padding: 8px 12px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-weight: 600; font-size: 0.82rem;" onclick="window.openDirectChat ? window.openDirectChat('${rescue.rescueDriverId || ''}', '${(rescue.rescueDriverName || 'Rescue Driver').replace(/'/g, "\\'")}', '${rescue.id}') : null">
+                                    <i class="fa-solid fa-comments me-1"></i> Chat Rescue Driver
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+            }
+
+            // 1. Check if there are active bookings
+            if (activeBookingsCache.length > 0) {
+                const booking = activeBookingsCache[0];
+                if (badgeEl) {
+                    badgeEl.innerHTML = `
+                        <span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981; font-weight: 700; font-size: 0.8rem; padding: 6px 12px; border-radius: 12px; display: inline-flex; align-items: center; gap: 6px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulseDot 1.5s infinite;"></span>
+                            Trip Booked &bull; Upcoming
+                        </span>
+                    `;
+                }
+
+                contentEl.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+                        <div>
+                            <div style="font-size: 1.15rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <span><i class="fa-regular fa-circle-dot" style="color: var(--primary-color);"></i> ${booking.rideFrom || 'Origin'}</span>
+                                <i class="fa-solid fa-arrow-right" style="color: var(--primary-color); font-size: 0.85rem;"></i>
+                                <span><i class="fa-solid fa-location-dot" style="color: var(--secondary-color);"></i> ${booking.rideTo || 'Destination'}</span>
+                            </div>
+                            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap;">
+                                <span><i class="fa-solid fa-user-tie me-1"></i> Driver: <strong>${booking.driverName || 'Verified Driver'}</strong></span>
+                                <span><i class="fa-solid fa-credit-card me-1"></i> Method: <strong>${booking.paymentMethod || 'ICBT Wallet'}</strong></span>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.25rem; font-weight: 700; color: var(--success-color);">Rs. ${booking.amount || 350}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-circle-check text-success me-1"></i> Paid & Confirmed</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn" style="flex: 1; min-width: 110px; padding: 10px 14px; background: rgba(27,94,32,0.1); color: var(--primary-color); border: 1px solid var(--primary-color); font-weight: 600; font-size: 0.85rem; border-radius: 10px;" onclick="window.showRideRouteMap ? window.showRideRouteMap('${(booking.rideFrom || '').replace(/'/g, "\\'")}', '${(booking.rideTo || '').replace(/'/g, "\\'")}') : null">
+                            <i class="fa-solid fa-map-location-dot me-1"></i> Route Map
+                        </button>
+                        <button class="btn" style="flex: 0.9; min-width: 110px; padding: 10px 14px; background: rgba(220,38,38,0.1); color: #dc2626; border: 1px solid rgba(220,38,38,0.35); font-weight: 700; font-size: 0.85rem; border-radius: 10px;" onclick="window.openEmergencySosModal ? window.openEmergencySosModal({ role: 'passenger', rideId: '${booking.rideId || ''}', start: '${(booking.rideFrom || '').replace(/'/g, "\\'")}', dest: '${(booking.rideTo || '').replace(/'/g, "\\'")}', passengerId: '${currentUser.uid}', passengerName: '${(currentUser.name || 'Passenger').replace(/'/g, "\\'")}', passengerPhone: '${currentUser.phone || ''}', fareReward: ${booking.amount || 350} }) : null">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i> SOS / Report
+                        </button>
+                        <button class="btn" style="flex: 1; min-width: 120px; padding: 10px 14px; background: rgba(239, 68, 68, 0.08); color: #dc2626; border: 1.5px solid #dc2626; font-weight: 700; font-size: 0.85rem; border-radius: 10px; cursor: pointer;" onclick="cancelActiveRideBooking('${booking.id}', ${booking.amount || 0}, '${booking.rideId || ''}')">
+                            <i class="fa-solid fa-ban me-1"></i> Cancel Ride
+                        </button>
+                        <button class="btn btn-primary" style="flex: 1.1; min-width: 110px; padding: 10px 16px; font-weight: 600; font-size: 0.85rem; border-radius: 10px;" onclick="window.location.href='bookings.html'">
+                            <i class="fa-solid fa-ticket me-1"></i> Bookings
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // 2. Check if there are active driver-accepted custom requests
+            if (activeRequestsCache.length > 0) {
+                const req = activeRequestsCache[0];
+                if (badgeEl) {
+                    badgeEl.innerHTML = `<span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981; font-weight: 700; font-size: 0.8rem; padding: 6px 12px; border-radius: 12px;"><i class="fa-solid fa-circle-check me-1"></i> Driver Accepted Schedule</span>`;
+                }
+                contentEl.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+                        <div>
+                            <div style="font-size: 1.15rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                                <span><i class="fa-regular fa-circle-dot" style="color: var(--primary-color);"></i> ${req.origin}</span>
+                                <i class="fa-solid fa-arrow-right" style="color: var(--primary-color); font-size: 0.85rem;"></i>
+                                <span><i class="fa-solid fa-location-dot" style="color: var(--secondary-color);"></i> ${req.destination}</span>
+                            </div>
+                            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+                                <span><i class="fa-regular fa-calendar me-1"></i> ${req.date || 'Today'} at ${req.time || 'N/A'}</span> &bull; 
+                                <span><i class="fa-solid fa-user-check me-1"></i> Driver: <strong>${req.driverName || 'Verified Driver'}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn" style="flex: 1; min-width: 110px; padding: 10px 16px; background: rgba(27,94,32,0.1); color: var(--primary-color); border: 1px solid var(--primary-color); font-weight: 600; font-size: 0.85rem; border-radius: 10px;" onclick="window.showRideRouteMap ? window.showRideRouteMap('${(req.origin || '').replace(/'/g, "\\'")}', '${(req.destination || '').replace(/'/g, "\\'")}') : null">
+                            <i class="fa-solid fa-map-location-dot me-1"></i> Route Map
+                        </button>
+                        <button class="btn" style="flex: 0.9; min-width: 110px; padding: 10px 14px; background: rgba(220,38,38,0.1); color: #dc2626; border: 1px solid rgba(220,38,38,0.35); font-weight: 700; font-size: 0.85rem; border-radius: 10px;" onclick="window.openEmergencySosModal ? window.openEmergencySosModal({ role: 'passenger', requestId: '${req.id}', start: '${(req.origin || '').replace(/'/g, "\\'")}', dest: '${(req.destination || '').replace(/'/g, "\\'")}', passengerId: '${currentUser.uid}', passengerName: '${(currentUser.name || 'Passenger').replace(/'/g, "\\'")}', passengerPhone: '${currentUser.phone || ''}', fareReward: ${req.amount || req.fare || 350} }) : null">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i> SOS / Breakdown
+                        </button>
+                        <button class="btn" style="flex: 1; min-width: 120px; padding: 10px 14px; background: rgba(239, 68, 68, 0.08); color: #dc2626; border: 1.5px solid #dc2626; font-weight: 700; font-size: 0.85rem; border-radius: 10px; cursor: pointer;" onclick="cancelActiveCustomRequest('${req.id}')">
+                            <i class="fa-solid fa-ban me-1"></i> Cancel Request
+                        </button>
+                        <button class="btn" style="flex: 1; min-width: 110px; padding: 10px 16px; background: rgba(16,185,129,0.12); color: var(--primary-color); border: 1px solid var(--primary-color); font-weight: 600; font-size: 0.85rem; border-radius: 10px;" onclick="window.openDirectChat ? window.openDirectChat('${req.driverId || ''}', '${(req.driverName || 'Driver').replace(/'/g, "\\'")}', '${req.id}') : null">
+                            <i class="fa-solid fa-comments me-1"></i> Chat Driver
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // 3. No active ride
+            if (badgeEl) {
+                badgeEl.innerHTML = `<span class="badge" style="background: rgba(0,0,0,0.06); color: var(--text-muted); font-size: 0.78rem; font-weight: 600;"><i class="fa-solid fa-bed me-1"></i> No Upcoming Trips</span>`;
+            }
+            contentEl.innerHTML = `
+                <div style="text-align: center; padding: 22px 15px; color: var(--text-muted);">
+                    <i class="fa-solid fa-car-rear fa-2x" style="color: rgba(27,94,32,0.35); margin-bottom: 8px;"></i>
+                    <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem; margin-bottom: 4px;">No Active Ride Scheduled</div>
+                    <p style="margin: 0 0 14px 0; font-size: 0.82rem;">You don't have any upcoming trips right now. Use <strong>"Quick Find a Ride"</strong> to book your next trip!</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('dashFromInput')?.focus(); window.scrollTo({top: 400, behavior: 'smooth'});" style="padding: 8px 18px; font-size: 0.85rem; border-radius: 8px;">
+                        <i class="fa-solid fa-magnifying-glass me-1"></i> Find a Ride
+                    </button>
+                </div>
+            `;
+        }
+
+        // Passenger Active Ride Cancellation Function
+        async function cancelActiveRideBooking(bookingId, amount, rideId) {
+            const confirmed = await window.showAppConfirm({
+                title: "Cancel Active Ride?",
+                message: "Are you sure you want to cancel this booking? The full fare of Rs. " + (amount || 0) + " will be refunded immediately to your ICBT Wallet.",
+                confirmText: "Yes, Cancel & Refund",
+                cancelText: "No, Keep My Ride",
+                type: "danger"
+            });
+            if (!confirmed) return;
+
+            try {
+                // 1. Refund to wallet
+                if (amount > 0 && currentUser && currentUser.uid) {
+                    const userRef = window.db.collection('users').doc(currentUser.uid);
+                    const snap = await userRef.get();
+                    const curBal = snap.exists ? (snap.data().walletBalance || 0) : 0;
+                    const newBal = curBal + Number(amount);
+                    await userRef.update({ walletBalance: newBal });
+                    currentUser.walletBalance = newBal;
+                    localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+                    const wEl = document.getElementById('walletBalance');
+                    if (wEl) wEl.textContent = newBal.toLocaleString();
+                }
+
+                // 2. Restore seat on ride
+                if (rideId) {
+                    try {
+                        const rRef = window.db.collection('rides').doc(rideId);
+                        const rSnap = await rRef.get();
+                        if (rSnap.exists) {
+                            const curSeats = rSnap.data().seats !== undefined ? Number(rSnap.data().seats) : (Number(rSnap.data().availableSeats) || 0);
+                            await rRef.update({
+                                seats: curSeats + 1,
+                                availableSeats: curSeats + 1
+                            });
+                        }
+                    } catch (rErr) {
+                        console.warn("Could not restore seat:", rErr);
+                    }
+                }
+
+                // 3. Update booking status
+                await window.db.collection('bookings').doc(bookingId).update({ status: 'Cancelled' });
+                window.showAppToast("Ride cancelled & Rs. " + amount + " refunded to your wallet.", "success");
+            } catch (err) {
+                console.error("Error cancelling active ride:", err);
+                window.showAppAlert({ title: "Cancellation Error", message: "Failed to cancel ride. Please try again.", type: "error" });
+            }
+        }
+
+        async function cancelActiveCustomRequest(reqId) {
+            const confirmed = await window.showAppConfirm({
+                title: "Cancel Custom Request?",
+                message: "Are you sure you want to cancel this scheduled custom ride request?",
+                confirmText: "Yes, Cancel Request",
+                cancelText: "No, Keep Request",
+                type: "danger"
+            });
+            if (!confirmed) return;
+
+            try {
+                await window.db.collection('RideRequests').doc(reqId).update({ status: 'cancelled' });
+                window.showAppToast("Custom ride request cancelled.", "success");
+            } catch (err) {
+                console.error("Error cancelling request:", err);
+                window.showAppAlert({ title: "Cancellation Error", message: "Failed to cancel request. Please try again.", type: "error" });
+            }
+        }
+
+        function loadPassengerActiveRide() {
+            if (!currentUser || !currentUser.uid || !window.db) return;
+
+            if (passengerBookingsUnsub) passengerBookingsUnsub();
+            if (passengerRequestsUnsub) passengerRequestsUnsub();
+            if (passengerRescueUnsub) passengerRescueUnsub();
+            if (passengerLiveNotifUnsub) passengerLiveNotifUnsub();
+
+            // 1. Live Bookings Listener
+            passengerBookingsUnsub = window.db.collection('bookings')
+                .where('passengerId', '==', currentUser.uid)
+                .where('status', '==', 'Upcoming')
+                .onSnapshot((snap) => {
+                    activeBookingsCache = [];
+                    snap.forEach(d => activeBookingsCache.push({ id: d.id, ...d.data() }));
+                    renderPassengerActiveState();
+                }, err => console.warn("Live bookings error:", err));
+
+            // 2. Live Custom Requests Listener
+            passengerRequestsUnsub = window.db.collection('RideRequests')
+                .where('passengerId', '==', currentUser.uid)
+                .where('status', '==', 'accepted')
+                .onSnapshot((snap) => {
+                    activeRequestsCache = [];
+                    snap.forEach(d => activeRequestsCache.push({ id: d.id, ...d.data() }));
+                    activeRequestsCache.sort((a, b) => {
+                        const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : (a.date ? new Date(`${a.date} ${a.time || '00:00'}`).getTime() : 0);
+                        const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : (b.date ? new Date(`${b.date} ${b.time || '00:00'}`).getTime() : 0);
+                        return timeB - timeA;
+                    });
+                    renderPassengerActiveState();
+                }, err => console.warn("Live requests error:", err));
+
+            // 3. Live Emergency Rescue Tracker for Passenger
+            passengerRescueUnsub = window.db.collection('rescue_requests')
+                .where('passengerId', '==', currentUser.uid)
+                .onSnapshot((snap) => {
+                    activePassengerRescueCache = [];
+                    snap.forEach(d => {
+                        const rData = d.data();
+                        if (rData.status === 'open_for_rescue' || rData.status === 'rescue_accepted') {
+                            activePassengerRescueCache.push({ id: d.id, ...rData });
+                        }
+                    });
+                    renderPassengerActiveState();
+                }, err => console.warn("Live passenger rescue error:", err));
+
+            // 4. Live Notification Listener for Ride Completed / Arrived & Cancelled Popups
+            let initialLoadPassed = false;
+            passengerLiveNotifUnsub = window.db.collection('notifications')
+                .where('userId', '==', currentUser.uid)
+                .orderBy('timestamp', 'desc')
+                .limit(5)
+                .onSnapshot((snap) => {
+                    if (!initialLoadPassed) {
+                        initialLoadPassed = true;
+                        return; // Don't pop up old historical notifications on initial page render
+                    }
+
+                    snap.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            const notif = change.doc.data();
+                            if (notif.type === 'ride_completed') {
+                                const modal = document.getElementById('passengerRideCompletedModal');
+                                const msgEl = document.getElementById('passengerCompletedModalMsg');
+                                const fareEl = document.getElementById('passengerCompletedFare');
+                                if (msgEl) msgEl.innerText = notif.message || 'You have arrived at your destination!';
+                                if (fareEl) fareEl.innerText = notif.amount ? `Rs. ${Number(notif.amount).toLocaleString()}` : 'Rs. 350';
+                                if (modal) modal.style.display = 'flex';
+                            } else if (notif.type === 'ride_cancelled') {
+                                if (window.showAppAlert) {
+                                    window.showAppAlert({
+                                        title: notif.title || "Ride Cancelled",
+                                        message: notif.message || "Your ride has been cancelled by the driver. Any fare paid was refunded to your wallet.",
+                                        type: "warning"
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }, err => console.warn("Live notification listener error:", err));
+
+            // In-App Notification Overlay Live Listener
+            if (window.InAppNotificationService && window.db && currentUser && currentUser.uid) {
+                window.InAppNotificationService.startLiveListener(window.db, currentUser.uid, 'passenger');
+            }
+        }
+
+        // ─── Initialize ───────────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserUI();
+            syncUserProfile();
+            loadNotifications();
+            loadTopDrivers();
+            loadPassengerActiveRide();
+            fetchLiveDashboardRoutes();
+            setupDashAutocomplete("dashFromInput", "dashFromSuggestions");
+            setupDashAutocomplete("dashToInput", "dashToSuggestions");
+            setupDashAutocomplete("dashReqOrigin", "dashReqOriginSuggestions");
+            setupDashAutocomplete("dashReqDest", "dashReqDestSuggestions");
         });
+        loadUserUI();
+        syncUserProfile();
+        loadTopDrivers();
+        loadPassengerActiveRide();
+        fetchLiveDashboardRoutes();
+        setupDashAutocomplete("dashFromInput", "dashFromSuggestions");
+        setupDashAutocomplete("dashToInput", "dashToSuggestions");
+        setupDashAutocomplete("dashReqOrigin", "dashReqOriginSuggestions");
+        setupDashAutocomplete("dashReqDest", "dashReqDestSuggestions");
     </script>
 </body>
 </html>
+
