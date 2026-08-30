@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICBT Ride - Ride History</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -95,19 +104,25 @@
             right: 0;
             background: #ffffff;
             border-top: 1px solid var(--border-color);
-            z-index: 1000;
-            padding: 10px 20px;
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            z-index: 9999;
+            padding: 8px 10px;
+            border-radius: 18px 18px 0 0;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.12);
         }
 
         .bottom-nav-links {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
             list-style: none;
             margin: 0;
             padding: 0;
+            width: 100%;
+        }
+
+        .bottom-nav-links li {
+            flex: 1;
+            text-align: center;
         }
 
         .bottom-nav-links a {
@@ -116,19 +131,22 @@
             align-items: center;
             color: var(--text-muted);
             text-decoration: none;
-            padding: 8px;
-            border-radius: 12px;
+            font-size: 1.15rem;
+            padding: 6px 2px;
+            border-radius: 10px;
             transition: all 0.3s ease;
         }
 
         .bottom-nav-links a span {
             font-size: 0.65rem;
-            margin-top: 4px;
+            margin-top: 3px;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .bottom-nav-links a.active, .bottom-nav-links a:hover {
             color: var(--primary-color);
+            font-weight: 700;
             background: #E8F5E9;
         }
 
@@ -298,15 +316,16 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .bottom-nav { display: block; }
-            .main-content { margin-left: 0; padding: 1.5rem; padding-bottom: 90px; }
-            .mobile-header-logo { display: flex; }
-            .mobile-logout-btn { display: block; position: absolute; right: 0; top: 0; }
-            .greeting { display: none; }
-            .header { align-items: center; justify-content: center; position: relative; margin-bottom: 1.5rem; }
-            .user-profile { width: 100%; justify-content: space-between; background: rgba(255,255,255,0.4); padding: 10px 15px; border-radius: 12px; }
+        @media (max-width: 992px) {
+            body { width: 100% !important; overflow-x: hidden !important; }
+            .sidebar { display: none !important; }
+            .bottom-nav { display: block !important; }
+            .main-content { margin-left: 0 !important; padding: 1rem !important; padding-bottom: 95px !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; }
+            .mobile-header-logo { display: flex !important; }
+            .mobile-logout-btn { display: block !important; position: absolute !important; right: 0 !important; top: 0 !important; }
+            .greeting { display: none !important; }
+            .header { align-items: center; justify-content: center; position: relative; margin-bottom: 1.2rem; }
+            .user-profile { width: 100% !important; justify-content: space-between !important; background: rgba(255,255,255,0.6) !important; padding: 10px 14px !important; border-radius: 12px !important; }
             
             .filters-container { flex-direction: column; }
             .table-wrapper { padding: 0 10px 15px 10px; }
@@ -414,6 +433,7 @@
     </main>
 
     <!-- Custom Owner Logic -->
+    <script src="../js/pwa-install.js"></script>
     <script type="module" src="js/owner-app.js"></script>
 </body>
 </html>

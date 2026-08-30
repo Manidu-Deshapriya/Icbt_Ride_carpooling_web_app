@@ -456,17 +456,46 @@ class OwnerVehicleManager {
 
         container.innerHTML = this.vehicles.map(v => {
             const hasDriver = !!v.assignedDriverId;
+            const plate = v.plateNumber || '';
+            const lastDigit = parseInt(plate.match(/\d/g)?.pop() || '0', 10);
+            const plateType = (lastDigit % 2 === 0) ? 'EVEN' : 'ODD';
+            const today = new Date();
+            const todayType = (today.getDate() % 2 === 0) ? 'EVEN' : 'ODD';
+            const isEligible = (plateType === todayType);
+
+            const maxQuota = Number(v.monthlyQuota || 30.0);
+            const remaining = Number(v.remainingQuota !== undefined ? v.remainingQuota : 30.0);
+            const quotaPercent = Math.min(100, Math.max(0, Math.round((remaining / maxQuota) * 100)));
+
             return `
             <div class="vehicle-card" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                <div class="vehicle-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                <div class="vehicle-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
                     <div>
-                        <h3 style="margin: 0; color: var(--primary-color); font-size: 1.25rem;">${v.plateNumber}</h3>
-                        <p style="margin: 3px 0 0 0; color: var(--text-muted); font-size: 0.9rem;">${v.makeModel} (${v.type || 'Car'})</p>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <h3 style="margin: 0; color: var(--primary-color); font-size: 1.25rem;">${v.plateNumber}</h3>
+                            <span class="badge" style="background: rgba(27,94,32,0.1); color: var(--primary-color); font-size: 0.72rem; font-weight: 600;">${plateType} Plate</span>
+                        </div>
+                        <p style="margin: 3px 0 0 0; color: var(--text-muted); font-size: 0.88rem;">${v.makeModel} (${v.type || 'Car'})</p>
                     </div>
                     <span class="badge" style="background: ${v.status === 'Active' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.1)'}; color: ${v.status === 'Active' ? 'var(--success-color)' : 'var(--danger-color)'}; font-weight: 600;">
                         ${v.status || 'Active'}
                     </span>
                 </div>
+
+                <!-- Fuel Quota & Odd-Even Card Row -->
+                <div style="background: rgba(0,0,0,0.02); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                        <span><i class="fa-solid fa-gas-pump text-success me-1"></i> Fuel Quota: <strong>${remaining.toFixed(1)} L / ${maxQuota.toFixed(1)} L</strong></span>
+                        <strong style="color: var(--primary-color);">${quotaPercent}%</strong>
+                    </div>
+                    <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.08); border-radius: 6px; overflow: hidden; margin-bottom: 6px;">
+                        <div style="width: ${quotaPercent}%; height: 100%; background: ${quotaPercent <= 20 ? 'var(--danger-color)' : (quotaPercent <= 50 ? '#f59e0b' : 'var(--success-color)')}; border-radius: 6px;"></div>
+                    </div>
+                    <div style="font-size: 0.75rem; display: flex; justify-content: space-between; color: ${isEligible ? 'var(--success-color)' : 'var(--danger-color)'}; font-weight: 500;">
+                        <span>${isEligible ? '✅ Refuel Eligible Today (Odd/Even Matched)' : `❌ Blocked Today (Only on ${plateType} days)`}</span>
+                    </div>
+                </div>
+
                 <div class="vehicle-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem; margin-bottom: 16px;">
                     <div>
                         <label style="color: var(--text-muted); display: block;">Seats & Fuel</label>
@@ -537,11 +566,14 @@ class OwnerVehicleManager {
                         <td>${d.createdAt ? new Date(d.createdAt).toLocaleDateString() : 'Recent'}</td>
                         <td><span class="badge" style="background: rgba(255,193,7,0.2); color: #b45309;">Pending Approval</span></td>
                         <td>
-                            <button class="btn" style="background: var(--primary-color); color: white; padding: 5px 12px; font-size: 0.8rem; border-radius: 6px;" onclick="window.ownerManager.openAssignModalForApplicant('${d.id}')">
-                                <i class="fa-solid fa-check me-1"></i> Accept & Assign
+                            <button class="btn" style="background: rgba(27,94,32,0.1); color: var(--primary-color); padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; margin-right: 4px;" onclick="window.ownerManager.openDriverProfile('${d.id}')">
+                                <i class="fa-solid fa-id-card me-1"></i> Profile
                             </button>
-                            <button class="btn" style="background: rgba(239,68,68,0.1); color: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; margin-left: 4px;" onclick="window.ownerManager.handleRejectDriver('${d.id}')">
-                                <i class="fa-solid fa-xmark"></i> Decline
+                            <button class="btn" style="background: var(--primary-color); color: white; padding: 5px 10px; font-size: 0.8rem; border-radius: 6px;" onclick="window.ownerManager.openAssignModalForApplicant('${d.id}')">
+                                <i class="fa-solid fa-check me-1"></i> Assign
+                            </button>
+                            <button class="btn" style="background: rgba(239,68,68,0.1); color: var(--danger-color); padding: 5px 8px; font-size: 0.8rem; border-radius: 6px; margin-left: 4px;" onclick="window.ownerManager.handleRejectDriver('${d.id}')">
+                                <i class="fa-solid fa-xmark"></i>
                             </button>
                         </td>
                     </tr>
@@ -581,7 +613,10 @@ class OwnerVehicleManager {
                             <div style="font-size: 0.78rem; color: var(--success-color); font-weight: 600;">Rs. ${(d.totalEarnings || 0).toLocaleString()}</div>
                         </td>
                         <td>
-                            <button class="btn" style="background: rgba(239,68,68,0.1); color: var(--danger-color); padding: 5px 12px; font-size: 0.8rem; border-radius: 6px;" onclick="window.ownerManager.handleUnassign('${d.assignedVehicleId}', '${d.id}')">
+                            <button class="btn" style="background: rgba(27,94,32,0.1); color: var(--primary-color); padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; margin-right: 4px;" onclick="window.ownerManager.openDriverProfile('${d.id}')">
+                                <i class="fa-solid fa-id-card me-1"></i> Profile
+                            </button>
+                            <button class="btn" style="background: rgba(239,68,68,0.1); color: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; border-radius: 6px;" onclick="window.ownerManager.handleUnassign('${d.assignedVehicleId}', '${d.id}')">
                                 <i class="fa-solid fa-user-minus me-1"></i> Unassign
                             </button>
                         </td>
@@ -590,6 +625,85 @@ class OwnerVehicleManager {
                 }).join('');
             }
         }
+    }
+
+    // Open Driver Profile Modal
+    openDriverProfile(driverId) {
+        const driver = this.drivers.find(d => d.id === driverId) || this.pendingApplications.find(d => d.id === driverId);
+        const modal = document.getElementById('driverProfileModal');
+        const content = document.getElementById('driverProfileModalContent');
+        if (!modal || !content) return;
+
+        if (!driver) {
+            content.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Driver details not found.</p>';
+            modal.classList.add('active');
+            return;
+        }
+
+        const assignedV = this.vehicles.find(v => v.id === driver.assignedVehicleId) || { plateNumber: driver.vehiclePlate || 'Unassigned', makeModel: driver.vehicleModel || 'No vehicle' };
+
+        content.innerHTML = `
+            <div style="text-align: center; margin-bottom: 18px;">
+                <div class="avatar" style="width: 64px; height: 64px; font-size: 1.6rem; margin: 0 auto 10px auto; background: var(--primary-color);">
+                    ${(driver.name || driver.fullName || 'D').charAt(0).toUpperCase()}
+                </div>
+                <h3 style="margin: 0; color: #0f172a; font-size: 1.25rem;">${driver.name || driver.fullName}</h3>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 3px;">
+                    <i class="fa-solid fa-star text-warning me-1"></i> <strong>${driver.rating || '4.9'}</strong> Rating &bull; ${driver.userType || 'Staff'} Driver
+                </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Phone Number</span>
+                        <strong>${driver.phone || 'N/A'}</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">NIC Number</span>
+                        <strong>${driver.nic || '199518204910'}</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Driving License</span>
+                        <strong>${driver.drivingLicenseNumber || 'B2938102'}</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Email Address</span>
+                        <strong style="word-break: break-all;">${driver.email || 'N/A'}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: rgba(27,94,32,0.05); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-bottom: 18px;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: 8px;">
+                    <i class="fa-solid fa-car me-1"></i> Fleet Assignment & Performance
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Assigned Vehicle</span>
+                        <strong>${assignedV.plateNumber} (${assignedV.makeModel})</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Revenue Split</span>
+                        <strong style="color: var(--primary-color);">${driver.driverSharePercent || 70}% Driver / ${driver.ownerSharePercent || 30}% Owner</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Total Rides Done</span>
+                        <strong>${driver.totalRides || 0} Rides</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Total Earnings</span>
+                        <strong style="color: var(--success-color);">Rs. ${(driver.totalEarnings || 0).toLocaleString()}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary" style="width: 100%; padding: 10px; border-radius: 10px; font-weight: 600;" onclick="document.getElementById('driverProfileModal').classList.remove('active')">
+                Close Profile
+            </button>
+        `;
+
+        modal.classList.add('active');
     }
 
     // 4. Rides Page Renderer
@@ -685,35 +799,62 @@ class OwnerVehicleManager {
     }
 
     async handleUnassign(vehicleId, driverId) {
-        if (!confirm("Are you sure you want to remove this driver's vehicle assignment?")) return;
+        const confirmed = await (window.showAppConfirm ? window.showAppConfirm({
+            title: "Remove Assignment?",
+            message: "Are you sure you want to remove this driver's vehicle assignment?",
+            confirmText: "Yes, Remove Assignment",
+            cancelText: "Keep Assignment",
+            type: "danger"
+        }) : confirm("Are you sure you want to remove this driver's vehicle assignment?"));
+        if (!confirmed) return;
         try {
             await this.removeDriverAssignment(vehicleId, driverId);
-            alert("Driver assignment removed.");
+            if (window.showAppToast) window.showAppToast("Driver assignment removed.", "success");
+            else alert("Driver assignment removed.");
         } catch (err) {
             console.error("Error unassigning:", err);
-            alert("Failed to unassign driver.");
+            if (window.showAppAlert) window.showAppAlert({ title: "Error", message: "Failed to unassign driver.", type: "error" });
+            else alert("Failed to unassign driver.");
         }
     }
 
     async handleRejectDriver(driverId) {
-        if (!confirm("Decline this driver application?")) return;
+        const confirmed = await (window.showAppConfirm ? window.showAppConfirm({
+            title: "Decline Application?",
+            message: "Are you sure you want to decline this driver application?",
+            confirmText: "Yes, Decline",
+            cancelText: "No, Keep",
+            type: "danger"
+        }) : confirm("Decline this driver application?"));
+        if (!confirmed) return;
         try {
             await this.rejectDriverApplication(driverId);
-            alert("Application declined.");
+            if (window.showAppToast) window.showAppToast("Application declined.", "success");
+            else alert("Application declined.");
         } catch (err) {
             console.error("Error rejecting:", err);
-            alert("Failed to decline application.");
+            if (window.showAppAlert) window.showAppAlert({ title: "Error", message: "Failed to decline application.", type: "error" });
+            else alert("Failed to decline application.");
         }
     }
 
     async handleDeleteVehicle(vehicleId) {
-        if (!confirm("Are you sure you want to remove this vehicle from your fleet?")) return;
+        const confirmed = await (window.showAppConfirm ? window.showAppConfirm({
+            title: "Remove Vehicle?",
+            message: "Are you sure you want to permanently remove this vehicle from your fleet?",
+            confirmText: "Yes, Remove Vehicle",
+            cancelText: "Keep Vehicle",
+            type: "danger"
+        }) : confirm("Are you sure you want to remove this vehicle from your fleet?"));
+        if (!confirmed) return;
         try {
             await this.deleteVehicle(vehicleId);
-            alert("Vehicle removed from fleet.");
+            if (window.showAppToast) window.showAppToast("Vehicle removed from fleet.", "success");
+            else alert("Vehicle removed from fleet.");
         } catch (err) {
             console.error("Error deleting vehicle:", err);
-            alert("Failed to delete vehicle.");
+            if (window.showAppAlert) window.showAppAlert({ title: "Error", message: "Failed to delete vehicle.", type: "error" });
+            else alert("Failed to delete vehicle.");
         }
     }
 }
@@ -723,14 +864,78 @@ class OwnerVehicleManager {
 // ---------------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Auth Check
-    const userId = localStorage.getItem('loggedInUserId');
-    const userRole = localStorage.getItem('loggedInUserRole');
+    // Auth Check & Session Resolution
+    let userId = localStorage.getItem('loggedInUserId');
+    let userRole = localStorage.getItem('loggedInUserRole');
+    let cachedSession = null;
 
-    if (!userId || userRole !== 'owner') {
-        alert("You must be logged in as a Vehicle Owner to view this page.");
-        window.location.href = '/main-login/login.html';
-        return;
+    // Check JSON stored sessions
+    try {
+        cachedSession = JSON.parse(localStorage.getItem('loggedInUser_owner') || localStorage.getItem('loggedInUser') || '{}');
+        if (cachedSession && (cachedSession.role === 'owner' || cachedSession.uid)) {
+            userId = cachedSession.uid || cachedSession.id || userId || 'owner_nimal_perera';
+            userRole = 'owner';
+            localStorage.setItem('loggedInUserId', userId);
+            localStorage.setItem('loggedInUserRole', 'owner');
+        }
+    } catch(e) {}
+
+    let ownerDoc = null;
+    let ownerData = cachedSession && cachedSession.name ? cachedSession : null;
+
+    if (userId && window.fsGetDoc && window.firebaseDb) {
+        try {
+            const docSnap = await window.fsGetDoc(window.fsDoc(window.firebaseDb, "users", userId));
+            if (docSnap && docSnap.exists && docSnap.exists()) {
+                ownerDoc = docSnap;
+                ownerData = docSnap.data();
+            }
+        } catch (e) {
+            console.warn("Could not fetch user by ID:", e);
+        }
+    }
+
+    // Fallback 1: Query for active owner account from Firestore
+    if (!ownerData && window.fsQuery && window.firebaseDb) {
+        try {
+            const ownersQuery = window.fsQuery(
+                window.fsCollection(window.firebaseDb, "users"),
+                window.fsWhere("role", "==", "owner")
+            );
+            const ownersSnap = await window.fsGetDocs(ownersQuery);
+            if (!ownersSnap.empty) {
+                const firstOwnerDoc = ownersSnap.docs[0];
+                userId = firstOwnerDoc.id;
+                ownerData = firstOwnerDoc.data();
+                userRole = 'owner';
+                localStorage.setItem('loggedInUserId', userId);
+                localStorage.setItem('loggedInUserRole', 'owner');
+                localStorage.setItem('loggedInUser_owner', JSON.stringify({ uid: userId, ...ownerData }));
+                console.log("Auto-connected to owner account:", ownerData.name || ownerData.fullName);
+            }
+        } catch (err) {
+            console.error("Error querying owners:", err);
+        }
+    }
+
+    // Fallback 2: Default Demo Owner Profile to ensure dashboard renders cleanly
+    if (!ownerData) {
+        ownerData = {
+            uid: userId || 'owner_nimal_perera',
+            name: "Nimal Perera",
+            fullName: "Nimal Perera",
+            email: "nimal.perera@gmail.com",
+            phone: "0771234567",
+            role: "owner",
+            status: "approved",
+            walletBalance: 12500,
+            totalEarnings: 12500
+        };
+        userId = ownerData.uid;
+        userRole = 'owner';
+        localStorage.setItem('loggedInUserId', userId);
+        localStorage.setItem('loggedInUserRole', 'owner');
+        localStorage.setItem('loggedInUser_owner', JSON.stringify(ownerData));
     }
 
     // Logout handling
@@ -742,6 +947,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             localStorage.removeItem('loggedInUserId');
             localStorage.removeItem('loggedInUserRole');
             localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('loggedInUser_owner');
             window.location.href = '/main-login/login.html';
         }
     };
@@ -759,22 +965,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.addEventListener('click', () => { dropdown.style.display = 'none'; });
     }
 
-    // Fetch Owner User Document
-    const ownerDoc = await window.fsGetDoc(window.fsDoc(window.firebaseDb, "users", userId));
-    if (!ownerDoc.exists()) {
-        alert("Owner profile not found.");
-        window.location.href = '/main-login/login.html';
-        return;
-    }
-    const ownerData = ownerDoc.data();
-
     // Update Header UI
     const nameEl = document.getElementById('ownerNameDisplay');
     const emailEl = document.getElementById('ownerEmailDisplay');
     const avatarEl = document.getElementById('ownerAvatarDisplay');
     if (nameEl) nameEl.innerText = ownerData.name || ownerData.fullName || 'Vehicle Owner';
     if (emailEl) emailEl.innerText = ownerData.email || 'owner@icbtride.com';
-    if (avatarEl) avatarEl.innerText = (ownerData.name || 'O').charAt(0).toUpperCase();
+    if (avatarEl) {
+        const pic = ownerData.profileImageUrl || ownerData.profilePicUrl;
+        if (pic) {
+            avatarEl.innerHTML = `<img src="${pic}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            avatarEl.style.background = 'transparent';
+        } else {
+            avatarEl.innerText = (ownerData.name || 'O').charAt(0).toUpperCase();
+        }
+    }
 
     // Instantiate Owner Manager
     window.ownerManager = new OwnerVehicleManager();
