@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICBT Ride - Announcements</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome -->
@@ -11,11 +19,13 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body { overflow-x: hidden; }
+        body { overflow-x: hidden; width: 100%; }
         .wrapper { display: flex; width: 100%; }
         
-        #sidebar { width: 250px; min-height: 100vh; flex-shrink: 0; position: fixed; z-index: 100; }
-        #content { width: calc(100% - 250px); margin-left: 250px; padding: 30px; min-height: 100vh; }
+        @media (min-width: 993px) {
+            #sidebar { width: 250px; min-height: 100vh; flex-shrink: 0; position: fixed; z-index: 100; }
+            #content { width: calc(100% - 250px); margin-left: 250px; padding: 30px; min-height: 100vh; }
+        }
         
         .top-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
         .user-profile { display: flex; align-items: center; gap: 15px; }
@@ -31,6 +41,64 @@
             border-radius: 0 8px 8px 0;
             padding: 15px 20px;
             margin-bottom: 15px;
+        }
+
+        /* Admin Bottom Navigation (Mobile Only) */
+        .admin-bottom-nav {
+            display: none;
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            height: 64px !important;
+            background: #ffffff !important;
+            border-top: 1px solid var(--border-color) !important;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.12) !important;
+            z-index: 999999 !important;
+            padding: 6px 6px !important;
+            justify-content: space-around !important;
+            align-items: center !important;
+        }
+
+        .admin-nav-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: var(--text-muted) !important;
+            text-decoration: none !important;
+            font-size: 1.15rem !important;
+            padding: 4px 2px !important;
+            flex: 1 !important;
+            text-align: center !important;
+            border-radius: 10px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .admin-nav-item span {
+            font-size: 0.65rem !important;
+            margin-top: 3px !important;
+            font-weight: 500 !important;
+            white-space: nowrap !important;
+        }
+
+        .admin-nav-item.active,
+        .admin-nav-item:hover {
+            color: var(--accent-primary) !important;
+            font-weight: 700 !important;
+            background: #E8F5E9 !important;
+        }
+
+        @media (max-width: 992px) {
+            #sidebar { display: none !important; }
+            .admin-bottom-nav { display: flex !important; }
+            #content {
+                width: 100% !important;
+                margin-left: 0 !important;
+                padding: 15px !important;
+                padding-bottom: 95px !important;
+            }
         }
     </style>
 </head>
@@ -116,11 +184,13 @@
 
         // Auth State Check
         window.onAuthStateChanged(window.firebaseAuth, (user) => {
-            if (!user) {
+            const localAdmin = localStorage.getItem('loggedInAdmin');
+            if (!user && !localAdmin) {
                 window.location.href = 'admin-login.html';
             } else {
-                document.getElementById('userEmail').textContent = user.email;
-                document.getElementById('userInitial').textContent = user.email.charAt(0).toUpperCase();
+                const email = user ? user.email : (localAdmin || 'Admin');
+                document.getElementById('userEmail').textContent = email;
+                document.getElementById('userInitial').textContent = email.charAt(0).toUpperCase();
                 loadAnnouncements();
             }
         });
@@ -128,8 +198,10 @@
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', async (e) => {
             e.preventDefault();
+            localStorage.removeItem('loggedInAdmin');
             try { await window.signOut(window.firebaseAuth); } 
             catch (error) { console.error("Error signing out: ", error); }
+            window.location.href = 'admin-login.html';
         });
 
         // Publish Announcement
@@ -187,9 +259,12 @@
                     const div = document.createElement('div');
                     div.className = 'announcement-card';
                     div.innerHTML = `
-                        <div class="d-flex justify-content-between mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <strong class="">${data.title}</strong>
-                            <small class="text-muted-custom">${data.date}</small>
+                            <div class="d-flex align-items-center gap-2">
+                                <small class="text-muted-custom">${data.date}</small>
+                                <button class="btn btn-sm btn-outline-danger rounded-circle p-1" style="width: 28px; height: 28px; line-height: 1;" onclick="deleteAnnouncement('${data.id}')" title="Delete Announcement"><i class="fa-solid fa-trash" style="font-size: 0.75rem;"></i></button>
+                            </div>
                         </div>
                         <p class="text-muted-custom mb-0 small">${data.message}</p>
                     `;
@@ -201,7 +276,34 @@
                 listContainer.innerHTML = '<div class="text-center text-danger py-4">Error loading data.</div>';
             }
         }
+
+        // Delete Announcement
+        window.deleteAnnouncement = async function(docId) {
+            if (!(await window.customConfirm("Are you sure you want to delete this announcement?"))) return;
+
+            try {
+                const ref = window.fsDoc(window.firebaseDb, 'announcements', docId);
+                await window.fsDeleteDoc(ref);
+                window.customAlert("Announcement deleted successfully!", "success");
+                loadAnnouncements();
+            } catch(error) {
+                console.error("Error deleting: ", error);
+                window.customAlert("Error deleting announcement.", "error");
+            }
+        }
     </script>
+    <!-- Admin Mobile Bottom Navigation -->
+    <nav class="admin-bottom-nav">
+        <a href="dashboard.html" class="admin-nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+        <a href="users.html" class="admin-nav-item"><i class="fa-solid fa-users"></i><span>Users</span></a>
+        <a href="rides.html" class="admin-nav-item"><i class="fa-solid fa-route"></i><span>Rides</span></a>
+        <a href="complaints.html" class="admin-nav-item"><i class="fa-solid fa-triangle-exclamation"></i><span>Complaints</span></a>
+        <a href="announcements.html" class="admin-nav-item active"><i class="fa-solid fa-bullhorn"></i><span>Announce</span></a>
+    </nav>
+
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="../js/pwa-install.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 
