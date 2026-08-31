@@ -13,13 +13,9 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/main-login/css/style.css">
     
-    <!-- PWA Manifest & Meta Tags -->
+    <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#1B5E20">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
-    <link rel="apple-touch-icon" href="/icon-192.png">
+    <meta name="theme-color" content="#0f172a">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -68,7 +64,7 @@
             const form = document.getElementById(formId);
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                const email = e.target.querySelector('input[type="email"]').value.trim();
+                const email = e.target.querySelector('input[type="email"]').value;
                 const password = e.target.querySelector('input[type="password"]').value;
                 
                 const btn = document.getElementById(btnId);
@@ -78,41 +74,15 @@
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Verifying...';
                 btn.disabled = true;
 
-                let loggedIn = false;
-
-                // 1. Try Firebase Auth
                 try {
                     await window.signInWithEmailAndPassword(window.firebaseAuth, email, password);
-                    localStorage.setItem('loggedInAdmin', email);
-                    loggedIn = true;
-                } catch(authError) {
-                    console.warn("Firebase Auth sign-in failed, trying Firestore users collection...", authError);
-                }
-
-                // 2. Fallback to Firestore users collection
-                if (!loggedIn) {
-                    try {
-                        const usersRef = window.fsCollection(window.firebaseDb, "users");
-                        const snapshot = await window.fsGetDocs(usersRef);
-                        snapshot.forEach(doc => {
-                            const u = doc.data();
-                            if (u.email && u.email.toLowerCase() === email.toLowerCase() && u.password === password && u.role === 'admin') {
-                                loggedIn = true;
-                                localStorage.setItem('loggedInAdmin', u.email);
-                            }
-                        });
-                    } catch(dbError) {
-                        console.error("Firestore query error:", dbError);
-                    }
-                }
-
-                if (loggedIn) {
                     btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
                     btn.classList.replace('btn-primary', 'btn-success');
                     setTimeout(() => {
                         window.location.href = redirectUrl;
                     }, 1000);
-                } else {
+                } catch(error) {
+                    console.error("Login Error:", error);
                     errorMsg.innerText = "Invalid email or password.";
                     errorMsg.style.display = 'block';
                     btn.innerHTML = 'Log In';
@@ -122,8 +92,14 @@
         }
 
         verifyLogin('adminLoginForm', 'a-login-btn', 'a-login-error', 'dashboard.html');
+
+        // Register Service Worker for PWA Installation
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js');
+            });
+        }
     </script>
-    <script src="/js/pwa-install.js"></script>
 </body>
 </html>
 
