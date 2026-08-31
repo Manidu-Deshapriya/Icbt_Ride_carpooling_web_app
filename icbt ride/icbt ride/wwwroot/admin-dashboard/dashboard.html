@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICBT Ride - Admin Dashboard</title>
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome -->
@@ -22,22 +23,24 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         /* Specific layout styles for the dashboard to match the image */
-        body { overflow-x: hidden; }
+        body { overflow-x: hidden; width: 100%; }
         .wrapper { display: flex; width: 100%; }
         
-        #sidebar {
-            width: 250px;
-            min-height: 100vh;
-            flex-shrink: 0;
-            position: fixed;
-            z-index: 100;
-        }
-        
-        #content {
-            width: calc(100% - 250px);
-            margin-left: 250px;
-            padding: 30px;
-            min-height: 100vh;
+        @media (min-width: 993px) {
+            #sidebar {
+                width: 250px;
+                min-height: 100vh;
+                flex-shrink: 0;
+                position: fixed;
+                z-index: 100;
+            }
+            
+            #content {
+                width: calc(100% - 250px);
+                margin-left: 250px;
+                padding: 30px;
+                min-height: 100vh;
+            }
         }
 
         .top-header {
@@ -82,7 +85,7 @@
             gap: 25px;
         }
         
-                /* Custom card styling matching the screenshot */
+        /* Glass Box Card Styling */
         .glass-box {
             background-color: var(--bg-card);
             border-radius: 16px;
@@ -101,13 +104,138 @@
             font-size: 1.1rem;
         }
 
+        /* Fuel KPI 4-Card Responsive Grid */
+        .fuel-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Mobile Vehicle Card View */
+        .admin-vehicle-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .admin-vehicle-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .view-toggle-btn {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .view-toggle-btn.active {
+            background: var(--accent-primary);
+            color: #ffffff;
+            border-color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        /* Mobile Swipeable Table */
+        .table-responsive {
+            width: 100% !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            display: block !important;
+        }
+        .table-responsive table {
+            min-width: 650px !important;
+            width: 100% !important;
+        }
+        .table-responsive::-webkit-scrollbar {
+            height: 6px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: rgba(27, 94, 32, 0.4);
+            border-radius: 4px;
+        }
+
+        /* Admin Bottom Navigation (Mobile Only) */
+        .admin-bottom-nav {
+            display: none;
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            height: 64px !important;
+            background: #ffffff !important;
+            border-top: 1px solid var(--border-color) !important;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.12) !important;
+            z-index: 999999 !important;
+            padding: 6px 6px !important;
+            justify-content: space-around !important;
+            align-items: center !important;
+        }
+
+        .admin-nav-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: var(--text-muted) !important;
+            text-decoration: none !important;
+            font-size: 1.15rem !important;
+            padding: 4px 2px !important;
+            flex: 1 !important;
+            text-align: center !important;
+            border-radius: 10px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .admin-nav-item span {
+            font-size: 0.65rem !important;
+            margin-top: 3px !important;
+            font-weight: 500 !important;
+            white-space: nowrap !important;
+        }
+
+        .admin-nav-item.active,
+        .admin-nav-item:hover {
+            color: var(--accent-primary) !important;
+            font-weight: 700 !important;
+            background: #E8F5E9 !important;
+        }
+
         @media (max-width: 992px) {
+            #sidebar {
+                display: none !important;
+            }
+            .admin-bottom-nav {
+                display: flex !important;
+            }
+            #content {
+                width: 100% !important;
+                margin-left: 0 !important;
+                padding: 15px !important;
+                padding-bottom: 95px !important;
+            }
             .main-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .fuel-kpi-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px;
             }
             .top-header {
                 flex-direction: column;
                 gap: 15px;
+                margin-bottom: 20px;
             }
             .glass-box.mb-4 {
                 flex-direction: column;
@@ -116,6 +244,22 @@
             }
             .glass-box.mb-4 .text-end {
                 text-align: left !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .fuel-kpi-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px;
+            }
+            .fuel-kpi-grid .kpi-card {
+                padding: 12px !important;
+            }
+            .fuel-kpi-grid .kpi-card h4 {
+                font-size: 1.15rem !important;
+            }
+            .glass-box {
+                padding: 16px !important;
             }
         }
     </style>
@@ -186,66 +330,103 @@
             </div>
 
             <!-- Date and Odd/Even Banner -->
-            <div class="glass-box mb-4 d-flex justify-content-between align-items-center" style="padding: 10px 20px; height: auto;">
+            <div class="glass-box mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2" style="padding: 12px 20px; height: auto;">
                 <div class="d-flex align-items-center gap-3">
-                    <div style="background: rgba(14, 165, 233, 0.2); padding: 8px 12px; border-radius: 8px; color: var(--accent-primary);">
+                    <div style="background: rgba(27, 94, 32, 0.12); padding: 8px 12px; border-radius: 8px; color: var(--accent-primary);">
                         <i class="fa-regular fa-calendar-days fs-5"></i>
                     </div>
                     <div>
-                        <h6 class=" mb-0" id="currentDateDisplay">Loading Date...</h6>
+                        <h6 class="mb-0 fw-bold" id="currentDateDisplay">Loading Date...</h6>
                         <small class="text-muted-custom" style="font-size: 0.75rem;">ICBT Transport Schedule</small>
                     </div>
                 </div>
-                <div class="text-end">
-                    <small class="text-muted-custom d-block mb-1" style="font-size: 0.75rem;">Today's Allowed Vehicles</small>
-                    <span id="oddEvenBadge" class="badge px-3 py-1" style="border: 1px solid var(--border-color); font-size: 0.85rem;">Loading...</span>
+                <div>
+                    <span id="oddEvenBadge" class="badge p-2 px-3 rounded-pill border" style="font-size: 0.8rem; border-color: var(--accent-success); color: var(--accent-success); background: rgba(16, 185, 129, 0.1);">
+                        <i class="fa-solid fa-car-side me-2"></i> ALL VEHICLES
+                    </span>
                 </div>
             </div>
+
+            <!-- LIVE CAMPUS EMERGENCY & BREAKDOWN SOS MONITOR (Live Auto-Updates) -->
+            <div id="adminEmergencyIncidentContainer" style="display: none; margin-bottom: 24px;"></div>
 
             <!-- Dashboard Grid -->
             <div class="main-grid">
                 
-                <!-- Box 1 -->
+                <!-- Box 1: System Stats -->
                 <div class="glass-box">
                     <div class="box-title">
                         <i class="fa-solid fa-chart-pie"></i> System Stats
                     </div>
                     
-                    <div class="mb-4">
-                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Total Users</p>
+                    <div class="mb-3">
+                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Total Registered Users</p>
                         <h3 class=" fw-bold" id="totalUsersCount"><span class="spinner-border spinner-border-sm fs-6"></span></h3>
                     </div>
                     
-                    <div class="mb-4">
-                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Active Drivers</p>
-                        <h3 class=" fw-bold" id="activeDriversCount"><span class="spinner-border spinner-border-sm fs-6"></span></h3>
+                    <div class="mb-3">
+                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Active / Verified Drivers</p>
+                        <h3 class=" fw-bold text-success" id="activeDriversCount"><span class="spinner-border spinner-border-sm fs-6"></span></h3>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Total Platform Rides</p>
+                        <h3 class=" fw-bold text-primary" id="totalRidesCount"><span class="spinner-border spinner-border-sm fs-6"></span></h3>
                     </div>
                     
-                    <div class="d-flex justify-content-between align-items-center mt-5">
-                        <span class="">System Status:</span>
-                        <span class="text-success"><i class="fa-solid fa-circle"></i> Online</span>
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary">
+                        <span class="small">System Status:</span>
+                        <span class="text-success small fw-bold"><i class="fa-solid fa-circle me-1"></i> Online & Live</span>
                     </div>
                 </div>
 
-                <!-- Box 2 (Environmental & Ride Stats) -->
+                <!-- Box 2: Driver Performance & Live Summary (Replaced Sustainability Impact) -->
                 <div class="glass-box">
-                    <div class="box-title">
-                        <i class="fa-solid fa-leaf text-success"></i> Sustainability Impact
+                    <div class="box-title d-flex justify-content-between align-items-center mb-2">
+                        <span><i class="fa-solid fa-id-card-clip text-success"></i> Driver Fleet Summary</span>
+                        <span class="badge bg-primary" id="adminDriverCountBadge">0 Drivers</span>
                     </div>
                     
-                    <div class="mb-4">
-                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Total Rides Completed</p>
-                        <h3 class=" fw-bold" id="totalRidesCount"><span class="spinner-border spinner-border-sm fs-6"></span></h3>
+                    <div class="mb-2">
+                        <label class="text-muted-custom mb-1" style="font-size: 0.75rem; text-transform: uppercase;">Select Driver to Inspect</label>
+                        <select id="adminDriverSelect" class="form-select form-select-sm" style="background: #ffffff; border-color: var(--border-color); color: var(--text-main);">
+                            <option value="">-- Choose a Driver --</option>
+                        </select>
                     </div>
 
-                    <div class="mb-4">
-                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">COâ‚‚ Saved Platform-Wide</p>
-                        <h3 class=" fw-bold text-success"><span id="totalCo2Saved"><span class="spinner-border spinner-border-sm fs-6"></span></span> <span style="font-size: 1rem; font-weight: 500;">kg</span></h3>
+                    <div id="adminDriverSummaryCard" style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="mb-0 fw-bold" id="adSummaryName">Driver Name</h6>
+                                <small class="text-muted-custom" id="adSummaryPhone">077XXXXXXX</small>
+                            </div>
+                            <span id="adSummaryStatusBadge" class="badge bg-success">Verified</span>
+                        </div>
+
+                        <div class="mb-2 p-2 rounded" style="background: var(--bg-main); font-size: 0.8rem;">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted-custom">Vehicle:</span>
+                                <strong id="adSummaryPlate">--</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted-custom">Fuel Quota:</span>
+                                <strong id="adSummaryQuota">--</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted-custom">Wallet Balance:</span>
+                                <strong class="text-success" id="adSummaryWallet">Rs. 0</strong>
+                            </div>
+                        </div>
+
+                        <div style="font-size: 0.75rem;">
+                            <div class="text-muted-custom mb-1">Recent Routes / Places:</div>
+                            <div id="adSummaryRoutes" class="fw-semibold text-truncate" style="color: var(--accent-primary);">No rides completed</div>
+                        </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <p class="text-muted-custom mb-1 text-uppercase" style="font-size: 0.8rem;">Fuel Saved Platform-Wide</p>
-                        <h3 class=" fw-bold text-primary"><span id="totalFuelSaved"><span class="spinner-border spinner-border-sm fs-6"></span></span> <span style="font-size: 1rem; font-weight: 500;">L</span></h3>
+
+                    <div id="adminDriverSummaryPlaceholder" class="text-center py-3 text-muted-custom" style="font-size: 0.82rem;">
+                        <i class="fa-solid fa-arrow-pointer mb-1 d-block fs-5"></i>
+                        Select any driver from the dropdown to view live fuel quota, earnings, and routes.
                     </div>
                 </div>
 
@@ -259,10 +440,89 @@
                     </div>
                 </div>
 
-                <!-- Pending Approvals (Moved to new row) -->
+                <!-- National Fuel Crisis & Quota Overview (Requirement 6) -->
+                <div class="glass-box" style="grid-column: 1 / -1;">
+                    <div class="box-title d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <span><i class="fa-solid fa-gas-pump text-warning me-2"></i> National Fuel Crisis & Vehicle Quota Monitoring</span>
+                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#adminFuelAdjustModal">
+                            <i class="fa-solid fa-sliders me-1"></i> Emergency Quota Adjustment
+                        </button>
+                    </div>
+
+                    <!-- 4 KPI Summary Responsive Grid -->
+                    <div class="fuel-kpi-grid">
+                        <div class="kpi-card p-3 rounded" style="background: #ffffff; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <small class="text-muted-custom d-block">Fleet Fuel Consumption</small>
+                            <h4 class="mb-0 fw-bold text-success mt-1" id="adminTotalFuelConsumed">0.0 L</h4>
+                            <small class="text-muted-custom" style="font-size: 0.75rem;">Total consumed this month</small>
+                        </div>
+                        <div class="kpi-card p-3 rounded" style="background: #ffffff; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <small class="text-muted-custom d-block">Low Quota Alert (&lt; 20%)</small>
+                            <h4 class="mb-0 fw-bold text-danger mt-1" id="adminLowQuotaCount">0 Vehicles</h4>
+                            <small class="text-muted-custom" style="font-size: 0.75rem;">Critical fuel level</small>
+                        </div>
+                        <div class="kpi-card p-3 rounded" style="background: #ffffff; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <small class="text-muted-custom d-block">Odd-Even Compliance</small>
+                            <h4 class="mb-0 fw-bold text-info mt-1" id="adminOddEvenStatus">100% Compliant</h4>
+                            <small class="text-muted-custom" style="font-size: 0.75rem;">Regulated per gazette</small>
+                        </div>
+                        <div class="kpi-card p-3 rounded" style="background: #ffffff; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <small class="text-muted-custom d-block">Fuel Price Benchmark</small>
+                            <h4 class="mb-0 fw-bold text-warning mt-1">LKR 320.00</h4>
+                            <small class="text-muted-custom" style="font-size: 0.75rem;">Octane 92 / Standard</small>
+                        </div>
+                    </div>
+
+                    <!-- Live Fleet Fuel & Quota Container -->
+                    <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <div>
+                                <h6 class="mb-0 fw-bold"><i class="fa-solid fa-list-check me-2 text-warning"></i> Fleet Vehicles Fuel & Odd-Even Status</h6>
+                                <small class="text-muted-custom" id="adminFleetVehicleCount">0 Vehicles in Fleet</small>
+                            </div>
+                            <div class="d-flex gap-1" id="fleetViewToggleGroup">
+                                <button type="button" class="view-toggle-btn active" id="fleetToggleCards" onclick="window.setFleetViewMode('cards')"><i class="fa-solid fa-grip me-1"></i> Cards</button>
+                                <button type="button" class="view-toggle-btn" id="fleetToggleTable" onclick="window.setFleetViewMode('table')"><i class="fa-solid fa-table-list me-1"></i> Table</button>
+                            </div>
+                        </div>
+
+                        <!-- 1. Mobile Cards View (Default on Phones) -->
+                        <div id="adminFleetCardsContainer">
+                            <div class="text-center text-muted py-3">Loading fleet quota data...</div>
+                        </div>
+
+                        <!-- 2. Tabular View (Swipeable on Mobile, Default on Desktop) -->
+                        <div id="adminFleetTableContainer" style="display: none;">
+                            <div class="d-md-none mb-2" style="font-size: 0.75rem; color: var(--accent-primary); font-weight: 500;">
+                                <i class="fa-solid fa-arrows-left-right me-1"></i> Swipe table horizontally to see all columns & actions
+                            </div>
+                            <div class="table-responsive" style="max-height: 320px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border-radius: 8px;">
+                                <table class="table table-hover mb-0" style="background: transparent; min-width: 650px; width: 100%;">
+                                    <thead>
+                                        <tr style="font-size: 0.8rem; border-color: var(--border-color); color: var(--text-muted);">
+                                            <th>Vehicle & Plate</th>
+                                            <th>Assigned Driver / Owner</th>
+                                            <th>Plate Type</th>
+                                            <th>Today's Eligibility</th>
+                                            <th>Remaining Quota</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminFleetFuelTableBody" style="font-size: 0.85rem;">
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-3">Loading fleet quota data...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Approvals (Sorted Newest First) -->
                 <div class="glass-box" style="grid-column: 1 / -1;">
                     <div class="box-title">
-                        <i class="fa-solid fa-users-gear"></i> Pending Approvals
+                        <i class="fa-solid fa-users-gear"></i> Pending Approvals (Latest First)
                     </div>
                     
                     <!-- Dynamic Request Items Container -->
@@ -275,14 +535,14 @@
         </div>
     </div>
 
-        <!-- Firebase Script (Module) -->
+    <!-- Firebase Script (Module) -->
     <script type="module">
         import "./js/firebase-config.js";
 
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => {
+                navigator.serviceWorker.register('/service-worker.js').catch(err => {
                     console.log('Service Worker registration failed: ', err);
                 });
             });
@@ -291,83 +551,127 @@
         // Date and Odd/Even Logic
         const dateObj = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('currentDateDisplay').textContent = dateObj.toLocaleDateString('en-US', options);
+        const dateEl = document.getElementById('currentDateDisplay');
+        if (dateEl) dateEl.textContent = dateObj.toLocaleDateString('en-US', options);
         
         const dayNumber = dateObj.getDate();
         const badge = document.getElementById('oddEvenBadge');
-        if (dayNumber % 2 === 0) {
-            badge.innerHTML = '<i class="fa-solid fa-car-side me-2"></i> EVEN NUMBERS';
-            badge.style.borderColor = 'var(--accent-success)';
-            badge.style.color = 'var(--accent-success)';
-            badge.style.background = 'rgba(16, 185, 129, 0.1)';
-        } else {
-            badge.innerHTML = '<i class="fa-solid fa-car-side me-2"></i> ODD NUMBERS';
-            badge.style.borderColor = 'var(--accent-warning)';
-            badge.style.color = 'var(--accent-warning)';
-            badge.style.background = 'rgba(245, 158, 11, 0.1)';
+        if (badge) {
+            if (dayNumber % 2 === 0) {
+                badge.innerHTML = '<i class="fa-solid fa-car-side me-2"></i> EVEN NUMBERS';
+                badge.style.borderColor = 'var(--accent-success)';
+                badge.style.color = 'var(--accent-success)';
+                badge.style.background = 'rgba(16, 185, 129, 0.1)';
+            } else {
+                badge.innerHTML = '<i class="fa-solid fa-car-side me-2"></i> ODD NUMBERS';
+                badge.style.borderColor = 'var(--accent-warning)';
+                badge.style.color = 'var(--accent-warning)';
+                badge.style.background = 'rgba(245, 158, 11, 0.1)';
+            }
         }
 
-        window.allUsersData = []; // Store real-time data for search
+        window.allUsersData = [];
+        window.allVehiclesData = [];
+        window.allRidesData = [];
 
         // Fetch Real Data for Dashboard
         window.loadDashboardData = function() {
             try {
+                // 1. Real-time listener for users
                 const usersCol = window.fsCollection(window.firebaseDb, 'users');
-                
-                // Real-time listener for users
                 window.fsOnSnapshot(usersCol, (snapshot) => {
                     let totalUsers = 0;
                     let activeDrivers = 0;
                     let driverCount = 0;
                     let passengerCount = 0;
-                    
-                    const pendingList = document.getElementById('pendingApprovalsList');
-                    pendingList.innerHTML = ''; // clear loading
-                    let hasPending = false;
-                    window.allUsersData = []; // Clear array to re-populate
+                    let pendingDrivers = [];
+                    let driverList = [];
+
+                    window.allUsersData = [];
 
                     snapshot.forEach((doc) => {
                         totalUsers++;
                         const data = doc.data();
-                        data.id = doc.id; // Save doc id
+                        data.id = doc.id;
                         window.allUsersData.push(data);
                         
-                        if(data.role === 'driver') {
+                        if (data.role === 'driver') {
                             driverCount++;
-                            if (data.status === 'verified') activeDrivers++;
+                            driverList.push(data);
+                            const st = (data.status || '').toLowerCase();
+                            if (st === 'verified' || st === 'approved' || st === 'active') {
+                                activeDrivers++;
+                            }
+                            if (st === 'pending') {
+                                pendingDrivers.push(data);
+                            }
                         } else {
                             passengerCount++;
                         }
-
-                        // Populate Pending Approvals
-                        if(data.role === 'driver' && data.status === 'pending') {
-                            hasPending = true;
-                            const div = document.createElement('div');
-                            div.className = 'p-3 rounded mb-3';
-                            div.style.cssText = 'background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); min-width: 250px; flex: 1;';
-                            div.innerHTML = `
-                                <div class="d-flex justify-content-between mb-2">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="avatar" style="width:30px; height:30px; font-size: 0.8rem; background: var(--accent-secondary); overflow: hidden;">
-                                            ${data.profileImageUrl ? `<img src="${data.profileImageUrl}" alt="Profile" style="width:100%; height:100%; object-fit: cover;">` : (data.name || '?').charAt(0).toUpperCase()}
-                                        </div>
-                                        <span class=" small fw-bold">${data.name || 'Unknown User'}</span>
-                                    </div>
-                                </div>
-                                <p class="text-muted-custom mb-2" style="font-size: 0.75rem;">Req: Verification &bull; ${data.vehiclePlate || 'No Plate'}</p>
-                                <div class="d-flex gap-2 mt-2">
-                                    <button onclick="openReviewModal('${doc.id}', '${encodeURIComponent(JSON.stringify(data))}')" class="btn btn-success btn-sm w-100 rounded-pill text-nowrap"><i class="fa-solid fa-eye"></i> Review</button>
-                                </div>
-                            `;
-                            pendingList.appendChild(div);
-                        }
                     });
 
-                    document.getElementById('totalUsersCount').textContent = totalUsers;
-                    document.getElementById('activeDriversCount').textContent = activeDrivers;
+                    // Sort Pending Approvals newest first
+                    pendingDrivers.sort((a, b) => {
+                        const tA = new Date(a.createdAt || a.timestamp || 0).getTime();
+                        const tB = new Date(b.createdAt || b.timestamp || 0).getTime();
+                        return tB - tA;
+                    });
 
-                    if(!hasPending) {
-                        pendingList.innerHTML = '<div class="text-center text-muted py-3 small w-100">No pending approvals!</div>';
+                    const pendingList = document.getElementById('pendingApprovalsList');
+                    if (pendingList) {
+                        pendingList.innerHTML = '';
+                        if (pendingDrivers.length === 0) {
+                            pendingList.innerHTML = '<div class="text-center text-muted py-3 small w-100"><i class="fa-solid fa-circle-check text-success me-1"></i> No pending approvals right now!</div>';
+                        } else {
+                            pendingDrivers.forEach(data => {
+                                const div = document.createElement('div');
+                                div.className = 'p-3 rounded mb-3';
+                                div.style.cssText = 'background: #ffffff; border: 1px solid var(--border-color); min-width: 260px; flex: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);';
+                                div.innerHTML = `
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar" style="width:32px; height:32px; font-size: 0.8rem; background: var(--accent-secondary); overflow: hidden;">
+                                                ${data.profileImageUrl ? `<img src="${data.profileImageUrl}" alt="Profile" style="width:100%; height:100%; object-fit: cover;">` : (data.name || '?').charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <div class="small fw-bold">${data.name || data.fullName || 'Unknown User'}</div>
+                                                <small class="text-muted-custom" style="font-size: 0.72rem;">${data.email || ''}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted-custom mb-2" style="font-size: 0.75rem;">Plate: <strong>${data.vehiclePlate || 'No Plate'}</strong> &bull; ${data.phone || ''}</p>
+                                    <div class="d-flex gap-2 mt-2">
+                                        <button onclick="openReviewModal('${data.id}', '${encodeURIComponent(JSON.stringify(data))}')" class="btn btn-success btn-sm w-100 rounded-pill text-nowrap"><i class="fa-solid fa-eye"></i> Review & Verify</button>
+                                    </div>
+                                `;
+                                pendingList.appendChild(div);
+                            });
+                        }
+                    }
+
+                    // Update System Stats
+                    const elTotalUsers = document.getElementById('totalUsersCount');
+                    const elActiveDrivers = document.getElementById('activeDriversCount');
+                    const elDriverBadge = document.getElementById('adminDriverCountBadge');
+
+                    if (elTotalUsers) elTotalUsers.textContent = totalUsers;
+                    if (elActiveDrivers) elActiveDrivers.textContent = activeDrivers;
+                    if (elDriverBadge) elDriverBadge.textContent = `${driverCount} Drivers`;
+
+                    // Populate Driver Fleet Select Dropdown
+                    const driverSelect = document.getElementById('adminDriverSelect');
+                    if (driverSelect) {
+                        const currentVal = driverSelect.value;
+                        let opts = '<option value="">-- Choose a Driver --</option>';
+                        driverList.forEach(d => {
+                            opts += `<option value="${d.id}" ${d.id === currentVal ? 'selected' : ''}>${d.name || d.fullName} (${d.vehiclePlate || d.driverType || 'Driver'})</option>`;
+                        });
+                        driverSelect.innerHTML = opts;
+
+                        // Re-trigger summary view if already selected or pick first
+                        if (currentVal) {
+                            window.showAdminDriverSummary(currentVal);
+                        }
                     }
 
                     // Render/Update User Distribution Chart
@@ -375,76 +679,180 @@
                         window.userRolesChartInstance.data.datasets[0].data = [driverCount, passengerCount];
                         window.userRolesChartInstance.update();
                     } else {
-                        const ctx = document.getElementById('userRolesChart').getContext('2d');
-                        window.userRolesChartInstance = new Chart(ctx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: ['Drivers', 'Passengers'],
-                                datasets: [{
-                                    data: [driverCount, passengerCount],
-                                    backgroundColor: ['#10B981', '#3b82f6'],
-                                    borderWidth: 0,
-                                    hoverOffset: 4
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: { position: 'bottom', labels: { color: '#4caf50' } }
+                        const ctxEl = document.getElementById('userRolesChart');
+                        if (ctxEl) {
+                            const ctx = ctxEl.getContext('2d');
+                            window.userRolesChartInstance = new Chart(ctx, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: ['Drivers', 'Passengers'],
+                                    datasets: [{
+                                        data: [driverCount, passengerCount],
+                                        backgroundColor: ['#10B981', '#3b82f6'],
+                                        borderWidth: 0,
+                                        hoverOffset: 4
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: { position: 'bottom', labels: { color: '#4caf50' } }
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
 
                 }, (error) => {
                     console.error("Error listening to dashboard users data:", error);
                 });
 
-                // Real-time listener for rides
+                // 2. Real-time listener for rides (Total platform rides count & history)
                 const ridesCol = window.fsCollection(window.firebaseDb, 'rides');
                 window.fsOnSnapshot(ridesCol, (snapshot) => {
-                    let totalCompletedRides = 0;
+                    let totalRides = 0;
+                    window.allRidesData = [];
                     snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        if (data.status === 'completed') {
-                            totalCompletedRides++;
-                        }
+                        totalRides++;
+                        const r = doc.data();
+                        r.id = doc.id;
+                        window.allRidesData.push(r);
                     });
 
-                    // Update UI with calculated sustainability metrics
-                    document.getElementById('totalRidesCount').textContent = totalCompletedRides;
-                    document.getElementById('totalCo2Saved').textContent = (totalCompletedRides * 2.5).toFixed(1);
-                    document.getElementById('totalFuelSaved').textContent = (totalCompletedRides * 1.5).toFixed(1);
+                    const elTotalRides = document.getElementById('totalRidesCount');
+                    if (elTotalRides) elTotalRides.textContent = totalRides;
+
+                    // Update currently inspected driver routes if selected
+                    const sel = document.getElementById('adminDriverSelect');
+                    if (sel && sel.value) {
+                        window.showAdminDriverSummary(sel.value);
+                    }
                 }, (error) => {
                     console.error("Error listening to rides data:", error);
+                });
+
+                // 3. Real-time listener for vehicles
+                const vCol = window.fsCollection(window.firebaseDb, 'vehicles');
+                window.fsOnSnapshot(vCol, (snapshot) => {
+                    window.allVehiclesData = [];
+                    snapshot.forEach(doc => {
+                        const v = doc.data();
+                        v.id = doc.id;
+                        window.allVehiclesData.push(v);
+                    });
                 });
 
             } catch (error) {
                 console.error("Error setting up snapshots:", error);
             }
-        }
+        };
 
-        // Call loadDashboardData after auth check
+        // Live Driver Inspector Function (Requirement 3)
+        window.showAdminDriverSummary = function(driverId) {
+            const card = document.getElementById('adminDriverSummaryCard');
+            const placeholder = document.getElementById('adminDriverSummaryPlaceholder');
+
+            if (!driverId) {
+                if (card) card.style.display = 'none';
+                if (placeholder) placeholder.style.display = 'block';
+                return;
+            }
+
+            const driver = window.allUsersData.find(u => u.id === driverId);
+            if (!driver) return;
+
+            // Find driver's vehicle
+            const vehicle = window.allVehiclesData.find(v => v.assignedDriverId === driverId || v.ownerId === driverId || v.plateNumber === driver.vehiclePlate);
+            
+            // Find driver's completed/active rides
+            const driverRides = window.allRidesData.filter(r => r.driverId === driverId);
+
+            if (card) card.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+
+            const nameEl = document.getElementById('adSummaryName');
+            const phoneEl = document.getElementById('adSummaryPhone');
+            const badgeEl = document.getElementById('adSummaryStatusBadge');
+            const plateEl = document.getElementById('adSummaryPlate');
+            const quotaEl = document.getElementById('adSummaryQuota');
+            const walletEl = document.getElementById('adSummaryWallet');
+            const routesEl = document.getElementById('adSummaryRoutes');
+
+            if (nameEl) nameEl.innerText = driver.name || driver.fullName || 'Driver';
+            if (phoneEl) phoneEl.innerText = `${driver.phone || 'No phone'} | NIC: ${driver.nic || 'N/A'}`;
+
+            const st = (driver.status || 'Active').toUpperCase();
+            if (badgeEl) {
+                badgeEl.innerText = st;
+                badgeEl.className = `badge ${st === 'VERIFIED' || st === 'APPROVED' ? 'bg-success' : (st === 'SUSPENDED' ? 'bg-danger' : 'bg-warning text-dark')}`;
+            }
+
+            if (plateEl) {
+                plateEl.innerText = vehicle ? `${vehicle.plateNumber} (${vehicle.makeModel || 'Car'})` : (driver.vehiclePlate || 'No Assigned Vehicle');
+            }
+
+            if (quotaEl) {
+                if (vehicle) {
+                    const rem = Number(vehicle.remainingQuota !== undefined ? vehicle.remainingQuota : (vehicle.monthlyQuota || 30.0));
+                    const max = Number(vehicle.monthlyQuota || 30.0);
+                    quotaEl.innerText = `${rem.toFixed(1)} L / ${max.toFixed(1)} L (${Math.round((rem/max)*100)}%)`;
+                    quotaEl.style.color = rem < 6 ? 'var(--accent-danger, #ef4444)' : 'var(--accent-success, #10b981)';
+                } else {
+                    quotaEl.innerText = '30.0 L / 30.0 L (Standard)';
+                    quotaEl.style.color = 'inherit';
+                }
+            }
+
+            if (walletEl) {
+                const bal = Number(driver.walletBalance || driver.totalEarnings || 0);
+                walletEl.innerText = `Rs. ${bal.toLocaleString()}`;
+            }
+
+            if (routesEl) {
+                if (driverRides.length === 0) {
+                    routesEl.innerText = 'No rides registered yet';
+                } else {
+                    const places = driverRides.slice(0, 3).map(r => `${r.start || r.origin || 'Start'} → ${r.dest || r.destination || 'End'}`).join(' • ');
+                    routesEl.innerText = `${places} (${driverRides.length} ride${driverRides.length === 1 ? '' : 's'})`;
+                }
+            }
+        };
+
+        // Attach listener to dropdown
+        document.addEventListener('DOMContentLoaded', () => {
+            const sel = document.getElementById('adminDriverSelect');
+            if (sel) {
+                sel.addEventListener('change', (e) => window.showAdminDriverSummary(e.target.value));
+            }
+        });
+
+        // Call loadDashboardData and listenToAdminFuelStats after auth check
         window.onAuthStateChanged(window.firebaseAuth, (user) => {
-            if (!user) {
+            const localAdmin = localStorage.getItem('loggedInAdmin');
+            if (!user && !localAdmin) {
                 window.location.href = 'admin-login.html';
             } else {
-                document.getElementById('userEmail').textContent = user.email;
-                document.getElementById('userInitial').textContent = user.email.charAt(0).toUpperCase();
+                const email = user ? user.email : (localAdmin || 'Admin');
+                const emailEl = document.getElementById('userEmail');
+                const initialEl = document.getElementById('userInitial');
+                if (emailEl) emailEl.textContent = email;
+                if (initialEl) initialEl.textContent = email.charAt(0).toUpperCase();
                 loadDashboardData();
+                listenToAdminFuelStats();
             }
         });
 
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', async (e) => {
             e.preventDefault();
+            localStorage.removeItem('loggedInAdmin');
             try {
                 await window.signOut(window.firebaseAuth);
-                // Redirect will happen via onAuthStateChanged
             } catch (error) {
                 console.error("Error signing out: ", error);
             }
+            window.location.href = 'admin-login.html';
         });
 
         let currentReviewDocId = null;
@@ -461,7 +869,7 @@
                 avatarDiv.textContent = (data.name || '?').charAt(0).toUpperCase();
             }
 
-            document.getElementById('modalName').textContent = data.name || 'Unknown User';
+            document.getElementById('modalName').textContent = data.name || data.fullName || 'Unknown User';
             document.getElementById('modalEmail').textContent = data.email || 'No email provided';
             document.getElementById('modalPhone').textContent = data.phone || 'No phone provided';
             document.getElementById('modalNic').textContent = data.nic || 'No NIC provided';
@@ -475,43 +883,355 @@
             reviewModalInstance.show();
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const approveBtn = document.getElementById('modalApproveBtn');
-            const rejectBtn = document.getElementById('modalRejectBtn');
-            if(approveBtn) approveBtn.addEventListener('click', () => {
-                if(currentReviewDocId) window.updateDriverStatus(currentReviewDocId, 'verified');
-            });
-            if(rejectBtn) rejectBtn.addEventListener('click', () => {
-                if(currentReviewDocId) window.updateDriverStatus(currentReviewDocId, 'rejected');
-            });
+        // --- National Fuel Quota & Emergency Adjustments Handler (Requirement 6) ---
+        function listenToAdminFuelStats() {
+            try {
+                const vCol = window.fsCollection(window.firebaseDb, 'vehicles');
+                window.fsOnSnapshot(vCol, (snapshot) => {
+                    let totalFuelUsed = 0;
+                    let lowQuotaCount = 0;
+                    let fleetCount = 0;
+                    const vehicleSelect = document.getElementById('adminAdjustVehicleSelect');
+                    const fleetTableBody = document.getElementById('adminFleetFuelTableBody');
+                    const fleetCardsContainer = document.getElementById('adminFleetCardsContainer');
+                    let selectHtml = '<option value="">-- Choose Vehicle / Driver --</option>';
+                    let tableHtml = '';
+                    let cardsHtml = '';
 
+                    const todayDay = new Date().getDate();
+                    const isTodayEven = (todayDay % 2 === 0);
 
-        });
+                    snapshot.forEach(doc => {
+                        fleetCount++;
+                        const data = doc.data();
+                        const maxQ = Number(data.monthlyQuota || 30.0);
+                        const remQ = Number(data.remainingQuota !== undefined ? data.remainingQuota : maxQ);
+                        const usedQ = Number(data.fuelUsedThisMonth || 0.0);
+                        const pct = Math.min(100, Math.max(0, Math.round((remQ / maxQ) * 100)));
+
+                        totalFuelUsed += usedQ;
+                        if (remQ < (maxQ * 0.2)) lowQuotaCount++;
+
+                        selectHtml += `<option value="${doc.id}">${data.plateNumber || data.vehiclePlate || 'Unknown Plate'} (${data.makeModel || 'Car'}) - [${remQ.toFixed(1)}L / ${maxQ}L remaining]</option>`;
+
+                        // Odd/Even Plate check
+                        const plateStr = (data.plateNumber || data.vehiclePlate || '').trim();
+                        const lastDigitMatch = plateStr.match(/\d(?=[^\d]*$)/);
+                        const lastDigit = lastDigitMatch ? parseInt(lastDigitMatch[0], 10) : 0;
+                        const isPlateEven = (lastDigit % 2 === 0);
+
+                        const plateBadge = isPlateEven
+                            ? '<span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-size:0.75rem;">EVEN (Ends in ' + lastDigit + ')</span>'
+                            : '<span class="badge" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); font-size:0.75rem;">ODD (Ends in ' + lastDigit + ')</span>';
+
+                        const isEligibleToday = (isPlateEven === isTodayEven);
+                        const eligBadge = isEligibleToday
+                            ? '<span class="badge bg-success" style="font-size:0.75rem;"><i class="fa-solid fa-circle-check me-1"></i> Refuel Allowed</span>'
+                            : '<span class="badge bg-danger" style="font-size:0.75rem;"><i class="fa-solid fa-ban me-1"></i> Refuel Blocked</span>';
+
+                        const quotaColor = remQ < 6 ? '#ef4444' : (remQ < 12 ? '#f59e0b' : '#10b981');
+
+                        // 1. Table Row (For Desktop / Table View)
+                        tableHtml += `
+                            <tr>
+                                <td>
+                                    <strong>${data.plateNumber || data.vehiclePlate || 'Unknown Plate'}</strong>
+                                    <small class="text-muted-custom d-block">${data.makeModel || 'Vehicle'}</small>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">${data.assignedDriverName || data.ownerName || 'Unassigned'}</div>
+                                    <small class="text-muted-custom">${data.ownerName ? 'Owner: ' + data.ownerName : 'Self'}</small>
+                                </td>
+                                <td>${plateBadge}</td>
+                                <td>${eligBadge}</td>
+                                <td>
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <strong style="color:${quotaColor};">${remQ.toFixed(1)} L</strong>
+                                        <span class="text-muted-custom">${pct}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; background: #e0e0e0;">
+                                        <div class="progress-bar" style="width: ${pct}%; background-color: ${quotaColor};"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-warning rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="openEmergencyAdjustModal('${doc.id}')">
+                                        <i class="fa-solid fa-sliders"></i> Adjust
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+
+                        // 2. Mobile Touch Card (For Phone Screens)
+                        cardsHtml += `
+                            <div class="admin-vehicle-card">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold" style="color: var(--text-main);">${data.plateNumber || data.vehiclePlate || 'Unknown Plate'}</h6>
+                                        <small class="text-muted-custom">${data.makeModel || 'Vehicle'}</small>
+                                    </div>
+                                    <div>${plateBadge}</div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded" style="background: var(--bg-main); font-size: 0.8rem; border: 1px solid var(--border-color);">
+                                    <div>
+                                        <small class="text-muted-custom d-block" style="font-size:0.7rem;">Assigned Driver</small>
+                                        <strong style="color: var(--text-main);">${data.assignedDriverName || data.ownerName || 'Unassigned'}</strong>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted-custom d-block" style="font-size:0.7rem;">Owner</small>
+                                        <strong style="color: var(--text-main);">${data.ownerName || 'Self'}</strong>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted-custom" style="font-size:0.78rem;">Today's Refuel Eligibility:</span>
+                                    ${eligBadge}
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <span class="text-muted-custom">Monthly Quota Balance:</span>
+                                        <strong style="color:${quotaColor};">${remQ.toFixed(1)} L / ${maxQ} L (${pct}%)</strong>
+                                    </div>
+                                    <div class="progress" style="height: 7px; background: #e0e0e0; border-radius: 4px;">
+                                        <div class="progress-bar" style="width: ${pct}%; background-color: ${quotaColor}; border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-warning btn-sm w-100 rounded-pill fw-semibold shadow-sm" onclick="openEmergencyAdjustModal('${doc.id}')">
+                                    <i class="fa-solid fa-sliders me-1"></i> Adjust Quota
+                                </button>
+                            </div>
+                        `;
+                    });
+
+                    const totalFuelEl = document.getElementById('adminTotalFuelConsumed');
+                    const lowQuotaEl = document.getElementById('adminLowQuotaCount');
+                    const fleetCountEl = document.getElementById('adminFleetVehicleCount');
+
+                    if (totalFuelEl) totalFuelEl.innerText = `${totalFuelUsed.toFixed(1)} L`;
+                    if (lowQuotaEl) lowQuotaEl.innerText = `${lowQuotaCount} Vehicle${lowQuotaCount === 1 ? '' : 's'}`;
+                    if (fleetCountEl) fleetCountEl.innerText = `${fleetCount} Vehicles in Fleet`;
+                    if (vehicleSelect) vehicleSelect.innerHTML = selectHtml;
+                    if (fleetTableBody) {
+                        fleetTableBody.innerHTML = tableHtml || '<tr><td colspan="6" class="text-center text-muted py-3">No vehicles registered yet.</td></tr>';
+                    }
+                    if (fleetCardsContainer) {
+                        fleetCardsContainer.innerHTML = cardsHtml || '<div class="text-center text-muted py-3">No vehicles registered yet.</div>';
+                    }
+                });
+            } catch (err) {
+                console.error("Error loading admin fuel stats:", err);
+            }
+        }
+
+        // Fleet View Mode Switcher
+        window.setFleetViewMode = function(mode) {
+            const cardsEl = document.getElementById('adminFleetCardsContainer');
+            const tableEl = document.getElementById('adminFleetTableContainer');
+            const btnCards = document.getElementById('fleetToggleCards');
+            const btnTable = document.getElementById('fleetToggleTable');
+
+            if (mode === 'cards') {
+                if (cardsEl) cardsEl.style.display = 'block';
+                if (tableEl) tableEl.style.display = 'none';
+                if (btnCards) btnCards.classList.add('active');
+                if (btnTable) btnTable.classList.remove('active');
+            } else {
+                if (cardsEl) cardsEl.style.display = 'none';
+                if (tableEl) tableEl.style.display = 'block';
+                if (btnTable) btnTable.classList.add('active');
+                if (btnCards) btnCards.classList.remove('active');
+            }
+        };
+
+        // Initialize default view based on screen size
+        if (window.innerWidth <= 768) {
+            window.setFleetViewMode('cards');
+        } else {
+            window.setFleetViewMode('table');
+        }
+
+        window.customAlert = function(msg, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : 'success'} position-fixed top-0 start-50 translate-middle-x mt-3 shadow-lg`;
+            alertDiv.style.cssText = 'z-index: 99999999; border-radius: 12px; font-weight: 500; min-width: 280px; text-align: center;';
+            alertDiv.innerHTML = `<i class="fa-solid fa-${type === 'error' ? 'circle-exclamation' : 'circle-check'} me-2"></i> ${msg}`;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 3500);
+        };
+
+        window.openEmergencyAdjustModal = function(vehicleId) {
+            const selectEl = document.getElementById('adminAdjustVehicleSelect');
+            if (selectEl && vehicleId) {
+                selectEl.value = vehicleId;
+                const v = window.allVehiclesData ? window.allVehiclesData.find(veh => veh.id === vehicleId) : null;
+                if (v) {
+                    const inputEl = document.getElementById('adminNewQuotaInput');
+                    if (inputEl) inputEl.value = Number(v.remainingQuota !== undefined ? v.remainingQuota : (v.monthlyQuota || 30.0));
+                }
+            }
+            const modalEl = document.getElementById('adminFuelAdjustModal');
+            if (modalEl) {
+                if (window.bootstrap && bootstrap.Modal) {
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modal.show();
+                } else {
+                    modalEl.classList.add('show');
+                    modalEl.style.display = 'block';
+                    modalEl.style.background = 'rgba(0,0,0,0.7)';
+                    document.body.classList.add('modal-open');
+                }
+            }
+        };
+
+        listenToAdminFuelStats();
+
+        const adminFuelAdjustForm = document.getElementById('adminFuelAdjustForm');
+        if (adminFuelAdjustForm) {
+            adminFuelAdjustForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const vId = document.getElementById('adminAdjustVehicleSelect').value;
+                const newQuota = parseFloat(document.getElementById('adminNewQuotaInput').value);
+                const reason = document.getElementById('adminAdjustReason').value.trim();
+
+                if (!vId || isNaN(newQuota)) {
+                    window.customAlert("Please select a vehicle and enter valid quota liters.", "error");
+                    return;
+                }
+
+                const btn = document.getElementById('saveAdminQuotaBtn');
+                const origText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+                btn.disabled = true;
+
+                try {
+                    // Update vehicle quota
+                    const vRef = window.fsDoc(window.firebaseDb, 'vehicles', vId);
+                    await window.fsUpdateDoc(vRef, {
+                        remainingQuota: newQuota,
+                        lastEmergencyAdjustment: new Date().toISOString(),
+                        lastAdjustmentReason: reason
+                    });
+
+                    // Log adjustment in fuel_adjustments collection
+                    await window.fsAddDoc(window.fsCollection(window.firebaseDb, 'fuel_adjustments'), {
+                        vehicleId: vId,
+                        adjustedBy: 'System Administrator',
+                        newQuotaLiters: newQuota,
+                        reason: reason,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    window.customAlert(`Vehicle quota successfully adjusted to ${newQuota} L.`, 'success');
+                    adminFuelAdjustForm.reset();
+                    
+                    const modalEl = document.getElementById('adminFuelAdjustModal');
+                    if (modalEl) {
+                        if (window.bootstrap && bootstrap.Modal) {
+                            bootstrap.Modal.getInstance(modalEl)?.hide();
+                        }
+                        modalEl.classList.remove('show');
+                        modalEl.style.display = 'none';
+                        document.body.classList.remove('modal-open');
+                    }
+                } catch (err) {
+                    console.error("Error adjusting quota:", err);
+                    window.customAlert("Failed to adjust quota.", "error");
+                } finally {
+                    btn.innerHTML = origText;
+                    btn.disabled = false;
+                }
+            });
+        }
 
         // Inline Update Status Logic
         window.updateDriverStatus = async function(docId, newStatus) {
             if(await window.customConfirm('Are you sure you want to ' + (newStatus === 'verified' ? 'Approve' : 'Reject') + ' this driver?')) {
                 try {
                     const userRef = window.fsDoc(window.firebaseDb, 'users', docId);
-                    await window.fsUpdateDoc(userRef, { status: newStatus });
-                    
-                    if(reviewModalInstance) {
-                        reviewModalInstance.hide();
-                    }
                     window.customAlert('Driver has been ' + newStatus + '.', 'success');
-                    // We don't need to manually call loadDashboardData() here anymore because onSnapshot is active.
                 } catch(error) {
                     console.error("Error updating driver:", error);
                     window.customAlert("Error updating status.", "error");
                 }
             }
+        };
+
+        // ─── Live Campus Emergency & Breakdown Incidents Monitor ─────────────
+        const emergencyContainer = document.getElementById('adminEmergencyIncidentContainer');
+        if (emergencyContainer && window.firebaseDb) {
+            const emergencyColl = window.fsCollection(window.firebaseDb, 'emergency_incidents');
+            window.fsOnSnapshot(emergencyColl, (snap) => {
+                const activeIncidents = [];
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.status === 'active_rescue_needed' || data.status === 'rescue_in_progress') {
+                        activeIncidents.push({ id: docSnap.id, ...data });
+                    }
+                });
+
+                if (activeIncidents.length === 0) {
+                    emergencyContainer.style.display = 'none';
+                    emergencyContainer.innerHTML = '';
+                    return;
+                }
+
+                emergencyContainer.style.display = 'block';
+                emergencyContainer.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%); border-radius: 18px; padding: 20px; color: #ffffff; box-shadow: 0 10px 30px rgba(153,27,27,0.35); border: 2px solid rgba(254,202,202,0.3);">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-white text-danger fw-bold px-3 py-2" style="font-size: 0.82rem; border-radius: 8px;">
+                                    <i class="fa-solid fa-triangle-exclamation me-1"></i> LIVE EMERGENCY SOS ALERT (${activeIncidents.length})
+                                </span>
+                            </div>
+                            <span class="small opacity-75">Auto-Refreshed via Firestore</span>
+                        </div>
+                        <div class="d-flex flex-column gap-3">
+                            ${activeIncidents.map(inc => `
+                                <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                                    <div>
+                                        <div style="font-weight: 700; font-size: 1.05rem; color: #fef08a;">
+                                            <i class="fa-solid fa-car-burst me-1"></i> ${inc.incidentType || 'Vehicle Breakdown'}
+                                        </div>
+                                        <div style="font-size: 0.85rem; margin-top: 2px;">
+                                            Reported by: <strong>${inc.reporterName || 'User'}</strong> (${inc.reporterRole || 'Driver'} - ${inc.reporterPhone || 'N/A'})
+                                        </div>
+                                        <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 2px;">
+                                            <i class="fa-solid fa-location-dot text-warning me-1"></i> Location: <strong>${inc.breakdownLocation || 'On Route'}</strong> &bull; Route: ${inc.origin} &rarr; ${inc.destination}
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <span class="badge" style="background: ${inc.status === 'rescue_in_progress' ? '#16a34a' : '#ea580c'}; color: white; padding: 8px 12px; font-weight: 700;">
+                                            ${inc.status === 'rescue_in_progress' ? 'Rescue Dispatched' : 'Rescue Needed'}
+                                        </span>
+                                        <button class="btn btn-sm btn-light fw-bold" onclick="window.resolveIncidentAsAdmin('${inc.id}')">
+                                            <i class="fa-solid fa-check me-1"></i> Mark Resolved
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
         }
+
+        window.resolveIncidentAsAdmin = async function(incidentId) {
+            if (confirm("Mark this emergency incident as resolved safely?")) {
+                try {
+                    const incRef = window.fsDoc(window.firebaseDb, 'emergency_incidents', incidentId);
+                    await window.fsUpdateDoc(incRef, { status: 'resolved_safely' });
+                    alert("Emergency incident marked as resolved.");
+                } catch(e) {
+                    console.error("Error resolving incident:", e);
+                }
+            }
+        };
     </script>
 
-    <!-- Bootstrap JS for Modals -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Review Modal -->
+    <script src="../js/pwa-install.js"></script>
+    
+    <!-- Firebase Script (Module) -->
     <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="background: var(--bg-card); border: 1px solid var(--border-color);">
@@ -560,6 +1280,52 @@
             </div>
         </div>
     </div>
+
+    <!-- Admin Emergency Fuel Quota Adjustment Modal (Requirement 6) -->
+    <div class="modal fade" id="adminFuelAdjustModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--bg-card); border: 1px solid var(--border-color);">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title"><i class="fa-solid fa-gas-pump text-warning me-2"></i> Emergency Quota Adjustment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="adminFuelAdjustForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted-custom">Select Vehicle / Driver</label>
+                            <select class="form-select text-dark" id="adminAdjustVehicleSelect" style="background: #ffffff; border: 1px solid var(--border-color);" required>
+                                <option value="">Loading vehicles...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted-custom">New Remaining Quota (Liters)</label>
+                            <input type="number" step="0.5" min="0" max="100" class="form-control text-dark" id="adminNewQuotaInput" placeholder="e.g. 30.0" style="background: #ffffff; border: 1px solid var(--border-color);" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted-custom">Reason for Adjustment / Authorization Note</label>
+                            <textarea class="form-control text-dark" id="adminAdjustReason" rows="2" placeholder="e.g., Special campus transport duty authorization" style="background: #ffffff; border: 1px solid var(--border-color);" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0">
+                        <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning rounded-pill px-4" id="saveAdminQuotaBtn"><i class="fa-solid fa-floppy-disk me-1"></i> Save Adjustment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Mobile Bottom Navigation -->
+    <nav class="admin-bottom-nav">
+        <a href="dashboard.html" class="admin-nav-item active"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+        <a href="users.html" class="admin-nav-item"><i class="fa-solid fa-users"></i><span>Users</span></a>
+        <a href="rides.html" class="admin-nav-item"><i class="fa-solid fa-route"></i><span>Rides</span></a>
+        <a href="complaints.html" class="admin-nav-item"><i class="fa-solid fa-triangle-exclamation"></i><span>Complaints</span></a>
+        <a href="announcements.html" class="admin-nav-item"><i class="fa-solid fa-bullhorn"></i><span>Announce</span></a>
+    </nav>
+
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 
