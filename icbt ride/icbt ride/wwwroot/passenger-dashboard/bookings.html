@@ -4,20 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings - Passenger Dashboard</title>
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <!-- PWA Manifest & Meta Tags -->
-    <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#1B5E20">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
-    <link rel="apple-touch-icon" href="/icon-192.png">
-
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="../css/chat-widget.css">
     <style>
         :root {
             --bg-color: #E8F5E9;
@@ -126,13 +114,7 @@
 <body>
 
     <aside class="sidebar">
-        <div class="logo" style="flex-direction: column; align-items: flex-start; gap: 0;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <img src="logo.png" alt="ICBT Ride" style="height: 40px; border-radius: 50%;">
-                <span>ICBT Ride</span>
-            </div>
-            <div style="font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-top: 3px; margin-left: 50px;">PASSENGER</div>
-        </div>
+        <div class="logo"><img src="logo.png" alt="ICBT Ride" style="height: 45px; border-radius: 50%;"> ICBT Ride</div>
         <ul class="nav-links">
             <li><a href="passenger_dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
             <li><a href="search_rides.html"><i class="fa-solid fa-magnifying-glass"></i> Find a Ride</a></li>
@@ -140,7 +122,7 @@
             <li><a href="profile.html"><i class="fa-solid fa-id-card"></i> Profile</a></li>
         </ul>
         <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05);">
-            <a href="/main-login/login.html" class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color); display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; width: 100%;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <a href="#" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </div>
     </aside>
 
@@ -148,18 +130,12 @@
         <header class="header">
             <div class="greeting-container">
                 <div class="greeting">
-                    <h1>My Bookings</h1>
+                    <h1>My Bookings 📖</h1>
                     <p>View and manage your upcoming and past rides.</p>
                 </div>
             </div>
             <div class="user-profile">
-                <div class="mobile-header-logo" style="flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.1;">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <img src="logo.png" alt="Logo" style="height: 26px; border-radius: 50%;"> 
-                        <span>ICBT Ride</span>
-                    </div>
-                    <div style="font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; color: var(--primary-color); margin-top: 2px; margin-left: 32px;">PASSENGER</div>
-                </div>
+                <div class="mobile-header-logo"><img src="logo.png" alt="Logo" style="height: 30px; border-radius: 50%;"> ICBT Ride</div>
                 <div class="avatar">P</div>
             </div>
         </header>
@@ -232,99 +208,38 @@
         </div>
     </div>
 
+    <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="../js/firebase-config.js"></script>
-    <script src="../js/app-dialogs.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="../js/map-service.js"></script>
-    <script src="../js/pwa-install.js"></script>
-    <script src="../js/in-app-notification-service.js"></script>
     <script src="app.js"></script>
-    <script src="../js/chat-widget.js"></script>
     <script>
-        // ─── Session (Isolated for Passenger) ─────────────────────────────────
-        function getPassengerSession() {
-            try {
-                const passRaw = localStorage.getItem('loggedInUser_passenger');
-                if (passRaw) return JSON.parse(passRaw);
-                const raw = localStorage.getItem('loggedInUser');
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    if (parsed.role === 'passenger') return parsed;
-                }
-                const legacyId = localStorage.getItem('loggedInUserId');
-                const legacyRole = localStorage.getItem('loggedInUserRole');
-                if (legacyId && (!legacyRole || legacyRole === 'passenger')) return { uid: legacyId, name: 'Passenger', role: 'passenger' };
-            } catch (e) {
-                console.error("Error reading passenger session:", e);
-            }
-            return null;
-        }
-
-        const currentUser = getPassengerSession();
-        if (!currentUser || !currentUser.uid) window.location.href = '/main-login/login.html';
-
-        // ─── Populate Header ──────────────────────────────────────────────────
-        function loadHeaderUser() {
-            if (!currentUser) return;
-            const avatarEl = document.querySelector('.avatar');
-            if (avatarEl) {
-                const picUrl1 = currentUser.profileImageUrl || currentUser.profilePicUrl;
-                if (picUrl1) {
-                    avatarEl.innerHTML = `<img src="${picUrl1}" alt="${currentUser.name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                    avatarEl.style.background = 'transparent';
-                } else {
-                    avatarEl.textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'P';
-                }
-            }
-
-            if (window.db && currentUser.uid) {
-                window.db.collection('users').doc(currentUser.uid).onSnapshot(snap => {
-                    if (snap.exists) {
-                        const data = snap.data();
-                        currentUser.name = data.name || currentUser.name;
-                        currentUser.profilePicUrl = data.profilePicUrl || currentUser.profilePicUrl || '';
-                        localStorage.setItem('loggedInUser_passenger', JSON.stringify({ ...currentUser, ...data }));
-                        if (avatarEl) {
-                            const picUrl2 = currentUser.profileImageUrl || currentUser.profilePicUrl;
-                            if (picUrl2) {
-                                avatarEl.innerHTML = `<img src="${picUrl2}" alt="${currentUser.name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                                avatarEl.style.background = 'transparent';
-                            } else {
-                                avatarEl.textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'P';
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        // ─── Modal helpers ────────────────────────────────────────────────────
+        // Modal functions
         function openChatModal(driverName) {
-            const widgetBtn = document.getElementById('chat-widget-btn');
-            if (widgetBtn) {
-                widgetBtn.click();
-                return;
-            }
             document.getElementById('chatDriverName').innerText = driverName;
             document.getElementById('chatModal').style.display = 'flex';
         }
+
         function openRatingModal(driverName) {
             document.getElementById('ratingDriverName').innerText = driverName;
             document.getElementById('ratingModal').style.display = 'flex';
         }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // ─── Dummy Chat ───────────────────────────────────────────────────────
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // Dummy Chat
         function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const msg = input.value.trim();
-            if (msg) {
+            if(msg) {
                 const msgs = document.getElementById('chatMessages');
                 msgs.innerHTML += `<div class="msg sent">${msg}</div>`;
                 input.value = '';
                 msgs.scrollTop = msgs.scrollHeight;
+                
+                // Simulate reply
                 setTimeout(() => {
                     msgs.innerHTML += `<div class="msg received">Okay, noted!</div>`;
                     msgs.scrollTop = msgs.scrollHeight;
@@ -332,267 +247,114 @@
             }
         }
 
-        // ─── Rating ───────────────────────────────────────────────────────────
+        // Dummy Rating
         const stars = document.querySelectorAll('.star-rating i');
         let selectedRating = 0;
+        
         stars.forEach(star => {
             star.addEventListener('click', function() {
                 selectedRating = this.getAttribute('data-val');
                 stars.forEach(s => s.classList.remove('active'));
-                for (let i = 0; i < selectedRating; i++) stars[i].classList.add('active');
+                for(let i=0; i<selectedRating; i++) {
+                    stars[i].classList.add('active');
+                }
             });
         });
+
         function submitRating() {
-            if (selectedRating === 0) { alert("Please select a star rating first."); return; }
+            if(selectedRating === 0) {
+                alert("Please select a star rating first.");
+                return;
+            }
             alert(`Thank you for rating ${selectedRating} stars! Review submitted.`);
             closeModal('ratingModal');
+            // reset
             selectedRating = 0;
             stars.forEach(s => s.classList.remove('active'));
         }
-
-        // ─── Cancel Booking ───────────────────────────────────────────────────
-        async function cancelBooking(bookingId, amount) {
-            const confirmed = await window.showAppConfirm({
-                title: "Cancel Booking?",
-                message: "Are you sure you want to cancel this booking? Any paid fare will be refunded to your wallet balance.",
-                confirmText: "Yes, Cancel Booking",
-                cancelText: "No, Keep Booking",
-                type: "danger"
-            });
-            if (!confirmed) return;
-
-            try {
-                // 1. Refund to wallet
-                if (amount > 0 && currentUser && currentUser.uid) {
-                    const userRef = window.db.collection('users').doc(currentUser.uid);
-                    const snap = await userRef.get();
-                    const currentBalance = snap.exists ? (snap.data().walletBalance || 0) : 0;
-                    await userRef.update({ walletBalance: currentBalance + Number(amount) });
-                    currentUser.walletBalance = currentBalance + Number(amount);
-                    localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
-                }
-
-                // 2. Mark booking as cancelled
-                const bDocRef = window.db.collection('bookings').doc(bookingId);
-                const bSnap = await bDocRef.get();
-                if (bSnap.exists && bSnap.data().rideId) {
-                    const rId = bSnap.data().rideId;
-                    try {
-                        const rRef = window.db.collection('rides').doc(rId);
-                        const rSnap = await rRef.get();
-                        if (rSnap.exists) {
-                            const curSeats = rSnap.data().seats !== undefined ? Number(rSnap.data().seats) : (Number(rSnap.data().availableSeats) || 0);
-                            await rRef.update({
-                                seats: curSeats + 1,
-                                availableSeats: curSeats + 1
-                            });
-                        }
-                    } catch (rErr) {
-                        console.warn("Could not restore seat count on ride:", rErr);
-                    }
-                }
-                await bDocRef.update({ status: 'Cancelled' });
-                window.showAppToast("Booking cancelled & Rs. " + amount + " refunded to your wallet.", "success");
-            } catch (error) {
-                console.error("Error cancelling booking:", error);
-                window.showAppAlert({ title: "Cancellation Failed", message: "Could not cancel booking. Please try again.", type: "error" });
-            }
-        }
-
-        async function cancelRideRequest(reqId) {
-            const confirmed = await window.showAppConfirm({
-                title: "Cancel Ride Request?",
-                message: "Are you sure you want to cancel this ride request? Verified drivers will no longer see your schedule.",
-                confirmText: "Yes, Cancel Request",
-                cancelText: "No, Keep Request",
-                type: "danger"
-            });
-            if (!confirmed) return;
-
-            try {
-                await window.db.collection('RideRequests').doc(reqId).delete();
-                window.showAppToast("Ride request cancelled successfully.", "success");
-            } catch (error) {
-                console.error("Error cancelling request:", error);
-                window.showAppAlert({ title: "Error", message: "Could not cancel request. Please try again.", type: "error" });
-            }
-        }
-
-        // ─── Load Upcoming Bookings ───────────────────────────────────────────
         function loadBookings() {
-            if (!currentUser || !window.db) return;
-            const upcomingContainer = document.getElementById('upcomingRidesContainer');
-            const pastContainer = document.getElementById('pastRidesContainer');
-
-            window.db.collection('bookings')
-                .where('passengerId', '==', currentUser.uid)
+            const container = document.getElementById('upcomingRidesContainer');
+            
+            // Dummy logic: We are showing all bookings for "Test Passenger"
+            window.db.collection('Bookings').where('passengerName', '==', 'Test Passenger')
+                .orderBy('timestamp', 'desc')
                 .onSnapshot(snapshot => {
-                    let upcoming = [];
-                    let past = [];
-                    const allBookings = [];
-
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No upcoming rides.</p>';
+                        return;
+                    }
+                    
+                    let html = '';
                     snapshot.forEach(doc => {
-                        allBookings.push({ id: doc.id, ...doc.data() });
+                        const booking = doc.data();
+                        
+                        html += `
+                        <div class="booking-item">
+                            <div>
+                                <div style="margin-bottom: 5px;"><span class="badge badge-upcoming">${booking.status || 'Upcoming'}</span></div>
+                                <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">Ride with ${booking.driverName}</div>
+                                <div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-car"></i> Rs. ${booking.amount}</div>
+                            </div>
+                            <div class="booking-actions" style="gap: 10px; flex-wrap: wrap;">
+                                <button class="btn btn-primary" onclick="alert('Map tracking feature will be connected later!')"><i class="fa-solid fa-location-dot"></i> Track on Map</button>
+                                <button class="btn btn-primary" style="background: rgba(102, 187, 106, 0.1); color: var(--secondary-color); border: 1px solid var(--secondary-color); box-shadow: none;" onclick="openChatModal('${booking.driverName}')"><i class="fa-regular fa-comment-dots"></i> Chat</button>
+                                <button class="btn btn-outline" onclick="cancelBooking('${doc.id}')">Cancel</button>
+                            </div>
+                        </div>
+                        `;
                     });
-
-                    // Sort client-side to prevent Firestore composite index errors
-                    allBookings.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
-
-                    allBookings.forEach(b => {
-                        const st = (b.status || '').toLowerCase();
-                        if (st === 'completed' || st === 'cancelled') {
-                            past.push(b);
-                        } else {
-                            upcoming.push(b);
-                        }
-                    });
-
-                    // Render upcoming
-                    if (upcoming.length === 0) {
-                        upcomingContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 15px;">No upcoming rides.</p>';
-                    } else {
-                        upcomingContainer.innerHTML = upcoming.map(b => `
-                            <div class="booking-item">
-                                <div>
-                                    <div style="margin-bottom: 5px;"><span class="badge badge-upcoming">${b.status || 'Upcoming'}</span></div>
-                                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">
-                                        ${b.rideFrom || ''} → ${b.rideTo || ''} with ${b.driverName || 'Driver'}
-                                    </div>
-                                    <div style="font-size: 0.9rem; color: var(--text-muted);">
-                                        <i class="fa-solid fa-money-bill-wave"></i> Paid: Rs. ${b.amount || 0}
-                                    </div>
-                                </div>
-                                <div class="booking-actions" style="gap: 10px; flex-wrap: wrap;">
-                                    <button class="btn btn-sm" style="background: rgba(27, 94, 32, 0.1); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 7px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;" onclick="window.showRideRouteMap ? window.showRideRouteMap('${(b.rideFrom || 'Kandy').replace(/'/g, "\\'")}', '${(b.rideTo || 'Colombo').replace(/'/g, "\\'")}') : null">
-                                        <i class="fa-solid fa-map-location-dot"></i> View Route Map
-                                    </button>
-                                    <button class="btn btn-primary" style="background: rgba(27, 94, 32, 0.1); color: var(--primary-color); border: 1px solid var(--primary-color); box-shadow: none;" onclick="window.openDirectChat ? window.openDirectChat('${b.driverId || ''}', '${(b.driverName || 'Driver').replace(/'/g, "\\'")}') : openChatModal('${b.driverName || 'Driver'}')"><i class="fa-solid fa-comments"></i> Chat with Driver</button>
-                                    <button class="btn btn-outline" onclick="cancelBooking('${b.id}', ${b.amount || 0})">Cancel</button>
-                                </div>
-                            </div>`).join('');
-                    }
-
-                    // Render past
-                    if (past.length === 0) {
-                        pastContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 15px;">No past rides.</p>';
-                    } else {
-                        pastContainer.innerHTML = past.map(b => `
-                            <div class="booking-item">
-                                <div>
-                                    <div style="margin-bottom: 5px;"><span class="badge ${b.status === 'Completed' ? 'badge-completed' : ''}" style="${b.status === 'Cancelled' ? 'background:var(--danger-color);' : ''}">${b.status}</span></div>
-                                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">
-                                        ${b.rideFrom || ''} → ${b.rideTo || ''} with ${b.driverName || 'Driver'}
-                                    </div>
-                                    <div style="font-size: 0.9rem; color: var(--text-muted);">
-                                        <i class="fa-solid fa-money-bill-wave"></i> Paid: Rs. ${b.amount || 0}
-                                    </div>
-                                </div>
-                                <div class="booking-actions">
-                                    ${b.status === 'Completed' ? `<button class="btn btn-primary" onclick="openRatingModal('${b.driverName || 'Driver'}')"><i class="fa-solid fa-star"></i> Rate</button>` : ''}
-                                </div>
-                            </div>`).join('');
-                    }
-
+                    
+                    container.innerHTML = html;
                 }, error => {
                     console.error("Error fetching bookings:", error);
-                    upcomingContainer.innerHTML = '<p style="text-align: center; color: var(--danger-color);">Error loading bookings.</p>';
+                    container.innerHTML = '<p style="text-align: center; color: var(--danger-color);">Error loading bookings.</p>';
                 });
         }
-
-        // ─── Load Ride Requests with 20-Minute Live Expiration Engine ──────
-        const passReqIntervals = {};
-
+        
+        async function cancelBooking(bookingId) {
+            if(confirm("Are you sure you want to cancel this booking?")) {
+                try {
+                    await window.db.collection('Bookings').doc(bookingId).delete();
+                    alert("Booking cancelled successfully.");
+                } catch(error) {
+                    console.error("Error cancelling booking:", error);
+                    alert("Could not cancel booking.");
+                }
+            }
+        }
+        
         function loadRideRequests() {
-            if (!currentUser || !window.db) return;
             const container = document.getElementById('myRequestsContainer');
-
-            window.db.collection('RideRequests')
-                .where('passengerId', '==', currentUser.uid)
+            
+            window.db.collection('RideRequests').where('passengerName', '==', 'Test Passenger')
+                .orderBy('timestamp', 'desc')
                 .onSnapshot(snapshot => {
                     if (snapshot.empty) {
                         container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">You have no custom ride requests.</p>';
                         return;
                     }
+                    
                     let html = '';
-                    const reqList = [];
-                    snapshot.forEach(doc => reqList.push({ id: doc.id, ...doc.data() }));
-                    reqList.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
-
-                    const now = Date.now();
-
-                    reqList.forEach(req => {
-                        const isAccepted = req.status === 'accepted';
-                        const expiresAt = req.expiresAt || (req.createdAtMs ? req.createdAtMs + 20*60*1000 : (req.timestamp?.toMillis ? req.timestamp.toMillis() + 20*60*1000 : null));
-                        const remainingSec = expiresAt ? Math.max(0, Math.floor((expiresAt - now) / 1000)) : null;
-                        const isExpired = req.status === 'expired' || (!isAccepted && remainingSec !== null && remainingSec <= 0);
-
-                        let statusColor = isAccepted ? 'var(--success-color)' : (isExpired ? '#ef4444' : '#f59e0b');
-                        let statusText = (req.status || 'pending').toUpperCase();
-                        if (isExpired) statusText = 'EXPIRED (20M TIMEOUT)';
-
-                        let timerHtml = '';
-                        if (!isAccepted && !isExpired && remainingSec !== null) {
-                            const m = Math.floor(remainingSec / 60);
-                            const s = remainingSec % 60;
-                            timerHtml = `<span id="pass-countdown-${req.id}" class="badge" style="background: ${remainingSec <= 180 ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)'}; color: ${remainingSec <= 180 ? '#dc2626' : '#b45309'}; font-weight: 700; border: 1px solid ${remainingSec <= 180 ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)'}; margin-left: 8px;"><i class="fa-solid fa-stopwatch me-1"></i> <span id="pass-timer-${req.id}">${m}:${s < 10 ? '0' : ''}${s} left</span></span>`;
-                        }
-
+                    snapshot.forEach(doc => {
+                        const req = doc.data();
+                        
+                        let statusColor = req.status === 'pending' ? 'var(--warning-color)' : 'var(--success-color)';
+                        let badgeHtml = `<span class="badge" style="background: ${statusColor}; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem;">${req.status.toUpperCase()}</span>`;
+                        
                         html += `
-                            <div class="booking-item" style="border-left: 4px solid ${statusColor};">
-                                <div>
-                                    <div style="margin-bottom: 5px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
-                                        <span class="badge" style="background: ${statusColor};">${statusText}</span>
-                                        ${timerHtml}
-                                        <span style="color: var(--text-muted); font-size: 0.85rem;">${req.date || ''} • ${req.time || ''}</span>
-                                    </div>
-                                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">${req.origin || ''} → ${req.destination || ''}</div>
-                                    ${isAccepted && req.driverName 
-                                        ? `<div style="font-size: 0.95rem; color: var(--success-color); font-weight: 500;"><i class="fa-solid fa-circle-check"></i> Accepted by Driver: <strong>${req.driverName}</strong></div>`
-                                        : (isExpired 
-                                            ? `<div style="font-size: 0.85rem; color: var(--danger-color);"><i class="fa-solid fa-triangle-exclamation"></i> Request expired after 20 minutes with no drivers available. Please submit a new request if needed.</div>`
-                                            : `<div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-clock"></i> Waiting for available campus drivers to accept (20-minute window)...</div>`)}
-                                </div>
-                                <div class="booking-actions" style="gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-                                    <button class="btn btn-sm" style="background: rgba(27, 94, 32, 0.1); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 7px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;" onclick="window.showRideRouteMap ? window.showRideRouteMap('${(req.origin || 'Kandy').replace(/'/g, "\\'")}', '${(req.destination || 'Colombo').replace(/'/g, "\\'")}') : null">
-                                        <i class="fa-solid fa-map-location-dot"></i> View Route
-                                    </button>
-                                    ${isAccepted ? `
-                                        <button class="btn btn-primary" style="background: rgba(27, 94, 32, 0.1); color: var(--primary-color); border: 1px solid var(--primary-color); box-shadow: none;" onclick="window.openDirectChat ? window.openDirectChat('${req.driverId}', '${(req.driverName || 'Driver').replace(/'/g, "\\'")}', '${req.id}') : openChatModal('${req.driverName || 'Driver'}')">
-                                            <i class="fa-solid fa-comments"></i> Chat with Driver
-                                        </button>
-                                    ` : ''}
-                                    ${!isAccepted && !isExpired ? `
-                                        <button class="btn btn-outline" onclick="cancelRideRequest('${req.id}')">Cancel</button>
-                                    ` : ''}
-                                </div>
-                            </div>`;
-
-                        // Attach live countdown interval
-                        if (!isAccepted && !isExpired && expiresAt) {
-                            setTimeout(() => {
-                                if (passReqIntervals[req.id]) clearInterval(passReqIntervals[req.id]);
-                                passReqIntervals[req.id] = setInterval(() => {
-                                    const timerEl = document.getElementById(`pass-timer-${req.id}`);
-                                    if (!timerEl) {
-                                        clearInterval(passReqIntervals[req.id]);
-                                        return;
-                                    }
-                                    const currRem = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
-                                    if (currRem <= 0) {
-                                        clearInterval(passReqIntervals[req.id]);
-                                        timerEl.innerText = "0:00 Expired";
-                                        if (window.db) {
-                                            window.db.collection('RideRequests').doc(req.id).update({ status: 'expired' }).catch(() => {});
-                                        }
-                                        return;
-                                    }
-                                    const pm = Math.floor(currRem / 60);
-                                    const ps = currRem % 60;
-                                    timerEl.innerText = `${pm}:${ps < 10 ? '0' : ''}${ps} left`;
-                                }, 1000);
-                            }, 50);
-                        }
+                        <div class="booking-item">
+                            <div>
+                                <div style="margin-bottom: 5px;">${badgeHtml} <span style="margin-left: 10px; color: var(--text-muted); font-size: 0.9rem;">${req.date} • ${req.time}</span></div>
+                                <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">${req.origin} &rarr; ${req.destination}</div>
+                                ${req.driverName ? `<div style="font-size: 0.9rem; color: var(--success-color);"><i class="fa-solid fa-circle-check"></i> Accepted by: ${req.driverName}</div>` : `<div style="font-size: 0.9rem; color: var(--text-muted);">Waiting for drivers...</div>`}
+                            </div>
+                            <div class="booking-actions">
+                                <button class="btn btn-outline" onclick="cancelRideRequest('${doc.id}')">Cancel Request</button>
+                            </div>
+                        </div>
+                        `;
                     });
+                    
                     container.innerHTML = html;
                 }, error => {
                     console.error("Error fetching requests:", error);
@@ -600,20 +362,26 @@
                 });
         }
 
-        // ─── Initialize ───────────────────────────────────────────────────────
-        document.addEventListener('DOMContentLoaded', () => {
-            loadHeaderUser();
-            if (window.InAppNotificationService && window.db && currentUser && currentUser.uid) {
-                window.InAppNotificationService.startLiveListener(window.db, currentUser.uid, 'passenger');
+        async function cancelRideRequest(reqId) {
+            if(confirm("Are you sure you want to cancel this ride request?")) {
+                try {
+                    await window.db.collection('RideRequests').doc(reqId).delete();
+                    alert("Ride request cancelled successfully.");
+                } catch(error) {
+                    console.error("Error cancelling request:", error);
+                    alert("Could not cancel request.");
+                }
             }
-            if (window.db) {
+        }
+
+        
+        // Load bookings on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            if(window.db) {
                 loadBookings();
                 loadRideRequests();
-            } else {
-                setTimeout(() => { loadBookings(); loadRideRequests(); }, 500);
             }
         });
     </script>
 </body>
 </html>
-
