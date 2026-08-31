@@ -4,20 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find a Ride - Passenger Dashboard</title>
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <!-- PWA Manifest & Meta Tags -->
-    <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#1B5E20">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
-    <link rel="apple-touch-icon" href="/icon-192.png">
-
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="../css/chat-widget.css">
     <style>
         :root {
             --bg-color: #E8F5E9;
@@ -62,7 +50,7 @@
         .card-header { font-size: 1.2rem; font-weight: 600; color: var(--primary-color); margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
         
         /* Search Form Layout */
-        .search-grid { display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1fr auto; gap: 12px; align-items: end; }
+        .search-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; align-items: end; }
         .form-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
         .form-control { width: 100%; padding: 12px 15px; background: rgba(255, 255, 255, 0.6); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); outline: none; }
         .form-control:focus { border-color: var(--primary-color); }
@@ -71,43 +59,33 @@
         .btn-primary:hover { opacity: 0.9; box-shadow: 0 6px 20px rgba(27, 94, 32, 0.4); }
 
         /* Ride Results */
-        .ride-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: stretch; transition: 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .ride-card:hover { transform: translateY(-2px); border-color: var(--primary-color); box-shadow: 0 8px 25px rgba(27,94,32,0.1); }
-        .ride-info { display: flex; gap: 20px; flex: 1; }
-        .ride-time { font-size: 1.1rem; font-weight: 600; color: var(--text-main); min-width: 140px; }
-        .ride-route { display: flex; flex-direction: column; gap: 4px; color: var(--text-muted); flex: 1; }
+        .ride-card { background: rgba(255, 255, 255, 0.4); border: 1px solid var(--border-color); border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .ride-card:hover { transform: translateY(-3px); border-color: var(--primary-color); }
+        .ride-info { display: flex; gap: 20px; }
+        .ride-time { font-size: 1.5rem; font-weight: 600; color: var(--text-main); }
+        .ride-route { display: flex; flex-direction: column; gap: 5px; color: var(--text-muted); }
         .ride-driver { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-        .driver-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--surface-color); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; color: var(--primary-color); }
-        .ride-price { text-align: right; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; min-width: 170px; gap: 8px; }
-        .price-val { font-size: 1.6rem; font-weight: 700; color: var(--success-color); line-height: 1.1; }
-        .price-header-mobile { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-        .ride-card-actions { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+        .driver-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--surface-color); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+        .ride-price { text-align: right; }
+        .price-val { font-size: 1.8rem; font-weight: 700; color: var(--success-color); }
 
         /* Bottom Nav */
-        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--border-color); z-index: 10000; padding: 10px 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-top: 1px solid var(--border-color); z-index: 1000; padding: 10px 20px; border-radius: 20px 20px 0 0; }
         .bottom-nav-links { display: flex; justify-content: space-between; align-items: center; list-style: none; }
         .bottom-nav-links li { flex: 1; text-align: center; }
         .bottom-nav-links a { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 1.2rem; padding: 8px; border-radius: 12px; }
-        .bottom-nav-links a.active { color: var(--primary-color); background: rgba(102, 187, 106, 0.15); font-weight: 600; }
+        .bottom-nav-links a.active { color: var(--primary-color); background: rgba(102, 187, 106, 0.15); }
         .bottom-nav-links a span { font-size: 0.65rem; margin-top: 4px; }
         .mobile-header-logo { display: none; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); margin-right: auto; gap: 8px; }
-
-        @media (max-width: 900px) {
-            .search-grid { grid-template-columns: 1fr 1fr; }
-        }
 
         @media (max-width: 768px) {
             body { display: block; overflow-x: hidden; width: 100%; }
             .sidebar { display: none; }
-            .main-content { margin-left: 0; padding: 1rem; padding-bottom: 110px; width: 100%; }
-            .bottom-nav { display: block !important; z-index: 10000 !important; }
-            .search-grid { grid-template-columns: 1fr; gap: 12px; }
-            .search-grid .form-group { margin-bottom: 8px !important; }
-            .ride-card { flex-direction: column; align-items: stretch; gap: 16px; padding: 16px; }
-            .ride-info { flex-direction: column; gap: 12px; width: 100%; }
-            .ride-price { text-align: left; width: 100%; display: flex; flex-direction: column; align-items: stretch; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 14px; gap: 12px; }
-            .price-header-mobile { display: flex; flex-direction: row; justify-content: space-between; align-items: center; width: 100%; }
-            .ride-card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+            .main-content { margin-left: 0; padding: 1rem; padding-bottom: 90px; width: 100%; }
+            .bottom-nav { display: block; z-index: 9999; }
+            .search-grid { grid-template-columns: 1fr; }
+            .ride-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .ride-price { text-align: left; width: 100%; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 15px; }
             .mobile-header-logo { display: flex; font-size: 1.2rem; }
             .greeting-container { display: none; }
             
@@ -120,10 +98,6 @@
                 border-radius: 12px;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             }
-        }
-
-        @media (max-width: 480px) {
-            .ride-card-actions { grid-template-columns: 1fr; gap: 8px; }
         }
 
         /* Autocomplete Styles */
@@ -141,13 +115,7 @@
 <body>
 
     <aside class="sidebar">
-        <div class="logo" style="flex-direction: column; align-items: flex-start; gap: 0;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <img src="logo.png" alt="ICBT Ride" style="height: 40px; border-radius: 50%;">
-                <span>ICBT Ride</span>
-            </div>
-            <div style="font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-top: 3px; margin-left: 50px;">PASSENGER</div>
-        </div>
+        <div class="logo"><img src="logo.png" alt="ICBT Ride" style="height: 45px; border-radius: 50%;"> ICBT Ride</div>
         <ul class="nav-links">
             <li><a href="passenger_dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
             <li><a href="search_rides.html" class="active"><i class="fa-solid fa-magnifying-glass"></i> Find a Ride</a></li>
@@ -155,7 +123,7 @@
             <li><a href="profile.html"><i class="fa-solid fa-id-card"></i> Profile</a></li>
         </ul>
         <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
-            <a href="/main-login/login.html" class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color); display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; width: 100%;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <a href="#" class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color); display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </div>
     </aside>
 
@@ -163,55 +131,37 @@
         <header class="header">
             <div class="greeting-container">
                 <div class="greeting">
-                    <h1>Search Rides</h1>
+                    <h1>Search Rides 🔍</h1>
                     <p>Find the perfect ride to your destination.</p>
                 </div>
             </div>
             <div class="user-profile">
-                <div class="mobile-header-logo" style="flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.1;">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <img src="logo.png" alt="Logo" style="height: 26px; border-radius: 50%;"> 
-                        <span>ICBT Ride</span>
-                    </div>
-                    <div style="font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; color: var(--primary-color); margin-top: 2px; margin-left: 32px;">PASSENGER</div>
-                </div>
+                <div class="mobile-header-logo"><img src="logo.png" alt="Logo" style="height: 30px; border-radius: 50%;"> ICBT Ride</div>
                 <div class="avatar">P</div>
             </div>
         </header>
 
         <div class="card">
-            <div class="card-header"><i class="fa-solid fa-location-crosshairs"></i> Smart Ride Matching & Search</div>
+            <div class="card-header"><i class="fa-solid fa-location-crosshairs"></i> Search Criteria</div>
             <form class="search-grid" id="searchForm">
                 <div class="form-group autocomplete-container">
-                    <label><i class="fa-solid fa-location-dot" style="color:var(--primary-color);"></i> Leaving from</label>
-                    <input type="text" id="fromInput" class="form-control" placeholder="Origin (e.g., Kandy)" autocomplete="off">
+                    <label>Leaving from</label>
+                    <input type="text" id="fromInput" class="form-control" placeholder="Origin" autocomplete="off">
                     <div id="fromSuggestions" class="autocomplete-list"></div>
                 </div>
                 <div class="form-group autocomplete-container">
-                    <label><i class="fa-solid fa-flag-checkered" style="color:var(--secondary-color);"></i> Going to</label>
-                    <input type="text" id="toInput" class="form-control" placeholder="Destination (e.g., ICBT Campus)" autocomplete="off">
+                    <label>Going to</label>
+                    <input type="text" id="toInput" class="form-control" placeholder="Destination" autocomplete="off">
                     <div id="toSuggestions" class="autocomplete-list"></div>
                 </div>
                 <div class="form-group">
-                    <label><i class="fa-regular fa-calendar"></i> Date</label>
+                    <label>Date</label>
                     <input type="date" class="form-control" id="dateInput">
                 </div>
                 <div class="form-group">
-                    <label><i class="fa-regular fa-clock"></i> Preferred Time</label>
-                    <input type="time" class="form-control" id="timeInput">
-                </div>
-                <div class="form-group">
-                    <button type="button" id="searchBtn" class="btn btn-primary" style="height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Match
-                    </button>
+                    <button type="button" id="searchBtn" class="btn btn-primary"><i class="fa-solid fa-search"></i> Search</button>
                 </div>
             </form>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);">
-                <div>
-                    <i class="fa-solid fa-sliders me-1"></i> Sorted by: <strong>Time Proximity & Best Match</strong>
-                </div>
-                <div id="matchSummaryText" style="color: var(--primary-color); font-weight: 600;"></div>
-            </div>
         </div>
 
         <div style="text-align: center; margin: 20px 0;">
@@ -238,1066 +188,266 @@
 
     <!-- Request Ride Modal -->
     <div id="requestRideModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 460px; border-radius: 20px; padding: 26px 28px;">
+        <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('requestRideModal').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
-            <h2 style="color: var(--primary-color); margin-bottom: 5px; font-size: 1.25rem;"><i class="fa-solid fa-bullhorn text-success me-1"></i> Request a Ride</h2>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 18px;">Let campus drivers know your route, seats and schedule.</p>
+            <h2 style="color: var(--primary-color); margin-bottom: 5px;"><i class="fa-solid fa-bullhorn"></i> Request a Ride</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Let drivers know where you need to go.</p>
             
-            <div class="form-group" style="margin-bottom: 12px;">
-                <label style="font-size: 0.85rem; font-weight: 600;">Leaving from (Pickup Location)</label>
-                <input type="text" id="reqOrigin" class="form-control" placeholder="e.g. Kandy, Nugegoda, Maharagama">
+            <div class="form-group">
+                <label>Leaving from</label>
+                <input type="text" id="reqOrigin" class="form-control" placeholder="e.g. Kandy">
             </div>
-            <div class="form-group" style="margin-bottom: 12px;">
-                <label style="font-size: 0.85rem; font-weight: 600;">Going to (Destination)</label>
-                <input type="text" id="reqDestination" class="form-control" placeholder="e.g. ICBT Colombo Campus">
+            <div class="form-group">
+                <label>Going to</label>
+                <input type="text" id="reqDestination" class="form-control" placeholder="e.g. Colombo">
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label style="font-size: 0.85rem; font-weight: 600;">Travel Date</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Date</label>
                     <input type="date" id="reqDate" class="form-control">
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label style="font-size: 0.85rem; font-weight: 600;">Pickup Time</label>
+                <div class="form-group">
+                    <label>Time</label>
                     <input type="time" id="reqTime" class="form-control">
                 </div>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label style="font-size: 0.85rem; font-weight: 600;">Seats Needed</label>
-                    <select id="reqSeats" class="form-control" style="background: white;" onchange="autoCalculateSearchReqFare()">
-                        <option value="1" selected>1 Passenger (1 Seat)</option>
-                        <option value="2">2 Passengers (2 Seats)</option>
-                        <option value="3">3 Passengers (3 Seats)</option>
-                        <option value="4">4 Passengers (4 Seats)</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label style="font-size: 0.85rem; font-weight: 600;">Estimated Fare (Rs.)</label>
-                    <input type="number" id="reqFare" class="form-control" placeholder="Auto calculated..." value="350" min="100" step="50">
-                </div>
-            </div>
-
-            <!-- Auto-Calculated Distance Info Box -->
-            <div id="reqDistanceInfo" style="display: none; background: rgba(27,94,32,0.06); border: 1px solid rgba(27,94,32,0.15); border-radius: 10px; padding: 10px 12px; font-size: 0.82rem; color: var(--primary-color); margin-bottom: 14px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 600;">
-                    <span><i class="fa-solid fa-route me-1"></i> <span id="reqDistText">Calculating route...</span></span>
-                    <span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981; font-size: 0.72rem;">Map Auto-Priced</span>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" style="width: 100%; font-size: 1rem; padding: 12px; border-radius: 10px;" onclick="submitRideRequest()">
-                <i class="fa-solid fa-paper-plane me-1"></i> Broadcast Request to Drivers
+            <button class="btn btn-primary" style="margin-top: 10px; width: 100%; font-size: 1.1rem;" onclick="submitRideRequest()">
+                Submit Request
             </button>
         </div>
     </div>
 
-    <!-- Payment Modal (Wallet by default + Card alternative) -->
+    <!-- Payment Modal -->
     <div id="paymentModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 440px; border-radius: 20px; padding: 24px;">
+        <div class="modal-content">
             <button class="modal-close" onclick="closePaymentModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h2 style="color: var(--primary-color); margin-bottom: 5px;"><i class="fa-regular fa-credit-card"></i> Payment Details</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Booking ride with <strong id="payDriverName">Driver</strong> for <strong style="color: var(--success-color);">Rs. <span id="payAmount">0</span></strong></p>
             
-            <div style="text-align: center; margin-bottom: 18px;">
-                <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(27,94,32,0.1); color: var(--primary-color); display: inline-flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 8px;">
-                    <i class="fa-solid fa-ticket"></i>
-                </div>
-                <h2 style="color: var(--primary-color); font-size: 1.25rem; margin-bottom: 4px;">Confirm Ride Booking</h2>
-                <p style="color: var(--text-muted); font-size: 0.88rem;">Driver: <strong id="payDriverName">Driver</strong></p>
+            <div class="form-group">
+                <label>Name on Card</label>
+                <input type="text" class="form-control" placeholder="e.g. John Doe">
             </div>
-
-            <!-- Boarding / Pickup Location -->
-            <div class="form-group" style="position: relative; margin-bottom: 14px; text-align: left;">
-                <label style="font-size: 0.82rem; font-weight: 600; color: var(--primary-color); display: flex; justify-content: space-between;">
-                    <span><i class="fa-solid fa-location-crosshairs me-1"></i> Boarding / Pickup Point</span>
-                    <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">Live Map Priced</span>
-                </label>
-                <input type="text" id="payPickupInput" class="form-control" placeholder="Type or change boarding location..." style="padding: 10px 14px; font-size: 0.9rem; background: #ffffff; border: 1.5px solid var(--primary-color); border-radius: 10px;" oninput="recalculateBookingFare()" autocomplete="off">
-                <div id="payPickupSuggestions" class="suggestions-list" style="display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 1000; background: white; border: 1px solid #ccc; border-radius: 8px; max-height: 160px; overflow-y: auto; box-shadow: 0 8px 20px rgba(0,0,0,0.15);"></div>
+            <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19">
             </div>
-
-            <!-- Route & Fare Box -->
-            <div style="background: rgba(27,94,32,0.04); border: 1px solid rgba(27,94,32,0.18); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.88rem; text-align: left;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span style="color: var(--text-muted);">Trip Route:</span>
-                    <strong id="payRouteDisplay" style="color: #1e293b; max-width: 230px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Digana → ICBT Kandy</strong>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Expiry Date</label>
+                    <input type="text" class="form-control" placeholder="MM/YY" maxlength="5">
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span style="color: var(--text-muted);">Trip Distance:</span>
-                    <span id="payDistanceDisplay" class="badge" style="background: rgba(14,165,233,0.12); color: #0284c7; font-weight: 600; font-size: 0.78rem;">~16.0 km</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(0,0,0,0.12); padding-top: 6px;">
-                    <span style="color: var(--text-muted); font-weight: 600;">Ride Fare:</span>
-                    <strong style="color: var(--success-color); font-size: 1.2rem;">Rs. <span id="payAmount">350</span></strong>
+                <div class="form-group">
+                    <label>CVV</label>
+                    <input type="password" class="form-control" placeholder="123" maxlength="3">
                 </div>
             </div>
-
-            <!-- Payment Method Tabs -->
-            <div style="display: flex; gap: 8px; margin-bottom: 18px; background: rgba(0,0,0,0.04); padding: 4px; border-radius: 10px;">
-                <button type="button" id="tabWalletBtn" onclick="switchPaymentTab('wallet')" style="flex: 1; padding: 8px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; background: var(--primary-color); color: white; transition: 0.2s;">
-                    <i class="fa-solid fa-wallet me-1"></i> ICBT Wallet
-                </button>
-                <button type="button" id="tabCardBtn" onclick="switchPaymentTab('card')" style="flex: 1; padding: 8px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; background: transparent; color: var(--text-muted); transition: 0.2s;">
-                    <i class="fa-regular fa-credit-card me-1"></i> Pay with Card
-                </button>
-            </div>
-
-            <!-- 1. Wallet Payment Tab View (Default) -->
-            <div id="walletPaymentView">
-                <div style="background: rgba(27,94,32,0.05); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-bottom: 18px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">
-                        <span>Your Wallet Balance:</span>
-                        <strong style="color: var(--primary-color);" id="payWalletBalanceText">Rs. 0</strong>
-                    </div>
-                    <div id="walletStatusNotice" style="font-size: 0.8rem; font-weight: 600; margin-top: 6px;"></div>
-                </div>
-                <button class="btn btn-primary" id="walletPayBtn" style="width: 100%; font-size: 1.05rem; padding: 12px;" onclick="processPayment('wallet')">
-                    <i class="fa-solid fa-wallet me-2"></i> Pay & Confirm Booking
-                </button>
-            </div>
-
-            <!-- 2. Card Payment Tab View (Optional / Fallback) -->
-            <div id="cardPaymentView" style="display: none;">
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label style="font-size: 0.8rem;">Name on Card</label>
-                    <input type="text" id="payCardName" class="form-control" placeholder="e.g. John Doe" style="padding: 8px 12px; font-size: 0.88rem;">
-                </div>
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label style="font-size: 0.8rem;">Card Number</label>
-                    <input type="text" id="payCardNum" class="form-control" placeholder="4111 2222 3333 4444" maxlength="19" style="padding: 8px 12px; font-size: 0.88rem; font-family: monospace;">
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label style="font-size: 0.8rem;">Expiry</label>
-                        <input type="text" id="payCardExp" class="form-control" placeholder="MM/YY" maxlength="5" style="padding: 8px 12px; font-size: 0.88rem; text-align: center;">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label style="font-size: 0.8rem;">CVV</label>
-                        <input type="password" id="payCardCvv" class="form-control" placeholder="123" maxlength="4" style="padding: 8px 12px; font-size: 0.88rem; text-align: center;">
-                    </div>
-                </div>
-                <button class="btn btn-primary" id="cardPayBtn" style="width: 100%; font-size: 1.05rem; padding: 12px;" onclick="processPayment('card')">
-                    <i class="fa-solid fa-lock me-2"></i> Pay with Card & Book
-                </button>
-            </div>
+            <button class="btn btn-primary" style="margin-top: 10px; width: 100%; font-size: 1.1rem;" onclick="processPayment()"><i class="fa-solid fa-lock"></i> Pay Now</button>
         </div>
     </div>
 
-    <!-- Custom Request Broadcast Success Popup Modal -->
-    <div id="customReqSuccessModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 420px; text-align: center; border-radius: 24px; padding: 30px 24px; animation: modalPop 0.25s ease-out;">
-            <div style="width: 65px; height: 65px; border-radius: 50%; background: rgba(16,185,129,0.12); color: #10b981; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 14px;">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
-            <h2 style="color: var(--primary-color); font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;">Request Broadcasted!</h2>
-            <p style="color: #475569; font-size: 0.88rem; line-height: 1.5; margin-bottom: 22px;">
-                Your custom ride request has been sent to verified campus drivers. You will receive an instant alert when a driver accepts your route!
-            </p>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-outline-light" style="flex: 1; border: 1px solid var(--border-color); color: var(--text-main); font-weight: 600; padding: 10px;" onclick="document.getElementById('customReqSuccessModal').style.display='none'">Done</button>
-                <button class="btn btn-primary" style="flex: 1.4; padding: 10px;" onclick="window.location.href='bookings.html'"><i class="fa-solid fa-book-open me-1"></i> My Bookings</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="../js/firebase-config.js"></script>
-    <script src="../js/app-dialogs.js"></script>
-    <script src="../js/rest-api-service.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="../js/map-service.js"></script>
-    <script src="../js/pwa-install.js"></script>
-    <script src="../js/in-app-notification-service.js"></script>
     <script src="app.js"></script>
-    <script src="../js/chat-widget.js"></script>
     <script>
-        // ─── Session (Isolated for Passenger) ─────────────────────────────────
-        function getPassengerSession() {
-            try {
-                const passRaw = localStorage.getItem('loggedInUser_passenger');
-                if (passRaw) return JSON.parse(passRaw);
-                const raw = localStorage.getItem('loggedInUser');
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    if (parsed.role === 'passenger') return parsed;
-                }
-                const legacyId = localStorage.getItem('loggedInUserId');
-                const legacyRole = localStorage.getItem('loggedInUserRole');
-                if (legacyId && (!legacyRole || legacyRole === 'passenger')) return { uid: legacyId, name: 'Passenger', role: 'passenger' };
-            } catch (e) {
-                console.error("Error reading passenger session:", e);
-            }
-            return null;
-        }
+        // Dummy data for autocomplete
+        const cities = ["Kandy", "Colombo", "ICBT Campus", "Peradeniya", "Katugastota", "Galle", "Kurunegala", "Malabe", "Nugegoda"];
 
-        const currentUser = getPassengerSession();
-        if (!currentUser || !currentUser.uid) window.location.href = '/main-login/login.html';
-
-        // ─── Header & Avatar Sync ─────────────────────────────────────────────
-        function loadHeaderUser() {
-            if (!currentUser) return;
-            const avatarEl = document.querySelector('.avatar');
-            if (avatarEl) {
-                const picUrl1 = currentUser.profileImageUrl || currentUser.profilePicUrl;
-                if (picUrl1) {
-                    avatarEl.innerHTML = `<img src="${picUrl1}" alt="${currentUser.name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                    avatarEl.style.background = 'transparent';
-                } else {
-                    avatarEl.textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'P';
-                }
-            }
-
-            if (window.db && currentUser.uid) {
-                window.db.collection('users').doc(currentUser.uid).onSnapshot(snap => {
-                    if (snap.exists) {
-                        const data = snap.data();
-                        currentUser.name = data.name || currentUser.name;
-                        currentUser.profilePicUrl = data.profilePicUrl || currentUser.profilePicUrl || '';
-                        localStorage.setItem('loggedInUser_passenger', JSON.stringify({ ...currentUser, ...data }));
-                        if (avatarEl) {
-                            const picUrl2 = currentUser.profileImageUrl || currentUser.profilePicUrl;
-                            if (picUrl2) {
-                                avatarEl.innerHTML = `<img src="${picUrl2}" alt="${currentUser.name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                                avatarEl.style.background = 'transparent';
-                            } else {
-                                avatarEl.textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'P';
-                            }
-                        }
-                    }
-                });
-            }
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            loadHeaderUser();
-            if (window.InAppNotificationService && window.db && currentUser && currentUser.uid) {
-                window.InAppNotificationService.startLiveListener(window.db, currentUser.uid, 'passenger');
-            }
-        });
-        loadHeaderUser();
-        if (window.InAppNotificationService && window.db && currentUser && currentUser.uid) {
-            window.InAppNotificationService.startLiveListener(window.db, currentUser.uid, 'passenger');
-        }
-
-        const defaultCities = [
-            "Kandy", "ICBT Kandy", "Matale", "Matale Town", "Ukuwela", "Palapathwela", "Rattota", "Yatawatta", "Alawatugoda", "Akurana", "Katugastota", 
-            "Peradeniya", "Gelioya", "Hindagala", "Gampola", "Nawalapitiya", "Kundasale", "Digana", "Teldeniya", "Wattegama", "Kadugannawa", "Pilimathalawa",
-            "Dambulla", "Galewela", "Naula", "Kurunegala", "ICBT Kurunegala", "Mawathagama", "Polgahawela", "Kegalle", "Mawanella",
-            "Colombo", "ICBT Campus", "ICBT Colombo", "Dehiwala", "Mount Lavinia", "Ratmalana", "Moratuwa", "Panadura", "Wadduwa", "Kalutara", "Beruwala", "Aluthgama",
-            "Nugegoda", "Maharagama", "Pannipitiya", "Kottawa", "Homagama", "Godagama", "Meegoda", "Hanwella", "Avissawella",
-            "Rajagiriya", "Battaramulla", "Pelawatte", "Thalawathugoda", "Malabe", "Kaduwela", "Peliyagoda", "Kelaniya", "Kiribathgoda", "Mahara", "Kadawatha", "Gampaha", "Yakkala", "Nittambuwa", "Warakapola", "Wattala", "Kandana", "Ja-Ela", "Seeduwa", "Katunayake", "Negombo",
-            "Galle", "Hikkaduwa", "Ambalangoda", "Bentota", "Matara", "Weligama", "Tangalle", "Nuwara Eliya", "Hatton", "Badulla", "Bandarawela", "Ella", "Ratnapura", "Anuradhapura", "Polonnaruwa", "Trincomalee", "Batticaloa", "Jaffna"
-        ];
-        let liveRoutes = [];
-
-        function fetchLiveRoutes() {
-            if (!window.db) return;
-            window.db.collection('rides').where('status', '==', 'active').onSnapshot(snap => {
-                const routes = new Set();
-                snap.forEach(doc => {
-                    const r = doc.data();
-                    if (r.start || r.origin) routes.add(r.start || r.origin);
-                    if (r.dest || r.destination) routes.add(r.dest || r.destination);
-                });
-                liveRoutes = Array.from(routes);
-            });
-        }
-
-        function setupAutocomplete(inputId, suggestionsId, fieldType, onSelectCallback = null) {
+        function setupAutocomplete(inputId, suggestionsId) {
             const input = document.getElementById(inputId);
             const suggestionsList = document.getElementById(suggestionsId);
-            if (!input || !suggestionsList) return;
 
-            let searchDebounce = null;
-            
             input.addEventListener("input", function() {
-                const rawVal = this.value.trim();
-                const val = rawVal.toLowerCase();
+                const val = this.value;
                 suggestionsList.innerHTML = "";
-                if (!val || val.length < 1) { 
-                    suggestionsList.style.display = "none"; 
-                    return; 
+                
+                if (!val) {
+                    suggestionsList.style.display = "none";
+                    return;
                 }
 
-                // 1. Instant local matches
-                const allPlaces = Array.from(new Set([...liveRoutes, ...defaultCities]));
-                const matches = allPlaces.filter(p => p.toLowerCase().includes(val));
-
-                function renderSuggestions(placeList) {
-                    if (!placeList || placeList.length === 0) {
-                        suggestionsList.style.display = "none";
-                        return;
-                    }
-                    suggestionsList.innerHTML = "";
+                const matches = cities.filter(city => city.toLowerCase().includes(val.toLowerCase()));
+                
+                if (matches.length > 0) {
                     suggestionsList.style.display = "block";
-                    placeList.slice(0, 8).forEach(match => {
+                    matches.forEach(match => {
                         const div = document.createElement("div");
                         div.className = "autocomplete-item";
-                        div.style.display = "flex";
-                        div.style.alignItems = "center";
-                        div.style.justifyContent = "space-between";
-                        
+                        // Highlight matching part
                         const regex = new RegExp(`(${val})`, "gi");
-                        const highlighted = match.replace(regex, "<strong>$1</strong>");
-                        const isLiveRoute = liveRoutes.some(lr => lr.toLowerCase() === match.toLowerCase());
-
-                        div.innerHTML = `
-                            <span><i class="fa-solid fa-location-dot" style="color:var(--primary-color); margin-right:8px;"></i>${highlighted}</span>
-                            ${isLiveRoute ? '<span style="font-size:0.7rem; background:rgba(27,94,32,0.1); color:var(--primary-color); padding:2px 6px; border-radius:6px; font-weight:600;">Active Ride</span>' : ''}
-                        `;
-
-                        div.addEventListener("click", function() { 
-                            input.value = match; 
+                        div.innerHTML = match.replace(regex, "<strong>$1</strong>");
+                        
+                        div.addEventListener("click", function() {
+                            input.value = match;
                             suggestionsList.style.display = "none";
-                            if (typeof onSelectCallback === 'function') {
-                                onSelectCallback(match);
-                            } else {
-                                searchRides();
-                            }
                         });
                         suggestionsList.appendChild(div);
                     });
+                } else {
+                    suggestionsList.style.display = "none";
                 }
-
-                renderSuggestions(matches);
-
-                // 2. Parallel OpenStreetMap search if few local matches
-                clearTimeout(searchDebounce);
-                searchDebounce = setTimeout(async () => {
-                    if (window.MapService && typeof window.MapService.searchLocationsSriLanka === 'function') {
-                        const osmResults = await window.MapService.searchLocationsSriLanka(rawVal);
-                        if (osmResults && osmResults.length > 0) {
-                            const enriched = Array.from(new Set([...matches, ...osmResults.map(o => o.shortName || o.displayName.split(',')[0].trim())]));
-                            renderSuggestions(enriched);
-                        }
-                    }
-                }, 200);
             });
 
-            document.addEventListener("click", function(e) { 
-                if (e.target !== input) suggestionsList.style.display = "none"; 
+            // Close list when clicking outside
+            document.addEventListener("click", function(e) {
+                if (e.target !== input) {
+                    suggestionsList.style.display = "none";
+                }
             });
         }
 
-        fetchLiveRoutes();
-        setupAutocomplete("fromInput", "fromSuggestions", "origin");
-        setupAutocomplete("toInput", "toSuggestions", "destination");
+        setupAutocomplete("fromInput", "fromSuggestions");
+        setupAutocomplete("toInput", "toSuggestions");
 
-        // ─── Smart Ride Matching Algorithm ───────────────────────────────────
-        let searchUnsubscribe = null;
-
-        // Parse time string 'HH:MM' (24-hour) to total minutes from midnight
-        function parseTimeToMinutes(timeStr) {
-            if (!timeStr) return null;
-            const parts = timeStr.trim().split(':');
-            if (parts.length < 2) return null;
-            const h = parseInt(parts[0], 10);
-            const m = parseInt(parts[1], 10);
-            return isNaN(h) || isNaN(m) ? null : h * 60 + m;
-        }
-
-        // Format difference in minutes into friendly badge
-        function formatProximityDiff(diffMinutes) {
-            if (diffMinutes === 0) return 'Exact Time Match';
-            const h = Math.floor(Math.abs(diffMinutes) / 60);
-            const m = Math.abs(diffMinutes) % 60;
-            const timeStr = h > 0 ? `${h}h ${m > 0 ? m + 'm' : ''}` : `${m}m`;
-            return diffMinutes > 0 ? `${timeStr} earlier` : `${timeStr} later`;
-        }
-
-        // Helper: Check if a ride is upcoming (today or future dates) and not expired
-        function isRideUpcoming(rideDate, rideTime) {
-            if (!rideDate) return true;
-            const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
-            // Keep rides for today and future dates visible
-            return rideDate >= todayStr;
-        }
-
-        async function searchRides() {
+        // Real Search Results Generation via Firebase
+        document.getElementById('searchBtn').addEventListener('click', async function() {
             const from = document.getElementById('fromInput').value.trim();
             const to = document.getElementById('toInput').value.trim();
-            const date = document.getElementById('dateInput').value;
-            const time = document.getElementById('timeInput').value;
             const container = document.getElementById('searchResultsContainer');
-            const matchSummaryEl = document.getElementById('matchSummaryText');
             
-            container.innerHTML = '<div style="text-align: center; padding: 30px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--primary-color);"></i><p style="margin-top:10px; color: var(--text-muted);">Finding best matched rides...</p></div>';
-
-            if (searchUnsubscribe) { searchUnsubscribe(); searchUnsubscribe = null; }
+            container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Searching rides...</div>';
 
             try {
-                let query = window.db.collection('rides').where('status', '==', 'active');
+                let query = window.db.collection('Rides').where('status', '==', 'active');
+                
+                if (from) query = query.where('origin', '==', from);
+                if (to) query = query.where('destination', '==', to);
 
-                searchUnsubscribe = query.onSnapshot(snapshot => {
-                    let matchedRides = [];
-                    const prefMinutes = parseTimeToMinutes(time);
-
-                    snapshot.forEach(doc => {
-                        const ride = { id: doc.id, ...doc.data() };
-                        const rideStart = (ride.start || ride.origin || '').toLowerCase();
-                        const rideDest = (ride.dest || ride.destination || '').toLowerCase();
-                        const rideDate = ride.date || '';
-                        const rideTime = ride.time || '';
-
-                        // Filter out expired / past rides so only upcoming trips can be booked
-                        if (!isRideUpcoming(rideDate, rideTime)) {
-                            // Auto-mark expired rides in the background if older than 24h
-                            const rideTimestamp = new Date(rideDate).getTime();
-                            if (Date.now() - rideTimestamp > 24 * 60 * 60 * 1000) {
-                                doc.ref.update({ status: 'completed' }).catch(() => {});
-                            }
-                            return; // Do NOT show expired rides in Available Matched Rides!
-                        }
-
-                        // 1. Smart Route Matching (Direct + Route Corridor / Intermediate Town Match)
-                        let routeMatch = { isMatch: true };
-                        if (window.MapService && typeof window.MapService.isRouteMatching === 'function') {
-                            routeMatch = window.MapService.isRouteMatching(rideStart, rideDest, from, to);
-                        } else {
-                            const fromMatch = !from || rideStart.includes(from.toLowerCase()) || from.toLowerCase().includes(rideStart);
-                            const toMatch = !to || rideDest.includes(to.toLowerCase()) || to.toLowerCase().includes(rideDest);
-                            routeMatch = { isMatch: fromMatch && toMatch, type: 'direct' };
-                        }
-
-                        if (!routeMatch.isMatch) return;
-
-                        // 2. Match Date (if specified by passenger)
-                        if (date && rideDate !== date) return;
-
-                        // 3. Calculate Time Proximity (Distance in minutes)
-                        const rideMinutes = parseTimeToMinutes(rideTime);
-                        let timeDiff = 0;
-                        let matchScore = 100;
-
-                        if (prefMinutes !== null && rideMinutes !== null) {
-                            timeDiff = rideMinutes - prefMinutes;
-                            const absDiff = Math.abs(timeDiff);
-                            // Score decreases as time gap widens (max penalty 50)
-                            matchScore = Math.max(50, 100 - Math.min(absDiff / 2, 50));
-                        }
-
-                        matchedRides.push({
-                            ...ride,
-                            timeDiff,
-                            absDiff: Math.abs(timeDiff),
-                            matchScore: Math.round(matchScore),
-                            hasTimePref: prefMinutes !== null && rideMinutes !== null,
-                            isCorridorMatch: routeMatch.isCorridorMatch,
-                            corridorLabel: routeMatch.label
-                        });
-                    });
-
-                    // ─── SORTING LOGIC: Best Time Proximity & Chronological Order ───
-                    matchedRides.sort((a, b) => {
-                        // If user supplied preferred time, sort by lowest absolute time difference
-                        if (prefMinutes !== null) {
-                            if (a.absDiff !== b.absDiff) {
-                                return a.absDiff - b.absDiff;
-                            }
-                        }
-                        // Secondary sort: earliest ride time
-                        const minA = parseTimeToMinutes(a.time) || 0;
-                        const minB = parseTimeToMinutes(b.time) || 0;
-                        return minA - minB;
-                    });
-
-                    if (matchSummaryEl) {
-                        if (from || to || date || time) {
-                            matchSummaryEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${matchedRides.length} matching ride${matchedRides.length === 1 ? '' : 's'} found`;
-                        } else {
-                            matchSummaryEl.innerHTML = `Showing all ${matchedRides.length} active rides`;
-                        }
-                    }
-
-                    if (matchedRides.length === 0) {
-                        container.innerHTML = `
-                            <div style="text-align: center; padding: 40px 20px; color: var(--text-muted); background: white; border-radius: 16px; border: 1px dashed var(--border-color);">
-                                <i class="fa-solid fa-route fa-3x" style="color: var(--secondary-color); margin-bottom:15px;"></i>
-                                <h3 style="color: var(--primary-color); margin-bottom: 8px;">No matching rides found</h3>
-                                <p style="font-size: 0.9rem; margin-bottom: 20px;">We couldn't find a ride for this route and time window.<br>You can submit a custom ride request and let drivers accept your schedule!</p>
-                                <button class="btn btn-primary" style="width: auto; padding: 10px 25px;" onclick="document.getElementById('requestRideModal').style.display='flex'">
-                                    <i class="fa-solid fa-bullhorn me-1"></i> Request This Ride Now
-                                </button>
-                            </div>`;
+                // Use onSnapshot to automatically update when a driver adds a ride!
+                query.onSnapshot(snapshot => {
+                    if (snapshot.empty) {
+                        container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted);">No rides found for this route.</div>';
                         return;
                     }
 
-                    let html = `<h3 style="margin-bottom: 20px; color: var(--primary-color); display: flex; align-items: center; justify-content: space-between;">
-                        <span>Available Matched Rides (${matchedRides.length})</span>
-                    </h3>`;
-
-                    matchedRides.forEach(ride => {
-                        const driverInitial = ride.driverName ? ride.driverName.charAt(0).toUpperCase() : 'D';
-                        const seatsLeft = ride.seats || ride.availableSeats || 0;
-                        
-                        // 2-Hour Expiration Check
-                        const now = Date.now();
-                        const expiresAt = ride.expiresAt || (ride.createdAtMs ? ride.createdAtMs + 2*60*60*1000 : (ride.createdAt?.toMillis ? ride.createdAt.toMillis() + 2*60*60*1000 : null));
-                        const remainingSec = expiresAt ? Math.max(0, Math.floor((expiresAt - now) / 1000)) : null;
-                        const isExpired = ride.status === 'expired' || (remainingSec !== null && remainingSec <= 0);
-                        if (isExpired) return; // Automatically hide expired rides
-
-                        let countdownBadge = '';
-                        if (remainingSec !== null) {
-                            const hrs = Math.floor(remainingSec / 3600);
-                            const mins = Math.floor((remainingSec % 3600) / 60);
-                            const secs = remainingSec % 60;
-                            const timeStr = `${hrs > 0 ? hrs + 'h ' : ''}${mins}m ${secs < 10 ? '0' : ''}${secs}s`;
-                            countdownBadge = `<div style="margin-top: 5px;"><span class="badge live-ride-ticker" data-expires-at="${expiresAt}" style="background: rgba(245, 158, 11, 0.15); color: #b45309; font-weight: 700; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.75rem;"><i class="fa-solid fa-stopwatch me-1"></i> <span class="ticker-text">${timeStr} left</span></span></div>`;
-                        }
-
-                        // Dynamic distance-based pricing for intermediate stretch or full route
-                        let calculatedPrice = ride.price || 350;
-                        if (ride.isCorridorMatch) {
-                            const pFrom = from || ride.rideStart;
-                            const pTo = to || ride.rideDest;
-                            const dKm = window.FuelQuotaEngine ? window.FuelQuotaEngine.estimateDistance(pFrom, pTo) : 10;
-                            calculatedPrice = window.FuelQuotaEngine ? window.FuelQuotaEngine.calculatePassengerFare(dKm) : Math.max(100, Math.round(dKm * 25));
-                        }
-
-                        // Time proximity tag
-                        let proximityTag = '';
-                        if (ride.hasTimePref) {
-                            const diff = ride.timeDiff;
-                            if (diff === 0) {
-                                proximityTag = `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success-color); font-weight: 600;"><i class="fa-solid fa-star"></i> Perfect Time Match</span>`;
-                            } else if (ride.absDiff <= 120) {
-                                proximityTag = `<span class="badge" style="background: rgba(27, 94, 32, 0.1); color: var(--primary-color); font-weight: 500;"><i class="fa-regular fa-clock"></i> ${formatProximityDiff(diff)}</span>`;
-                            } else {
-                                proximityTag = `<span class="badge" style="background: rgba(0,0,0,0.05); color: var(--text-muted); font-weight: 500;">${formatProximityDiff(diff)}</span>`;
-                            }
-                        }
-
-                        const displayFrom = from ? (from.charAt(0).toUpperCase() + from.slice(1)) : (ride.start || ride.origin || '?');
-                        const displayTo = to ? (to.charAt(0).toUpperCase() + to.slice(1)) : (ride.dest || ride.destination || '?');
-
-                        html += `
-                            <div class="ride-card">
-                                <div class="ride-info">
-                                    <div class="ride-time">
-                                        <div style="font-size: 1.1rem; font-weight: 700;">${ride.time || 'N/A'}</div>
-                                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top: 3px;">${ride.date || ''}</div>
-                                        ${countdownBadge}
-                                        ${proximityTag ? `<div style="margin-top: 6px;">${proximityTag}</div>` : ''}
-                                    </div>
-                                    <div class="ride-route">
-                                        <div style="font-weight: 600; font-size: 1rem;"><i class="fa-regular fa-circle-dot" style="color:var(--primary-color); margin-right: 6px;"></i> ${ride.start || ride.origin || '?'}</div>
-                                        <div style="font-weight: 600; font-size: 1rem; margin-top: 4px;"><i class="fa-solid fa-location-dot" style="color:var(--secondary-color); margin-right: 6px;"></i> ${ride.dest || ride.destination || '?'}</div>
-                                        ${ride.isCorridorMatch ? `
-                                            <div style="margin-top: 6px;">
-                                                <span class="badge" style="background: rgba(14, 165, 233, 0.12); color: #0284c7; font-weight: 600; border: 1px solid rgba(14, 165, 233, 0.25); font-size: 0.78rem;">
-                                                    <i class="fa-solid fa-route me-1"></i> ${ride.corridorLabel} &bull; Pro-rated Fare
-                                                </span>
-                                            </div>
-                                        ` : ''}
-                                        <div class="ride-driver" style="margin-top: 10px;">
-                                            <div class="driver-avatar">${driverInitial}</div>
-                                            <span style="font-size: 0.9rem;">${ride.driverName || 'Verified Driver'} • <span style="color: var(--text-muted);">${ride.vehicle || ride.vehicleModel || 'Car'}</span></span>
-                                        </div>
+                    let html = `<h3 style="margin-bottom: 20px; color: var(--text-muted);">Available Rides (${snapshot.size})</h3>`;
+                    
+                    snapshot.forEach(doc => {
+                    const ride = doc.data();
+                    html += `
+                        <div class="ride-card">
+                            <div class="ride-info">
+                                <div class="ride-time">
+                                    <div>${ride.time} <span style="font-size:1rem; color:var(--text-muted);"></span></div>
+                                </div>
+                                <div class="ride-route">
+                                    <div style="font-weight: 500;"><i class="fa-regular fa-circle-dot" style="color:var(--primary-color);"></i> ${ride.origin}</div>
+                                    <div style="font-weight: 500;"><i class="fa-solid fa-location-dot" style="color:var(--secondary-color);"></i> ${ride.destination}</div>
+                                    <div class="ride-driver">
+                                        <div class="driver-avatar">${ride.driverName ? ride.driverName[0] : 'D'}</div>
+                                        <span style="font-size: 0.9rem;">${ride.driverName || 'Driver'} • ${ride.vehicle || 'Vehicle'}</span>
                                     </div>
                                 </div>
-                                <div class="ride-price">
-                                    <div class="price-header-mobile">
-                                        <div class="price-val">Rs. ${calculatedPrice}</div>
-                                        <div style="font-size: 0.82rem;">
-                                            ${seatsLeft > 0 
-                                                ? `<span style="color: var(--text-muted);"><i class="fa-solid fa-user-group me-1"></i> <strong style="color: var(--primary-color);">${seatsLeft}</strong> seat${seatsLeft === 1 ? '' : 's'} left</span>`
-                                                : `<span class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; font-weight: 600; font-size: 0.78rem; padding: 4px 8px; border-radius: 6px;"><i class="fa-solid fa-ban me-1"></i> Fully Booked</span>`
-                                            }
-                                            ${ride.isCorridorMatch ? '<div style="font-size:0.72rem; color:#0284c7; margin-top:2px;">(Distance fare)</div>' : ''}
-                                        </div>
-                                    </div>
-                                    <div class="ride-card-actions">
-                                        <button class="btn btn-sm" style="background: rgba(27, 94, 32, 0.08); color: var(--primary-color); border: 1.5px solid var(--primary-color); padding: 10px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem;" onclick="window.showRideRouteMap ? window.showRideRouteMap('${(ride.start || ride.origin || 'Kandy').replace(/'/g, "\\'")}', '${(ride.dest || ride.destination || 'Colombo').replace(/'/g, "\\'")}') : null">
-                                            <i class="fa-solid fa-map-location-dot"></i> View Route
-                                        </button>
-                                        ${seatsLeft > 0 
-                                            ? `<button class="btn btn-primary" style="padding: 10px 18px; border-radius: 10px; font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="openPaymentModal('${ride.id}', '${(ride.driverName || 'Driver').replace(/'/g,"\\'")}', '${ride.driverId || ''}', ${calculatedPrice}, '${displayFrom.replace(/'/g,"\\'")}', '${displayTo.replace(/'/g,"\\'")}')"><i class="fa-solid fa-ticket"></i> Book Ride</button>`
-                                            : `<button class="btn btn-secondary" style="padding: 10px 18px; border-radius: 10px; opacity:0.65; cursor:not-allowed; background: #94a3b8; border: none; font-size: 0.88rem; font-weight: 600; color: white; display: flex; align-items: center; justify-content: center; gap: 6px;" disabled><i class="fa-solid fa-lock"></i> Fully Booked</button>`
-                                        }
-                                    </div>
-                                </div>
-                            </div>`;
-                    });
-                    container.innerHTML = html;
-                    startLiveCountdownTicker();
-                }, error => {
-                    console.error("Error searching rides:", error);
-                    container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger-color);">Error loading rides. Please check your connection.</div>';
+                            </div>
+                            <div class="ride-price">
+                                <div class="price-val">Rs. ${ride.price || 0}</div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">${ride.availableSeats || 0} seats left</div>
+                                <button class="btn btn-primary" style="padding: 8px 20px;" onclick="openPaymentModal('${doc.id}', '${ride.driverName || 'Driver'}', ${ride.price || 0})">Book Now</button>
+                            </div>
+                        </div>
+                    `;
                 });
-
+                
+                container.innerHTML = html;
+            }, error => {
+                console.error("Error searching rides: ", error);
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger-color);">Error loading rides. Please check your connection.</div>';
+            });
+            
             } catch (error) {
-                console.error("Error setting up ride listener:", error);
+                console.error("Error setting up ride listener: ", error);
                 container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger-color);">Error connecting to database.</div>';
             }
-        }
-
-        // ─── Live 1-Second Countdown Ticker for Ride Cards ────────────────────
-        function startLiveCountdownTicker() {
-            if (window.liveRideCountdownInterval) clearInterval(window.liveRideCountdownInterval);
-            window.liveRideCountdownInterval = setInterval(() => {
-                const now = Date.now();
-                document.querySelectorAll('.live-ride-ticker').forEach(el => {
-                    const expiresAt = parseInt(el.getAttribute('data-expires-at'), 10);
-                    if (!expiresAt) return;
-                    const remainingSec = Math.max(0, Math.floor((expiresAt - now) / 1000));
-                    const textSpan = el.querySelector('.ticker-text') || el;
-                    if (remainingSec <= 0) {
-                        el.style.background = 'rgba(239,68,68,0.12)';
-                        el.style.color = '#dc2626';
-                        el.style.borderColor = 'rgba(239,68,68,0.3)';
-                        textSpan.innerHTML = 'Expired (Locked)';
-                        const card = el.closest('.ride-card');
-                        if (card) {
-                            const bookBtn = card.querySelector('.btn-primary');
-                            if (bookBtn && !bookBtn.disabled) {
-                                bookBtn.disabled = true;
-                                bookBtn.style.opacity = '0.5';
-                                bookBtn.style.cursor = 'not-allowed';
-                                bookBtn.innerText = 'Expired';
-                            }
-                        }
-                    } else {
-                        const hrs = Math.floor(remainingSec / 3600);
-                        const mins = Math.floor((remainingSec % 3600) / 60);
-                        const secs = remainingSec % 60;
-                        const timeStr = `${hrs > 0 ? hrs + 'h ' : ''}${mins}m ${secs < 10 ? '0' : ''}${secs}s left`;
-                        textSpan.innerHTML = timeStr;
-                    }
-                });
-            }, 1000);
-        }
-
-        // ─── Read URL Params (from Quick Find on Passenger Dashboard) ────────
-        function prefillFromQueryParams() {
-            const params = new URLSearchParams(window.location.search);
-            const fromParam = params.get('from');
-            const toParam = params.get('to');
-            const dateParam = params.get('date');
-            const timeParam = params.get('time');
-
-            if (fromParam) document.getElementById('fromInput').value = fromParam;
-            if (toParam) document.getElementById('toInput').value = toParam;
-            if (dateParam) document.getElementById('dateInput').value = dateParam;
-            if (timeParam) document.getElementById('timeInput').value = timeParam;
-        }
-
-        document.getElementById('searchBtn').addEventListener('click', searchRides);
-        
-        // Auto-search on load with query params prefilled
-        window.addEventListener('load', () => {
-            const dateInput = document.getElementById('dateInput');
-            if (dateInput) {
-                dateInput.min = new Date().toISOString().split('T')[0];
-            }
-            prefillFromQueryParams();
-            searchRides();
         });
 
-        // ─── Dual-Method Payment Modal (Wallet by Default + Card Alternative) ───
-        let currentBookingData = {};
-        let activePaymentTab = 'wallet';
+        // Trigger search on load to show initial list if inputs are empty
+        document.getElementById('searchBtn').click();
 
-        function switchPaymentTab(tab) {
-            activePaymentTab = tab;
-            const tabWalletBtn = document.getElementById('tabWalletBtn');
-            const tabCardBtn = document.getElementById('tabCardBtn');
-            const walletView = document.getElementById('walletPaymentView');
-            const cardView = document.getElementById('cardPaymentView');
+        // Payment Modal Functions
+        let currentBookingRideId = null;
 
-            if (tab === 'wallet') {
-                tabWalletBtn.style.background = 'var(--primary-color)';
-                tabWalletBtn.style.color = '#ffffff';
-                tabCardBtn.style.background = 'transparent';
-                tabCardBtn.style.color = 'var(--text-muted)';
-                walletView.style.display = 'block';
-                cardView.style.display = 'none';
-            } else {
-                tabCardBtn.style.background = 'var(--primary-color)';
-                tabCardBtn.style.color = '#ffffff';
-                tabWalletBtn.style.background = 'transparent';
-                tabWalletBtn.style.color = 'var(--text-muted)';
-                cardView.style.display = 'block';
-                walletView.style.display = 'none';
-            }
-        }
-
-        async function openPaymentModal(rideId, driverName, driverId, amount, rideFrom, rideTo) {
-            currentBookingData = { rideId, driverName, driverId, amount, rideFrom, rideTo, originalFrom: rideFrom, dest: rideTo };
+        function openPaymentModal(rideId, driverName, amount) {
+            currentBookingRideId = rideId;
             document.getElementById('payDriverName').innerText = driverName;
-            
-            const pickupInput = document.getElementById('payPickupInput');
-            if (pickupInput) {
-                pickupInput.value = rideFrom || '';
-            }
-
-            // Setup autocomplete on pickup location inside booking modal
-            setupAutocomplete("payPickupInput", "payPickupSuggestions", "origin", () => {
-                recalculateBookingFare();
-            });
-
-            await recalculateBookingFare();
+            document.getElementById('payAmount').innerText = amount;
             document.getElementById('paymentModal').style.display = 'flex';
-        }
-
-        // Real-time Map Distance & Dynamic Fare recalculation when passenger changes Boarding Point
-        async function recalculateBookingFare() {
-            const pickupInput = document.getElementById('payPickupInput');
-            const boardingPoint = (pickupInput ? pickupInput.value.trim() : '') || currentBookingData.rideFrom || 'Digana';
-            const dest = currentBookingData.dest || currentBookingData.rideTo || 'ICBT Kandy';
-
-            // Query Road Distance
-            let distanceKm = 16.0;
-            let durationMin = 25;
-
-            if (window.MapService && typeof window.MapService.geocodeLocation === 'function') {
-                try {
-                    const c1 = await window.MapService.geocodeLocation(boardingPoint);
-                    const c2 = await window.MapService.geocodeLocation(dest);
-                    if (c1 && c2) {
-                        const route = await window.MapService.fetchRoadRoute(c1, c2);
-                        if (route && route.distanceKm) {
-                            distanceKm = route.distanceKm;
-                            durationMin = route.durationMin || Math.round(distanceKm * 1.5);
-                        }
-                    }
-                } catch (mapErr) {
-                    console.warn("Booking fare distance query fallback:", mapErr);
-                }
-            }
-
-            if (!distanceKm || distanceKm <= 0) {
-                distanceKm = window.FuelQuotaEngine ? window.FuelQuotaEngine.estimateDistance(boardingPoint, dest) : 16.0;
-            }
-
-            // Dynamic campus carpooling fare: baseRate (120) + (distanceKm * 18), rounded to 10
-            const calculatedFare = Math.max(150, Math.round((120 + (distanceKm * 18)) / 10) * 10);
-
-            // Update current booking state
-            currentBookingData.amount = calculatedFare;
-            currentBookingData.rideFrom = boardingPoint;
-
-            // Update UI elements
-            const payAmountEl = document.getElementById('payAmount');
-            const payRouteEl = document.getElementById('payRouteDisplay');
-            const payDistEl = document.getElementById('payDistanceDisplay');
-
-            if (payAmountEl) payAmountEl.innerText = calculatedFare;
-            if (payRouteEl) payRouteEl.innerText = `${boardingPoint} → ${dest}`;
-            if (payDistEl) payDistEl.innerText = `~${distanceKm} km (${durationMin} mins)`;
-
-            // Fetch live user wallet balance from Firestore
-            let walletBal = currentUser ? (Number(currentUser.walletBalance) || 0) : 0;
-            if (window.db && currentUser && currentUser.uid) {
-                try {
-                    const snap = await window.db.collection('users').doc(currentUser.uid).get();
-                    if (snap.exists) {
-                        walletBal = Number(snap.data().walletBalance) || 0;
-                        currentUser.walletBalance = walletBal;
-                    }
-                } catch (e) {
-                    console.warn("Could not sync live wallet balance:", e);
-                }
-            }
-
-            const balText = document.getElementById('payWalletBalanceText');
-            const noticeEl = document.getElementById('walletStatusNotice');
-            const payBtn = document.getElementById('walletPayBtn');
-
-            if (balText) balText.innerText = `Rs. ${walletBal.toLocaleString()}`;
-
-            if (walletBal >= calculatedFare) {
-                if (noticeEl) {
-                    noticeEl.innerHTML = `<span style="color: var(--success-color);"><i class="fa-solid fa-circle-check me-1"></i> Sufficient Balance (Rs. ${(walletBal - calculatedFare).toLocaleString()} remaining after booking)</span>`;
-                }
-                if (payBtn) {
-                    payBtn.innerHTML = `<i class="fa-solid fa-wallet me-2"></i> Pay Rs. ${calculatedFare} from Wallet & Book`;
-                    payBtn.onclick = () => processPayment('wallet');
-                    payBtn.disabled = false;
-                    payBtn.style.opacity = '1';
-                }
-                switchPaymentTab('wallet');
-            } else {
-                const shortFall = calculatedFare - walletBal;
-                if (noticeEl) {
-                    noticeEl.innerHTML = `<span style="color: var(--danger-color);"><i class="fa-solid fa-triangle-exclamation me-1"></i> Insufficient Balance (Need Rs. ${shortFall.toLocaleString()} more). Please use card or top up.</span>`;
-                }
-                if (payBtn) {
-                    payBtn.innerHTML = `<i class="fa-regular fa-credit-card me-2"></i> Pay with Card Instead`;
-                    payBtn.onclick = () => switchPaymentTab('card');
-                }
-                switchPaymentTab('wallet');
-            }
         }
 
         function closePaymentModal() {
             document.getElementById('paymentModal').style.display = 'none';
         }
 
-        async function processPayment(paymentMethod = 'wallet') {
-            if (!currentBookingData.rideId) return;
-            if (!currentUser || !currentUser.uid) { 
-                alert('Session expired. Please log in again.'); 
-                window.location.href = '/main-login/login.html'; 
-                return; 
-            }
-
-            const amount = Number(currentBookingData.amount) || 0;
-            const walletBal = Number(currentUser.walletBalance || 0);
-
-            const activeBtn = paymentMethod === 'wallet' ? document.getElementById('walletPayBtn') : document.getElementById('cardPayBtn');
-            const origHtml = activeBtn ? activeBtn.innerHTML : '';
-            if (activeBtn) {
-                activeBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Confirming Booking...';
-                activeBtn.disabled = true;
-            }
+        async function processPayment() {
+            if (!currentBookingRideId) return;
+            
+            let btn = document.querySelector('#paymentModal .btn-primary');
+            let originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
 
             try {
-                if (paymentMethod === 'wallet') {
-                    if (amount > 0 && walletBal < amount) {
-                        alert(`Insufficient wallet balance (Available: Rs. ${walletBal}). Switching to card payment.`);
-                        switchPaymentTab('card');
-                        if (activeBtn) { activeBtn.innerHTML = origHtml; activeBtn.disabled = false; }
-                        return;
-                    }
-
-                    // Deduct from wallet
-                    if (amount > 0) {
-                        const newBalance = walletBal - amount;
-                        await window.db.collection('users').doc(currentUser.uid).update({ walletBalance: newBalance });
-                        currentUser.walletBalance = newBalance;
-                        localStorage.setItem('loggedInUser_passenger', JSON.stringify(currentUser));
-                        localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
-                    }
-                }
-
-                // Save booking to Firestore
-                const bookingRef = await window.db.collection('bookings').add({
-                    passengerId: currentUser.uid,
-                    passengerName: currentUser.name || 'Passenger',
-                    rideId: currentBookingData.rideId,
-                    driverId: currentBookingData.driverId,
-                    driverName: currentBookingData.driverName,
-                    rideFrom: currentBookingData.rideFrom,
-                    rideTo: currentBookingData.rideTo,
-                    amount: amount,
-                    paymentMethod: paymentMethod === 'wallet' ? 'ICBT Wallet' : 'Credit/Debit Card',
-                    status: 'Upcoming',
+                // Save booking to Firebase
+                await window.db.collection('Bookings').add({
+                    rideId: currentBookingRideId,
+                    passengerName: "Test Passenger", // Dummy name for now until login is implemented
+                    driverName: document.getElementById('payDriverName').innerText,
+                    amount: document.getElementById('payAmount').innerText,
+                    status: 'Pending',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 1. Decrement available seats on the Ride document in Firestore
-                if (currentBookingData.rideId) {
-                    try {
-                        const rideRef = window.db.collection('rides').doc(currentBookingData.rideId);
-                        const rDoc = await rideRef.get();
-                        if (rDoc.exists) {
-                            const curSeats = rDoc.data().seats !== undefined ? Number(rDoc.data().seats) : (Number(rDoc.data().availableSeats) || 1);
-                            const updatedSeats = Math.max(0, curSeats - 1);
-                            await rideRef.update({
-                                seats: updatedSeats,
-                                availableSeats: updatedSeats
-                            });
-                        }
-                    } catch (seatErr) {
-                        console.warn("Could not update ride seat count:", seatErr);
-                    }
-                }
-
-                // 2. Initialize Chat Document for this booking
-                if (currentBookingData.driverId) {
-                    const chatId = `${currentBookingData.rideId}_${currentUser.uid}_${currentBookingData.driverId}`;
-                    await window.db.collection('chats').doc(chatId).set({
-                        bookingId: bookingRef.id,
-                        rideId: currentBookingData.rideId,
-                        passengerId: currentUser.uid,
-                        passengerName: currentUser.name,
-                        driverId: currentBookingData.driverId,
-                        driverName: currentBookingData.driverName,
-                        lastMessage: "Ride Booked",
-                        lastTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        unread_passenger: 0,
-                        unread_driver: 0
-                    }, { merge: true });
-                }
-
-                // 3. Add notification for Passenger
-                await window.db.collection('notifications').add({
-                    userId: currentUser.uid,
-                    title: 'Booking Confirmed!',
-                    message: `Your ride with ${currentBookingData.driverName} from ${currentBookingData.rideFrom} to ${currentBookingData.rideTo} has been booked.`,
-                    type: 'booking',
-                    read: false,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                // 4. Send Instant Live Notification to Driver
-                if (currentBookingData.driverId) {
-                    await window.db.collection('notifications').add({
-                        userId: currentBookingData.driverId,
-                        title: '🚗 New Passenger Booking!',
-                        message: `${currentUser.name || 'A passenger'} booked a seat from ${currentBookingData.rideFrom} to ${currentBookingData.rideTo} (Paid Rs. ${amount}).`,
-                        type: 'booking',
-                        rideId: currentBookingData.rideId,
-                        passengerId: currentUser.uid,
-                        passengerName: currentUser.name || 'Passenger',
-                        amount: amount,
-                        read: false,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-
+                alert('✅ Booking Successful!\n\nYour ride has been successfully booked. You can view it in the My Bookings section.');
                 closePaymentModal();
                 window.location.href = 'bookings.html';
             } catch (error) {
-                console.error("Error booking ride:", error);
-                alert('Error booking ride. Please try again.');
-                if (activeBtn) { activeBtn.innerHTML = origHtml; activeBtn.disabled = false; }
+                console.error("Error booking ride: ", error);
+                alert('❌ Error booking ride. Please try again.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         }
 
-        // ─── Custom Ride Request ─────────────────────────────────────────────
         async function submitRideRequest() {
             const origin = document.getElementById('reqOrigin').value.trim();
             const destination = document.getElementById('reqDestination').value.trim();
             const date = document.getElementById('reqDate').value;
             const time = document.getElementById('reqTime').value;
-            const seats = parseInt(document.getElementById('reqSeats')?.value || '1', 10);
-            const fare = parseFloat(document.getElementById('reqFare')?.value || '350');
-            const note = document.getElementById('reqNote')?.value.trim() || '';
 
-            if (!origin || !destination || !date || !time) { 
-                alert("Please fill in all fields to request a ride."); 
-                return; 
-            }
-            if (!currentUser) { 
-                alert('Please log in first.'); 
-                return; 
+            if (!origin || !destination || !date || !time) {
+                alert("Please fill in all fields to request a ride.");
+                return;
             }
 
             try {
-                const nowMs = Date.now();
-                const expiresMs = nowMs + (20 * 60 * 1000); // 20-minute live validity window
-                const senderName = currentUser.fullName || currentUser.name || 'Passenger';
-
-                const reqDoc = await window.db.collection('RideRequests').add({
-                    passengerId: currentUser.uid,
-                    passengerName: senderName,
-                    passengerPhone: currentUser.phone || '',
+                // Save custom ride request to Firebase
+                await window.db.collection('RideRequests').add({
+                    passengerName: "Test Passenger", // Dummy name
                     origin: origin,
                     destination: destination,
                     date: date,
                     time: time,
-                    seats: seats,
-                    fare: fare,
-                    note: note,
                     status: 'pending',
-                    validityMinutes: 20,
-                    createdAtMs: nowMs,
-                    expiresAt: expiresMs,
                     driverName: null,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // Send real-time notification to drivers
-                try {
-                    await window.db.collection('notifications').add({
-                        targetRole: 'driver',
-                        type: 'custom_ride_request',
-                        requestId: reqDoc.id,
-                        title: '🚗 New Custom Ride Request',
-                        message: `${senderName} requested a ride (${seats} seat${seats > 1 ? 's' : ''}, Rs. ${fare}) from ${origin} to ${destination} on ${date} at ${time}.`,
-                        origin: origin,
-                        destination: destination,
-                        date: date,
-                        time: time,
-                        seats: seats,
-                        fare: fare,
-                        passengerId: currentUser.uid,
-                        passengerName: senderName,
-                        read: false,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                } catch (notifErr) {
-                    console.warn("Could not create driver broadcast notification:", notifErr);
-                }
-
+                alert('✅ Ride Request Submitted!\n\nYour request has been sent to all drivers. You can view its status in the My Bookings section.');
                 document.getElementById('requestRideModal').style.display = 'none';
+                
+                // Clear form
                 document.getElementById('reqOrigin').value = '';
                 document.getElementById('reqDestination').value = '';
                 document.getElementById('reqDate').value = '';
                 document.getElementById('reqTime').value = '';
-                if (document.getElementById('reqNote')) document.getElementById('reqNote').value = '';
-
-                // Show modern in-app popup modal
-                document.getElementById('customReqSuccessModal').style.display = 'flex';
+                
             } catch (error) {
-                console.error("Error creating ride request:", error);
-                alert("Failed to submit request. Please try again.");
+                console.error("Error submitting ride request: ", error);
+                alert('❌ Error submitting request. Please try again.');
             }
         }
-
-        // Auto calculate fare based on map distance in search_rides.html
-        let searchReqFareDebounce = null;
-        window.autoCalculateSearchReqFare = function() {
-            clearTimeout(searchReqFareDebounce);
-            searchReqFareDebounce = setTimeout(async () => {
-                const oInput = document.getElementById('reqOrigin');
-                const dInput = document.getElementById('reqDestination');
-                const sSelect = document.getElementById('reqSeats');
-                const fInput = document.getElementById('reqFare');
-                const dBox = document.getElementById('reqDistanceInfo');
-                const dText = document.getElementById('reqDistText');
-
-                if (!oInput || !dInput || !fInput) return;
-                const o = oInput.value.trim();
-                const d = dInput.value.trim();
-                const seats = parseInt(sSelect ? sSelect.value : '1', 10) || 1;
-
-                if (!o || !d || o.length < 2 || d.length < 2) {
-                    if (dBox) dBox.style.display = 'none';
-                    return;
-                }
-
-                if (dBox && dText) {
-                    dBox.style.display = 'block';
-                    dText.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Calculating route distance...';
-                }
-
-                try {
-                    let distanceKm = 15.0;
-                    let durationMins = 30;
-
-                    if (window.MapService && typeof window.MapService.geocodeLocation === 'function') {
-                        const c1 = await window.MapService.geocodeLocation(o);
-                        const c2 = await window.MapService.geocodeLocation(d);
-                        if (c1 && c2) {
-                            const route = await window.MapService.fetchRoadRoute(c1, c2);
-                            if (route && route.distanceKm) {
-                                distanceKm = route.distanceKm;
-                                durationMins = route.durationMins || Math.round(distanceKm * 2.2);
-                            }
-                        }
-                    }
-
-                    const baseRate = 120;
-                    const perKmRate = 18;
-                    const perSeatFare = Math.max(150, Math.round((baseRate + (distanceKm * perKmRate)) / 10) * 10);
-                    const totalFare = perSeatFare * seats;
-
-                    fInput.value = totalFare;
-
-                    if (dBox && dText) {
-                        dBox.style.display = 'block';
-                        dText.innerHTML = `<span><strong>~${distanceKm} km</strong> (${durationMins} mins) &bull; <strong style="color:var(--success-color);">Rs. ${perSeatFare}/seat</strong></span>`;
-                    }
-                } catch (e) {
-                    if (dBox) dBox.style.display = 'none';
-                }
-            }, 350);
-        };
-
-        document.getElementById('reqOrigin')?.addEventListener('input', autoCalculateSearchReqFare);
-        document.getElementById('reqDestination')?.addEventListener('input', autoCalculateSearchReqFare);
     </script>
 </body>
 </html>
