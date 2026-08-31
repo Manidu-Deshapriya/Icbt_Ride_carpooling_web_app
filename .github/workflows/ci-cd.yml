@@ -16,17 +16,17 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     - name: Restore .NET Dependencies
-      run: dotnet restore "icbt ride/icbt ride.csproj"
+      run: dotnet restore "icbt ride/icbt ride/icbt ride.csproj"
     - name: Build .NET Application
-      run: dotnet build "icbt ride/icbt ride.csproj" --no-restore --configuration Release
+      run: dotnet build "icbt ride/icbt ride/icbt ride.csproj" --no-restore --configuration Release
     - name: Setup Node.js Environment
       uses: actions/setup-node@v4
       with:
         node-version: '18'
     - name: Verify Backend REST API Server
       run: |
-        cd "icbt ride/server"
+        cd "icbt ride/icbt ride/server"
         npm install
         node -c server.js
     - name: Build and Test Docker Container
-      run: docker build -t icbt-ride-app "icbt ride"
+      run: docker build -t icbt-ride-app "icbt ride/icbt ride"
