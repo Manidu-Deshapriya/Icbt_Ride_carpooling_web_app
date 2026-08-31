@@ -13,9 +13,13 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     
-    <!-- PWA Manifest -->
+    <!-- PWA Manifest & Meta Tags -->
     <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -132,6 +136,65 @@
     <script type="module">
         import "/admin-dashboard/js/firebase-config.js";
 
+        // ── Auto-redirect if already logged in ─────────────────────────────────
+        (function checkExistingSession() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('logout') === 'true') {
+                    localStorage.removeItem('loggedInUser');
+                    localStorage.removeItem('loggedInUser_passenger');
+                    localStorage.removeItem('loggedInUser_driver');
+                    localStorage.removeItem('loggedInUser_owner');
+                    localStorage.removeItem('loggedInUserId');
+                    localStorage.removeItem('loggedInUserRole');
+                    sessionStorage.clear();
+                    return;
+                }
+
+                const drvUser = localStorage.getItem('loggedInUser_driver');
+                const passUser = localStorage.getItem('loggedInUser_passenger');
+                const ownUser = localStorage.getItem('loggedInUser_owner');
+                const genericUser = localStorage.getItem('loggedInUser');
+
+                if (drvUser) {
+                    const u = JSON.parse(drvUser);
+                    if (u.uid) {
+                        window.location.replace('/driver-dashboard/driver_dashboard.html');
+                        return;
+                    }
+                }
+                if (passUser) {
+                    const u = JSON.parse(passUser);
+                    if (u.uid) {
+                        window.location.replace('/passenger-dashboard/passenger_dashboard.html');
+                        return;
+                    }
+                }
+                if (ownUser) {
+                    const u = JSON.parse(ownUser);
+                    if (u.uid) {
+                        window.location.replace('/owner-dashboard/owner_dashboard.html');
+                        return;
+                    }
+                }
+                if (genericUser) {
+                    const u = JSON.parse(genericUser);
+                    if (u.role === 'driver') {
+                        window.location.replace('/driver-dashboard/driver_dashboard.html');
+                        return;
+                    } else if (u.role === 'passenger') {
+                        window.location.replace('/passenger-dashboard/passenger_dashboard.html');
+                        return;
+                    } else if (u.role === 'owner') {
+                        window.location.replace('/owner-dashboard/owner_dashboard.html');
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn("Auto-redirect check error:", e);
+            }
+        })();
+
         async function verifyLogin(formId, btnId, errorId, role, redirectUrl) {
             const form = document.getElementById(formId);
             form.addEventListener('submit', async function(e) {
@@ -215,14 +278,8 @@
         verifyLogin('passengerLoginForm', 'p-login-btn', 'p-login-error', 'passenger', '/passenger-dashboard/passenger_dashboard.html');
         verifyLogin('driverLoginForm', 'd-login-btn', 'd-login-error', 'driver', '/driver-dashboard/driver_dashboard.html');
         verifyLogin('ownerLoginForm', 'o-login-btn', 'o-login-error', 'owner', '/owner-dashboard/owner_dashboard.html');
-
-        // Register Service Worker for PWA Installation
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js');
-            });
-        }
     </script>
+    <script src="/js/pwa-install.js"></script>
 
     <!-- Install App Guide Modal -->
     <div id="instructionModal" class="custom-modal">
