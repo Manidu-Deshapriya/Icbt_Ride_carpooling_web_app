@@ -1,4 +1,14 @@
-// In development, always fetch from the network and do not enable offline support.
-// This is because caching would make development more difficult (changes would not
-// be reflected on the first load after each change).
-self.addEventListener('fetch', () => { });
+// Service Worker for ICBT Ride PWA
+self.addEventListener('install', (e) => {
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', (e) => {
+    e.waitUntil(
+        caches.keys().then((keys) => {
+            return Promise.all(
+                keys.map((key) => caches.delete(key))
+            );
+        }).then(() => self.clients.claim())
+    );
+});
