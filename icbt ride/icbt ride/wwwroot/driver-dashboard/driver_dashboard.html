@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICBT Ride - Driver Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #E8F5E9;
+            --surface-color: #ffffff;
+            --border-color: #A5D6A7;
+            --primary-color: #1B5E20;
+            --secondary-color: #66BB6A;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --text-main: #1B5E20;
+            --text-muted: #4caf50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #F9FBF9;
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-links li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-links li a:hover, .nav-links li a.active {
+            background: #E8F5E9;
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2rem 3rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem; position: relative;
+        }
+
+        .greeting h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+        
+        .greeting p {
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Sections */
+        .section-container {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .section-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .single-view {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .single-view .card {
+            margin-bottom: 24px;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        /* Forms & Inputs */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(27, 94, 32, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(27, 94, 32, 0.2);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            box-shadow: 0 6px 20px rgba(27, 94, 32, 0.3);
+        }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            width: auto;
+        }
+        
+        .btn-success { background: var(--success-color); color: #fff; }
+        .btn-danger { background: var(--danger-color); color: #fff; }
+
+        /* Status Badge */
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* List Items */
+        .list-item {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .list-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .list-item-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* Metrics */
+        .metric-box {
+            text-align: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--success-color), #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: 70px;
+            right: 180px;
+            width: 320px;
+            background: var(--surface-color);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 100;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .notification-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            gap: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .notification-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+        }
+
+        /* Success Modal Specific */
+        .success-modal-content {
+            text-align: center;
+            padding: 40px 30px;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Bottom Nav (Hidden on PC) */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 10px 20px;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
+
+        .bottom-nav-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bottom-nav-links li {
+            flex: 1;
+            text-align: center;
+        }
+
+        .bottom-nav-links a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-nav-links a span {
+            font-size: 0.65rem;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .bottom-nav-links a.active, .bottom-nav-links a:hover {
+            color: var(--primary-color);
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .mobile-header-logo {
+            display: none;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: auto;
+            align-items: center;
+            gap: 8px;
+        }
+
+                .mobile-logout-btn {
+            display: none;
+            color: var(--danger-color);
+            font-size: 1.4rem;
+            position: absolute;
+            top: 5px;
+            right: 0px;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            .card[style*="grid-row"] { grid-row: span 1 !important; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 1.5rem; padding-bottom: 80px; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+                margin-bottom: 1.5rem; position: relative;
+            }
+            
+            .greeting-container {
+                display: flex;
+                align-items: center;
+                width: 100%;
+            }
+
+            .bottom-nav { display: block; }
+            .mobile-header-logo { display: flex; }
+            .mobile-logout-btn { display: block; }
+
+            .user-profile {
+                width: 100%;
+                justify-content: flex-end;
+                background: rgba(255,255,255,0.02);
+                padding: 10px;
+                border-radius: 12px;
+            }
+
+            .notification-dropdown {
+                right: 10px;
+                top: 60px;
+                width: 300px;
+            }
+        }
+    
+        .text-muted, .text-muted-custom { color: #94a3b8 !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo" style="flex-direction: column; align-items: flex-start; gap: 0;">
+            <div>ICBT Ride</div>
+            <div style="font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-top: -5px;">DRIVER</div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="driver_dashboard.html" class="active"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i> Profile & Docs</a></li>
+            <li><a href="rides.html"><i class="fa-solid fa-route"></i> My Rides</a></li>
+            <li><a href="requests.html"><i class="fa-solid fa-users"></i> Requests</a></li>
+            <li><a href="sustainability.html"><i class="fa-solid fa-leaf"></i> Sustainability</a></li>
+        </ul>
+        <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <a href="/main-login/login.html" class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color); display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; width: 100%;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <a href="/main-login/login.html" class="mobile-logout-btn" style="position: absolute; top: 0; right: 0; padding: 10px;" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+            <div class="greeting-container">
+                <div class="greeting">
+                    <h1 id="greeting">Hello, Driver</h1>
+                    <p>Welcome to your driver dashboard. Let's start carpooling!</p>
+                </div>
+            </div>
+            <div class="user-profile" style="position: relative;">
+                <div class="mobile-header-logo" style="flex-direction: column; align-items: flex-start; gap: 0; line-height: 1;">
+                    <div>ICBT Ride</div>
+                    <div style="font-size: 0.65rem; font-weight: 600; letter-spacing: 1.5px; color: var(--text-muted); margin-top: 2px;">DRIVER</div>
+                </div>
+                <i class="fa-regular fa-bell" id="bellIcon" style="font-size: 1.2rem; cursor: pointer;"></i>
+                
+                
+                <!-- Notification Dropdown -->
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="dropdown-header">Notifications</div>
+                    <div id="notificationList">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <div class="avatar" id="avatarInitials" style="cursor: pointer;">D</div>
+                <div style="cursor: pointer;" id="profileTriggerText">
+                    <div style="font-weight: 600;" id="profileName">Loading...</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);" id="driverStatus">Checking Status...</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD SECTION -->
+        <div class="section-container active">
+            <div class="dashboard-grid">
+                <!-- 1. Account & Verification -->
+                <div class="card">
+                    <div class="card-header"><i class="fa-solid fa-id-badge"></i> Vehicle & Profile</div>
+                    <div class="list-item">
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Vehicle Model</p>
+                        <p style="font-size: 1.1rem; font-weight: 500; margin-bottom: 10px;" id="vehicleModel">--</p>
+                        
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Plate Number</p>
+                        <p style="font-size: 1.1rem; font-weight: 500; margin-bottom: 10px;" id="plateNumber">--</p>
+                        
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Available Seats</p>
+                        <p style="font-size: 1.1rem; font-weight: 500;" id="availableSeats">--</p>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                        <span>License Docs:</span>
+                        <span class="badge" id="licenseStatus" style="background: rgba(255,255,255,0.1);">Checking...</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                        <span>Vehicle Reg:</span>
+                        <span class="badge" id="vehicleRegStatus" style="background: rgba(255,255,255,0.1);">Checking...</span>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="window.location.href='profile.html'">Update Documents</button>
+                </div>
+
+                <!-- 2. Ride Management (Offer Ride) -->
+                <div class="card" style="grid-row: span 2;">
+                    <div class="card-header"><i class="fa-solid fa-map-location-dot"></i> Offer a Ride</div>
+                    <form id="offerRideForm">
+                        <div class="form-group">
+                            <label>Start Location</label>
+                            <input type="text" class="form-control" id="offerStart" placeholder="e.g., Kandy" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Destination</label>
+                            <input type="text" class="form-control" id="offerDest" placeholder="e.g., ICBT Campus" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" class="form-control" id="offerDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time</label>
+                            <input type="time" class="form-control" id="offerTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Available Seats</label>
+                            <input type="number" class="form-control" id="offerSeats" min="1" max="6" value="3" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Publish Ride</button>
+                    </form>
+
+                    <div class="card-header" style="margin-top: 30px;"><i class="fa-solid fa-route"></i> Active Rides</div>
+                    <div id="activeRidesContainer">
+                        <p style="color: var(--text-muted); text-align: center; margin-top: 15px;">No active rides at the moment.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Passenger Requests -->
+                <div class="card">
+                    <div class="card-header"><i class="fa-solid fa-users"></i> Passenger Requests</div>
+                    <div id="passengerRequestsContainer">
+                        <p style="color: var(--text-muted); text-align: center; margin-top: 15px;">No passenger requests yet.</p>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="window.location.href='requests.html'">View All Requests</button>
+                </div>
+
+                <!-- 4. Sustainability & Analytics -->
+                <div class="card">
+                    <div class="card-header"><i class="fa-solid fa-leaf"></i> Sustainability Metrics</div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; text-align: center;">Your contribution this month</p>
+                    
+                    <div class="metric-box">
+                        <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px;"><i class="fa-solid fa-cloud"></i> COÃƒÂ¢Ã¢â‚¬Å¡Ã¢â‚¬Å¡ Saved</div>
+                        <div class="metric-value"><span id="co2Saved">0</span> <span style="font-size: 1.2rem; font-weight: 500;">kg</span></div>
+                    </div>
+                    
+                    <div class="metric-box" style="margin-bottom: 0;">
+                        <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px;"><i class="fa-solid fa-gas-pump"></i> Fuel Saved</div>
+                        <div class="metric-value" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;"><span id="fuelSaved">0</span> <span style="font-size: 1.2rem; font-weight: 500;">Liters</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Profile Edit Modal -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-user-pen"></i> Edit Profile</div>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="form-control" id="editNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Vehicle Model</label>
+                    <input type="text" class="form-control" id="editVehicleInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Plate Number</label>
+                    <input type="text" class="form-control" id="editPlateInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Available Seats</label>
+                    <input type="number" class="form-control" id="editSeatsInput" min="1" max="6" required>
+                </div>
+                
+                <div class="form-group" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <label style="color: var(--primary-color); font-weight: 500; margin-bottom: 15px;"><i class="fa-solid fa-shield-halved"></i> Verified Documents</label>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">These documents are verified. You cannot change them directly. Contact the admin to request a change.</p>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn btn-sm" style="flex: 1; background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color);" onclick="contactAdminForDocs('Driving License')"><i class="fa-solid fa-id-card" style="margin-right: 5px; color: var(--text-muted);"></i> Driving License</button>
+                        <button type="button" class="btn btn-sm" style="flex: 1; background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color);" onclick="contactAdminForDocs('National Identity Card (NIC)')"><i class="fa-regular fa-id-badge" style="margin-right: 5px; color: var(--text-muted);"></i> NIC</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 25px;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content success-modal-content">
+            <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <h2 style="color: var(--text-main); margin-bottom: 15px;" id="successModalTitle">Success!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 25px;" id="successModalMessage">Your action was completed successfully.</p>
+            <button class="btn btn-primary" id="successModalBtn" style="width: 50%;">Done</button>
+        </div>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script src="app.js"></script>
+
+    <!-- Bottom Navigation (Mobile Only) -->
+    <nav class="bottom-nav">
+        <ul class="bottom-nav-links">
+            <li><a href="driver_dashboard.html" class="active"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
+            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i><span>Profile</span></a></li>
+            <li><a href="rides.html"><i class="fa-solid fa-route"></i><span>Rides</span></a></li>
+            <li><a href="requests.html"><i class="fa-solid fa-users"></i><span>Requests</span></a></li>
+            <li><a href="sustainability.html"><i class="fa-solid fa-leaf"></i><span>Eco</span></a></li>
+        </ul>
+    </nav>
+</body>
+</html>
+
+
+
+
+

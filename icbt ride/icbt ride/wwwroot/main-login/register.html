@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICBT Ride - Register</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0f172a">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <ul class="bg-slideshow">
+        <li style="background-image: url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070&auto=format&fit=crop')"></li>
+        <li style="background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop')"></li>
+        <li style="background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop')"></li>
+        <li style="background-image: url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=2075&auto=format&fit=crop')"></li>
+    </ul>
+
+    <div class="login-container">
+        <div class="glass-box">
+            
+            <h2 class="brand-title">
+                <img src="/icon-192.png" alt="ICBT Ride"> ICBT Ride
+            </h2>
+
+            <!-- Role Selector -->
+            <ul class="nav nav-pills justify-content-center mb-4" id="roleTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="passenger-tab" data-bs-toggle="pill" data-bs-target="#passenger-pane" type="button" role="tab">Passenger</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="driver-tab" data-bs-toggle="pill" data-bs-target="#driver-pane" type="button" role="tab">Driver</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="owner-tab" data-bs-toggle="pill" data-bs-target="#owner-pane" type="button" role="tab">Owner</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="roleTabsContent">
+                
+                <!-- PASSENGER SECTION -->
+                <div class="tab-pane fade show active" id="passenger-pane" role="tabpanel" tabindex="0">
+                    <!-- Passenger Register Form -->
+                    <form id="passengerRegisterForm">
+                        <h4 class="text-center mb-3">Create Passenger Account</h4>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Full Name</label>
+                            <input type="text" class="form-control" id="p-reg-name" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" placeholder="e.g. John Doe" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Phone Number</label>
+                            <input type="tel" class="form-control" id="p-reg-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  pattern="07[0-9]{8}" title="Phone number must start with 07 and contain exactly 10 digits" placeholder="07xxxxxxxx" maxlength="10" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Profile Picture</label>
+                            <input type="file" class="form-control" id="p-reg-image" accept="image/*" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <input type="email" class="form-control" id="p-reg-email" placeholder="e.g. passenger@example.com" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">User Type</label>
+                                <select class="form-select" id="p-reg-usertype">
+                                    <option value="Student">Student</option>
+                                    <option value="Staff">Staff</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">ID Number (Optional)</label>
+                                <input type="text" class="form-control" id="p-reg-studentid" placeholder="Student or Staff ID">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" class="form-control" id="p-reg-password" placeholder="Enter a secure password" required minlength="6">
+                        </div>
+                        
+                        <p class="text-muted small mb-3"><i class="fa-solid fa-circle-info text-success"></i> Note: Your account will be pending until admin verification.</p>
+
+                        <div class="error-msg" id="p-reg-error"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="p-reg-btn">Submit Application</button>
+                        
+                        <div class="auth-switch">
+                            Already have an account? <a href="login.html">Log in here</a>
+                        </div>
+                    </form>
+                </div>
+
+
+                <!-- DRIVER SECTION -->
+                <div class="tab-pane fade" id="driver-pane" role="tabpanel" tabindex="0">
+                    <!-- Driver Register Form -->
+                    <form id="driverRegisterForm">
+                        <h4 class="text-center mb-3">Driver Application</h4>
+
+                        <!-- Driver Employment Type Selection -->
+                        <div class="mb-3 p-3" style="background: rgba(27,94,32,0.06); border: 1.5px solid var(--border-color); border-radius: 12px;">
+                            <label class="form-label text-success fw-bold mb-2"><i class="fa-solid fa-car-side me-1"></i> Employment Type</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="driverType" id="d-type-self" value="self_employed" checked>
+                                    <label class="form-check-label fw-medium" for="d-type-self">
+                                        I have my own vehicle (Self-employed)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="driverType" id="d-type-hired" value="hired">
+                                    <label class="form-check-label fw-medium" for="d-type-hired">
+                                        I work for an Owner (Hired Driver)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Owner Selection (Visible only if Hired Driver) -->
+                        <div class="mb-3" id="ownerSelectContainer" style="display: none;">
+                            <label class="form-label text-muted fw-bold"><i class="fa-solid fa-user-tie text-success me-1"></i> Select Vehicle Owner</label>
+                            <select class="form-select border-success" id="d-reg-owner">
+                                <option value="">Loading registered vehicle owners...</option>
+                            </select>
+                            <div class="form-text small text-muted">Your application will be sent directly to this owner for approval and vehicle assignment.</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Full Name</label>
+                                <input type="text" class="form-control" id="d-reg-name" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" placeholder="e.g. Kamal De Silva" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Phone Number</label>
+                                <input type="tel" class="form-control" id="d-reg-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  pattern="07[0-9]{8}" title="Phone number must start with 07 and contain exactly 10 digits" placeholder="07xxxxxxxx" maxlength="10" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">NIC Number</label>
+                                <input type="text" class="form-control" id="d-reg-nic" pattern="^([0-9]{9}[vVxX]|[0-9]{12})$" title="Enter a valid Sri Lankan NIC (e.g. 123456789V or 199012345678)" placeholder="e.g. 901234567V" maxlength="12" required>
+                            </div>
+                            <div class="col-md-6 mb-3" id="driverVehiclePlateContainer">
+                                <label class="form-label text-muted" id="driverPlateLabel">Vehicle Plate Number</label>
+                                <input type="text" class="form-control" id="d-reg-plate" placeholder="e.g. WP ABC-1234">
+                            </div>
+                        </div>
+
+                        <div class="row" id="driverSelfVehicleFields">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Vehicle Make & Model</label>
+                                <input type="text" class="form-control" id="d-reg-model" placeholder="e.g. Toyota Aqua / Prius">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Available Passenger Seats</label>
+                                <input type="number" class="form-control" id="d-reg-seats" min="1" max="8" value="3" placeholder="e.g. 3">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Profile Picture</label>
+                            <input type="file" class="form-control" id="d-reg-image" accept="image/*" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <input type="email" class="form-control" id="d-reg-email" placeholder="e.g. driver@example.com" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">User Type</label>
+                                <select class="form-select" id="d-reg-usertype">
+                                    <option value="Student">Student</option>
+                                    <option value="Staff">Staff</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">ID Number (Optional)</label>
+                                <input type="text" class="form-control" id="d-reg-studentid" placeholder="Student or Staff ID">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" class="form-control" id="d-reg-password" placeholder="Enter a secure password" required minlength="6">
+                        </div>
+                        
+                        <p class="text-muted small mb-3" id="driverApprovalNotice"><i class="fa-solid fa-circle-info text-success"></i> Note: Your account will be pending until verified.</p>
+
+                        <div class="error-msg" id="d-reg-error"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="d-reg-btn">Submit Application</button>
+                        
+                        <div class="auth-switch">
+                            Already applied? <a href="login.html">Log in here</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- OWNER SECTION -->
+                <div class="tab-pane fade" id="owner-pane" role="tabpanel" tabindex="0">
+                    <!-- Owner Register Form -->
+                    <form id="ownerRegisterForm">
+                        <h4 class="text-center mb-3">Create Owner Account</h4>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Full Name</label>
+                            <input type="text" class="form-control" id="o-reg-name" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" placeholder="e.g. Nimal Perera" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Phone Number</label>
+                            <input type="tel" class="form-control" id="o-reg-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  pattern="07[0-9]{8}" title="Phone number must start with 07 and contain exactly 10 digits" placeholder="07xxxxxxxx" maxlength="10" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">NIC Number</label>
+                            <input type="text" class="form-control" id="o-reg-nic" pattern="^([0-9]{9}[vVxX]|[0-9]{12})$" title="Enter a valid Sri Lankan NIC" placeholder="e.g. 901234567V" maxlength="12" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Profile Picture</label>
+                            <input type="file" class="form-control" id="o-reg-image" accept="image/*" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <input type="email" class="form-control" id="o-reg-email" placeholder="e.g. owner@example.com" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Password</label>
+                            <input type="password" class="form-control" id="o-reg-password" placeholder="Enter a secure password" required minlength="6">
+                        </div>
+                        
+                        <p class="text-muted small mb-3"><i class="fa-solid fa-circle-info text-success"></i> Note: Your account will be pending until admin verification.</p>
+
+                        <div class="error-msg" id="o-reg-error"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="o-reg-btn">Submit Application</button>
+                        
+                        <div class="auth-switch">
+                            Already have an account? <a href="login.html">Log in here</a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Registration Guide Button inside Glass Box -->
+            <div class="mt-4 pt-3 border-top text-center">
+                <button type="button" id="helpRegisterBtn" class="btn btn-outline-success w-100" style="border-radius: 8px; font-weight: 600; padding: 10px;">
+                    <i class="fa-solid fa-circle-question me-2"></i> Registration Guide & Help
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase Config & Registration Logic -->
+    <script type="module">
+        import "/admin-dashboard/js/firebase-config.js";
+
+        // Global Client-side Image Compression function (Outputs optimized Base64 JPEG)
+        const compressImage = (file) => {
+            return new Promise((resolve, reject) => {
+                if (!file) return resolve("");
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 300;
+                        const scaleSize = Math.min(1, MAX_WIDTH / img.width);
+                        canvas.width = img.width * scaleSize;
+                        canvas.height = img.height * scaleSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const base64String = canvas.toDataURL('image/jpeg', 0.7);
+                        resolve(base64String);
+                    };
+                    img.onerror = (error) => reject(error);
+                };
+                reader.onerror = (error) => reject(error);
+            });
+        };
+
+        // Helper: Process and return profile image URL safely (Fast, No CORS / Storage lock issues)
+        async function uploadProfileImage(file) {
+            if (!file) return "";
+            try {
+                return await compressImage(file);
+            } catch (err) {
+                console.error("Image processing error:", err);
+                return "";
+            }
+        }
+
+        // --- Driver Employment Type Toggle & Owner Fetching ---
+        const dTypeSelf = document.getElementById('d-type-self');
+        const dTypeHired = document.getElementById('d-type-hired');
+        const ownerSelectContainer = document.getElementById('ownerSelectContainer');
+        const ownerSelect = document.getElementById('d-reg-owner');
+        const driverSelfVehicleFields = document.getElementById('driverSelfVehicleFields');
+        const driverVehiclePlateContainer = document.getElementById('driverVehiclePlateContainer');
+        const driverPlateLabel = document.getElementById('driverPlateLabel');
+        const driverApprovalNotice = document.getElementById('driverApprovalNotice');
+
+        let registeredOwners = [];
+
+        async function loadRegisteredOwners() {
+            try {
+                const querySnapshot = await window.fsGetDocs(window.fsQuery(
+                    window.fsCollection(window.firebaseDb, "users"),
+                    window.fsWhere("role", "==", "owner")
+                ));
+                registeredOwners = [];
+                let optionsHtml = '<option value="">-- Choose an Owner --</option>';
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    registeredOwners.push({ id: doc.id, ...data });
+                    optionsHtml += `<option value="${doc.id}">${data.name || data.fullName || 'Owner'} (${data.phone || data.email || 'Verified Owner'})</option>`;
+                });
+                if (registeredOwners.length === 0) {
+                    optionsHtml = '<option value="">No registered owners available currently</option>';
+                }
+                if (ownerSelect) ownerSelect.innerHTML = optionsHtml;
+            } catch (err) {
+                console.error("Error loading owners:", err);
+                if (ownerSelect) ownerSelect.innerHTML = '<option value="">Failed to load owners. Try again.</option>';
+            }
+        }
+
+        function updateDriverFormUI() {
+            const isHired = dTypeHired && dTypeHired.checked;
+            if (isHired) {
+                if (ownerSelectContainer) ownerSelectContainer.style.display = 'block';
+                if (driverSelfVehicleFields) driverSelfVehicleFields.style.display = 'none';
+                if (driverVehiclePlateContainer) driverVehiclePlateContainer.style.display = 'none';
+                if (ownerSelect) ownerSelect.required = true;
+                if (driverApprovalNotice) {
+                    driverApprovalNotice.innerHTML = '<i class="fa-solid fa-circle-info text-success"></i> Note: Your application will be sent directly to the selected vehicle owner for approval & vehicle assignment.';
+                }
+                loadRegisteredOwners();
+            } else {
+                if (ownerSelectContainer) ownerSelectContainer.style.display = 'none';
+                if (driverSelfVehicleFields) driverSelfVehicleFields.style.display = 'flex';
+                if (driverVehiclePlateContainer) driverVehiclePlateContainer.style.display = 'block';
+                if (ownerSelect) ownerSelect.required = false;
+                if (driverApprovalNotice) {
+                    driverApprovalNotice.innerHTML = '<i class="fa-solid fa-circle-info text-success"></i> Note: Your account and vehicle will be registered upon submission.';
+                }
+            }
+        }
+
+        if (dTypeSelf) dTypeSelf.addEventListener('change', updateDriverFormUI);
+        if (dTypeHired) dTypeHired.addEventListener('change', updateDriverFormUI);
+
+        // Preload owners on page load
+        loadRegisteredOwners();
+
+        // Passenger Registration
+        document.getElementById('passengerRegisterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('p-reg-btn');
+            const errorMsg = document.getElementById('p-reg-error');
+            errorMsg.style.display = 'none';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing photo & submitting...';
+            btn.disabled = true;
+
+            const name = document.getElementById('p-reg-name').value.trim();
+            const phone = document.getElementById('p-reg-phone').value.trim();
+            const email = document.getElementById('p-reg-email').value.trim();
+            const userType = document.getElementById('p-reg-usertype').value;
+            const studentId = document.getElementById('p-reg-studentid').value.trim();
+            const password = document.getElementById('p-reg-password').value;
+            const imageFile = document.getElementById('p-reg-image').files[0];
+
+            try {
+                let profilePicUrl = "";
+                if (imageFile) {
+                    profilePicUrl = await uploadProfileImage(imageFile);
+                }
+
+                await window.fsAddDoc(window.fsCollection(window.firebaseDb, "users"), {
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    userType: userType,
+                    studentId: studentId,
+                    password: password,
+                    profilePicUrl: profilePicUrl,
+                    role: 'passenger',
+                    status: 'pending',
+                    walletBalance: 0,
+                    createdAt: new Date().toISOString()
+                });
+
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Application Submitted!';
+                btn.classList.replace('btn-primary', 'btn-success');
+                
+                setTimeout(() => {
+                    alert("Your application has been submitted and is pending admin approval.");
+                    window.location.href = '/main-login/login.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                errorMsg.innerText = "Error creating account: " + (error.message || "Please try again.");
+                errorMsg.style.display = 'block';
+                btn.innerHTML = 'Submit Application';
+                btn.disabled = false;
+            }
+        });
+
+        // Driver Registration
+        document.getElementById('driverRegisterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('d-reg-btn');
+            const errorMsg = document.getElementById('d-reg-error');
+            errorMsg.style.display = 'none';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing photo & submitting...';
+            btn.disabled = true;
+
+            const isHired = dTypeHired && dTypeHired.checked;
+            const name = document.getElementById('d-reg-name').value.trim();
+            const phone = document.getElementById('d-reg-phone').value.trim();
+            const nic = document.getElementById('d-reg-nic').value.trim();
+            const email = document.getElementById('d-reg-email').value.trim();
+            const password = document.getElementById('d-reg-password').value;
+            const userType = document.getElementById('d-reg-usertype').value;
+            const studentId = document.getElementById('d-reg-studentid').value.trim();
+            const imageFile = document.getElementById('d-reg-image').files[0];
+
+            let vehiclePlate = '';
+            let vehicleModel = '';
+            let seats = 3;
+            let selectedOwnerId = null;
+            let selectedOwnerName = '';
+
+            if (isHired) {
+                selectedOwnerId = ownerSelect ? ownerSelect.value : null;
+                if (!selectedOwnerId) {
+                    errorMsg.innerText = "Please select a vehicle owner from the dropdown.";
+                    errorMsg.style.display = 'block';
+                    btn.innerHTML = 'Submit Application';
+                    btn.disabled = false;
+                    return;
+                }
+                const ownerObj = registeredOwners.find(o => o.id === selectedOwnerId);
+                selectedOwnerName = ownerObj ? (ownerObj.name || ownerObj.fullName || 'Vehicle Owner') : 'Vehicle Owner';
+            } else {
+                vehiclePlate = document.getElementById('d-reg-plate').value.trim();
+                vehicleModel = document.getElementById('d-reg-model').value.trim() || 'Car';
+                seats = parseInt(document.getElementById('d-reg-seats').value) || 3;
+            }
+
+            try {
+                let profilePicUrl = "";
+                if (imageFile) {
+                    profilePicUrl = await uploadProfileImage(imageFile);
+                }
+
+                // 1. Create Driver User Document
+                const driverDocRef = await window.fsAddDoc(window.fsCollection(window.firebaseDb, "users"), {
+                    name: name,
+                    fullName: name,
+                    phone: phone,
+                    nic: nic,
+                    email: email,
+                    password: password,
+                    userType: userType,
+                    studentId: studentId,
+                    profilePicUrl: profilePicUrl,
+                    role: 'driver',
+                    driverType: isHired ? 'hired' : 'self_employed',
+                    ownerId: isHired ? selectedOwnerId : null,
+                    ownerName: isHired ? selectedOwnerName : null,
+                    ownerApprovalStatus: isHired ? 'pending' : 'approved',
+                    status: 'pending',
+                    walletBalance: 0,
+                    totalEarnings: 0,
+                    totalRides: 0,
+                    vehiclePlate: vehiclePlate,
+                    vehicleModel: vehicleModel,
+                    availableSeats: seats,
+                    createdAt: new Date().toISOString()
+                });
+
+                const driverUid = driverDocRef.id;
+
+                // 2. If Self-Employed, register vehicle directly to vehicles collection
+                if (!isHired && vehiclePlate) {
+                    const vDocRef = await window.fsAddDoc(window.fsCollection(window.firebaseDb, "vehicles"), {
+                        ownerId: driverUid,
+                        ownerName: name,
+                        makeModel: vehicleModel,
+                        plateNumber: vehiclePlate,
+                        type: 'Car',
+                        seats: seats,
+                        fuelType: 'Petrol',
+                        status: 'Active',
+                        assignedDriverId: driverUid,
+                        assignedDriverName: name,
+                        totalRides: 0,
+                        totalEarnings: 0,
+                        totalPassengers: 0,
+                        createdAt: new Date().toISOString()
+                    });
+                    // Link assignedVehicleId
+                    await window.fsUpdateDoc(window.fsDoc(window.firebaseDb, "users", driverUid), {
+                        assignedVehicleId: vDocRef.id
+                    });
+                }
+
+                // 3. If Hired, notify the vehicle owner
+                if (isHired && selectedOwnerId) {
+                    await window.fsAddDoc(window.fsCollection(window.firebaseDb, "notifications"), {
+                        userId: selectedOwnerId,
+                        title: "New Driver Application! 🚗",
+                        message: `${name} has applied to work as a driver under your fleet. Review and assign a vehicle.`,
+                        type: "driver_application",
+                        driverId: driverUid,
+                        driverName: name,
+                        driverPhone: phone,
+                        driverNic: nic,
+                        read: false,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Application Submitted!';
+                btn.classList.replace('btn-primary', 'btn-success');
+                
+                setTimeout(() => {
+                    if (isHired) {
+                        alert(`Your driver application has been sent to owner "${selectedOwnerName}". Once approved and assigned to a vehicle, you can log in.`);
+                    } else {
+                        alert("Your driver account and vehicle have been submitted and are pending admin verification.");
+                    }
+                    window.location.href = '/main-login/login.html';
+                }, 1600);
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                errorMsg.innerText = "Error submitting application: " + (error.message || "Please try again.");
+                errorMsg.style.display = 'block';
+                btn.innerHTML = 'Submit Application';
+                btn.disabled = false;
+            }
+        });
+
+        // Owner Registration
+        document.getElementById('ownerRegisterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('o-reg-btn');
+            const errorMsg = document.getElementById('o-reg-error');
+            errorMsg.style.display = 'none';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing photo & submitting...';
+            btn.disabled = true;
+
+            const name = document.getElementById('o-reg-name').value.trim();
+            const phone = document.getElementById('o-reg-phone').value.trim();
+            const nic = document.getElementById('o-reg-nic').value.trim();
+            const email = document.getElementById('o-reg-email').value.trim();
+            const password = document.getElementById('o-reg-password').value;
+            const imageFile = document.getElementById('o-reg-image').files[0];
+
+            try {
+                let profilePicUrl = "";
+                if (imageFile) {
+                    profilePicUrl = await uploadProfileImage(imageFile, 'owner', email.replace(/[@.]/g, '_'));
+                }
+
+                await window.fsAddDoc(window.fsCollection(window.firebaseDb, "users"), {
+                    name: name,
+                    phone: phone,
+                    nic: nic,
+                    email: email,
+                    password: password,
+                    profilePicUrl: profilePicUrl,
+                    role: 'owner',
+                    status: 'pending',
+                    walletBalance: 0,
+                    createdAt: new Date().toISOString()
+                });
+
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Application Submitted!';
+                btn.classList.replace('btn-primary', 'btn-success');
+                
+                setTimeout(() => {
+                    alert("Your application has been submitted and is pending admin approval.");
+                    window.location.href = '/main-login/login.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                errorMsg.innerText = "Error creating account: " + (error.message || "Please try again.");
+                errorMsg.style.display = 'block';
+                btn.innerHTML = 'Submit Application';
+                btn.disabled = false;
+            }
+        });
+
+        // Register Service Worker for PWA Installation
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js');
+            });
+        }
+    </script>
+
+    <!-- Registration Guide Modal -->
+    <div id="regGuideModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Registration Guide & Help</h2>
+                <span class="close-modal" id="closeRegGuideModal">&times;</span>
+            </div>
+            <div class="modal-body" style="line-height:1.6; color: #333; max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 15px; padding: 15px; background: rgba(27, 94, 32, 0.05); border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                    <h5 style="color: var(--primary-color); font-weight: 700; margin-top: 0;"><i class="fa-solid fa-user me-2"></i> 1. Passenger Registration</h5>
+                    <p class="mb-1">Select <strong>Passenger</strong> tab, enter your details, upload your profile picture, and submit.</p>
+                </div>
+
+                <div style="margin-bottom: 15px; padding: 15px; background: rgba(2, 132, 199, 0.05); border-radius: 10px; border-left: 4px solid #0284c7;">
+                    <h5 style="color: #0284c7; font-weight: 700; margin-top: 0;"><i class="fa-solid fa-car-side me-2"></i> 2. Driver Application</h5>
+                    <p class="mb-1">Select <strong>Driver</strong> tab, enter your NIC, vehicle plate, and upload your profile picture.</p>
+                </div>
+
+                <div style="margin-bottom: 15px; padding: 15px; background: rgba(217, 119, 6, 0.05); border-radius: 10px; border-left: 4px solid #d97706;">
+                    <h5 style="color: #d97706; font-weight: 700; margin-top: 0;"><i class="fa-solid fa-id-badge me-2"></i> 3. Owner Account</h5>
+                    <p class="mb-1">Select <strong>Owner</strong> tab, enter your legal name, NIC, phone, and upload your profile picture.</p>
+                </div>
+
+                <div style="padding: 12px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffeeba; font-size: 0.88rem;">
+                    <strong><i class="fa-solid fa-clock-rotate-left"></i> Verification Process:</strong>
+                    All submitted accounts are reviewed and verified by an administrator before access is granted.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .custom-modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .custom-modal.active { display: flex !important; }
+        .modal-content { background-color: #fff; padding: 25px; border-radius: 16px; width: 90%; max-width: 480px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .modal-header h2 { font-size: 1.3rem; color: var(--primary-color); font-weight: 600; margin: 0; }
+        .close-modal { font-size: 1.8rem; cursor: pointer; color: var(--danger-color); line-height: 1; }
+    </style>
+
+    <script>
+        const regGuideBtn = document.getElementById('helpRegisterBtn');
+        const regModal = document.getElementById('regGuideModal');
+        const closeRegModal = document.getElementById('closeRegGuideModal');
+
+        if (regGuideBtn) {
+            regGuideBtn.addEventListener('click', () => {
+                regModal.classList.add('active');
+            });
+        }
+
+        if (closeRegModal) {
+            closeRegModal.addEventListener('click', () => {
+                regModal.classList.remove('active');
+            });
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target === regModal) {
+                regModal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+

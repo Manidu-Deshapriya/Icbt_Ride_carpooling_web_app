@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICBT Ride - Ride History</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #E8F5E9;
+            --surface-color: #ffffff;
+            --border-color: #A5D6A7;
+            --primary-color: #1B5E20;
+            --secondary-color: #66BB6A;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --info-color: #3B82F6;
+            --text-main: #1B5E20;
+            --text-muted: #4caf50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #F9FBF9;
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-links li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links li a:hover, .nav-links li a.active {
+            background: #E8F5E9;
+            color: var(--primary-color);
+        }
+
+        /* Bottom Nav (Hidden on PC) */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            z-index: 9999;
+            padding: 8px 10px;
+            border-radius: 18px 18px 0 0;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .bottom-nav-links {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        .bottom-nav-links li {
+            flex: 1;
+            text-align: center;
+        }
+
+        .bottom-nav-links a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.15rem;
+            padding: 6px 2px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-nav-links a span {
+            font-size: 0.65rem;
+            margin-top: 3px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .bottom-nav-links a.active, .bottom-nav-links a:hover {
+            color: var(--primary-color);
+            font-weight: 700;
+            background: #E8F5E9;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2rem 3rem;
+            padding-bottom: 50px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .greeting h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+        
+        .greeting p {
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .mobile-header-logo {
+            display: none;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: auto;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mobile-logout-btn {
+            display: none;
+            color: var(--danger-color);
+            font-size: 1.4rem;
+            text-decoration: none;
+        }
+
+        /* Ride History Styles */
+        .filters-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            color: var(--text-main);
+            outline: none;
+            background: rgba(232, 245, 233, 0.2);
+        }
+        .filter-group select:focus, .filter-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .card-container {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-bottom: 2px solid var(--border-color);
+            background: rgba(232, 245, 233, 0.2);
+        }
+
+        td {
+            font-weight: 500;
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+        .status-completed { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
+        .status-cancelled { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+        .status-ongoing { background: rgba(59, 130, 246, 0.1); color: var(--info-color); }
+
+        .location-col {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        .location-col .pickup {
+            color: var(--primary-color);
+        }
+        .location-col .dropoff {
+            color: var(--danger-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            body { width: 100% !important; overflow-x: hidden !important; }
+            .sidebar { display: none !important; }
+            .bottom-nav { display: block !important; }
+            .main-content { margin-left: 0 !important; padding: 1rem !important; padding-bottom: 95px !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; }
+            .mobile-header-logo { display: flex !important; }
+            .mobile-logout-btn { display: block !important; position: absolute !important; right: 0 !important; top: 0 !important; }
+            .greeting { display: none !important; }
+            .header { align-items: center; justify-content: center; position: relative; margin-bottom: 1.2rem; }
+            .user-profile { width: 100% !important; justify-content: space-between !important; background: rgba(255,255,255,0.6) !important; padding: 10px 14px !important; border-radius: 12px !important; }
+            
+            .filters-container { flex-direction: column; }
+            .table-wrapper { padding: 0 10px 15px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar (Desktop) -->
+    <aside class="sidebar">
+        <div class="logo"><img src="/icon-192.png" alt="ICBT Ride"> ICBT Ride</div>
+        <ul class="nav-links">
+            <li><a href="owner_dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="vehicles.html"><i class="fa-solid fa-car"></i> My Vehicles</a></li>
+            <li><a href="drivers.html"><i class="fa-solid fa-user-tie"></i> Drivers & Assignments</a></li>
+            <li><a href="rides.html" class="active"><i class="fa-solid fa-route"></i> Ride History</a></li>
+            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i> Profile</a></li>
+        </ul>
+        <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
+            <a href="#" id="logoutBtn" style="color: var(--danger-color); text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; padding: 12px 15px;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Bottom Nav (Mobile) -->
+    <nav class="bottom-nav">
+        <ul class="bottom-nav-links">
+            <li><a href="owner_dashboard.html"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
+            <li><a href="vehicles.html"><i class="fa-solid fa-car"></i><span>Vehicles</span></a></li>
+            <li><a href="drivers.html"><i class="fa-solid fa-user-tie"></i><span>Drivers</span></a></li>
+            <li><a href="rides.html" class="active"><i class="fa-solid fa-route"></i><span>Rides</span></a></li>
+            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i><span>Profile</span></a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="mobile-header-logo"><img src="/icon-192.png" alt="Logo" style="height: 30px;"> ICBT Ride</div>
+            <div class="greeting">
+                <h1>Ride History</h1>
+                <p>Track rides completed by your vehicles.</p>
+            </div>
+            <div class="user-profile">
+                <a href="#" class="mobile-logout-btn"><i class="fa-solid fa-right-from-bracket"></i></a>
+                <div style="text-align: right; display: flex; flex-direction: column;" class="d-none d-md-flex">
+                    <span style="font-weight: 600;">Vehicle Owner</span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">owner@icbtride.com</span>
+                </div>
+                <div class="avatar">O</div>
+            </div>
+        </header>
+
+        <!-- Filters -->
+        <div class="filters-container">
+            <div class="filter-group">
+                <label>Filter by Status</label>
+                <select id="rideStatusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="completed">Completed</option>
+                    <option value="active">Active / In Progress</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Filter by Vehicle</label>
+                <select id="rideVehicleFilter">
+                    <option value="all">All Fleet Vehicles</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Filter by Driver</label>
+                <select id="rideDriverFilter">
+                    <option value="all">All Fleet Drivers</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Rides Table -->
+        <div class="card-container">
+            <div class="card-header" style="padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin:0; font-size: 1.15rem;"><i class="fa-solid fa-clock-rotate-left me-2"></i> Fleet Ride Transactions & Earnings Split</h3>
+                <span style="font-size: 0.85rem; color: var(--text-muted);" id="fleetRidesCount">0 rides recorded</span>
+            </div>
+            <div class="table-wrapper">
+                <table id="ownerRidesTable">
+                    <thead>
+                        <tr>
+                            <th>Ride ID</th>
+                            <th>Date & Time</th>
+                            <th>Driver & Vehicle</th>
+                            <th>Route</th>
+                            <th>Total Fare</th>
+                            <th>Driver Payout</th>
+                            <th>Owner Revenue</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ownerRidesTbody">
+                        <tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin me-1"></i> Loading fleet ride history...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Custom Owner Logic -->
+    <script src="../js/pwa-install.js"></script>
+    <script type="module" src="js/owner-app.js"></script>
+</body>
+</html>

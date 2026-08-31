@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - Passenger Dashboard</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="../css/chat-widget.css">
+    <style>
+        :root {
+            --bg-color: #E8F5E9;
+            --surface-color: rgba(255, 255, 255, 0.7);
+            --border-color: rgba(27, 94, 32, 0.15);
+            --primary-color: #1B5E20;
+            --secondary-color: #66BB6A;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --text-main: #064e3b;
+            --text-muted: #475569;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(102, 187, 106, 0.2) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(165, 214, 167, 0.3) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Sidebar & Layout */
+        .sidebar { width: 280px; background: var(--surface-color); backdrop-filter: blur(12px); border-right: 1px solid var(--border-color); padding: 2rem; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
+        .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
+        .nav-links { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+        .nav-links li a { color: var(--text-muted); text-decoration: none; font-size: 1.1rem; display: flex; align-items: center; gap: 15px; padding: 12px 15px; border-radius: 12px; transition: all 0.3s ease; }
+        .nav-links li a:hover, .nav-links li a.active { background: rgba(102, 187, 106, 0.15); color: var(--primary-color); }
+        .main-content { margin-left: 280px; flex: 1; padding: 2rem 3rem; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
+        .greeting h1 { font-size: 2.2rem; font-weight: 600; }
+        .greeting p { color: var(--text-muted); margin-top: 5px; }
+        .user-profile { display: flex; align-items: center; gap: 15px; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; color: #fff; }
+
+        .card { background: var(--surface-color); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 24px; }
+        .card-header { font-size: 1.2rem; font-weight: 600; color: var(--primary-color); margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        
+        /* Bookings List */
+        .booking-item { background: rgba(255, 255, 255, 0.6); border: 1px solid var(--border-color); border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .booking-item:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: #fff; }
+        .badge-upcoming { background: var(--primary-color); }
+        .badge-completed { background: var(--success-color); }
+
+        .btn { padding: 8px 15px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
+        .btn-outline { background: transparent; border: 1px solid var(--danger-color); color: var(--danger-color); }
+        .btn-outline:hover { background: rgba(239, 68, 68, 0.1); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: #fff; border: none; }
+
+        /* Bottom Nav */
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-top: 1px solid var(--border-color); z-index: 1000; padding: 10px 20px; border-radius: 20px 20px 0 0; }
+        .bottom-nav-links { display: flex; justify-content: space-between; align-items: center; list-style: none; }
+        .bottom-nav-links li { flex: 1; text-align: center; }
+        .bottom-nav-links a { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 1.2rem; padding: 8px; border-radius: 12px; }
+        .bottom-nav-links a.active { color: var(--primary-color); background: rgba(102, 187, 106, 0.15); }
+        .bottom-nav-links a span { font-size: 0.65rem; margin-top: 4px; }
+        .mobile-header-logo { display: none; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); margin-right: auto; gap: 8px; }
+
+        @media (max-width: 768px) {
+            body { display: block; overflow-x: hidden; width: 100%; }
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 1rem; padding-bottom: 90px; width: 100%; }
+            .bottom-nav { display: block; z-index: 9999; }
+            .mobile-header-logo { display: flex; font-size: 1.2rem; }
+            .greeting-container { display: none; }
+            
+            .header { margin-bottom: 1.5rem; }
+            .user-profile {
+                width: 100%;
+                justify-content: space-between;
+                background: rgba(255,255,255,0.4);
+                padding: 10px 15px;
+                border-radius: 12px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
+            .booking-item { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .booking-actions { width: 100%; display: flex; justify-content: flex-end; }
+        }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center; }
+        .modal-content { background: var(--bg-color); width: 90%; max-width: 400px; border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        
+        /* Chat */
+        .chat-messages { height: 250px; overflow-y: auto; background: rgba(255,255,255,0.5); border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 0.9rem; }
+        .msg.received { background: white; align-self: flex-start; border-bottom-left-radius: 0; }
+        .msg.sent { background: var(--primary-color); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+        .chat-input-area { display: flex; gap: 10px; }
+        .chat-input-area input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid var(--border-color); outline: none; }
+        .chat-input-area button { background: var(--primary-color); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+
+        /* Rating */
+        .star-rating { display: flex; justify-content: center; gap: 10px; margin: 20px 0; font-size: 2rem; color: #cbd5e1; cursor: pointer; }
+        .star-rating i.active, .star-rating i:hover { color: #facc15; }
+        .rating-textarea { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 15px; resize: none; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo" style="flex-direction: column; align-items: flex-start; gap: 0;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="logo.png" alt="ICBT Ride" style="height: 40px; border-radius: 50%;">
+                <span>ICBT Ride</span>
+            </div>
+            <div style="font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-top: 3px; margin-left: 50px;">PASSENGER</div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="passenger_dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="search_rides.html"><i class="fa-solid fa-magnifying-glass"></i> Find a Ride</a></li>
+            <li><a href="bookings.html" class="active"><i class="fa-solid fa-book-open"></i> My Bookings</a></li>
+            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i> Profile</a></li>
+        </ul>
+        <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05);">
+            <a href="/main-login/login.html" class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color); display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; width: 100%;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="greeting-container">
+                <div class="greeting">
+                    <h1>My Bookings</h1>
+                    <p>View and manage your upcoming and past rides.</p>
+                </div>
+            </div>
+            <div class="user-profile">
+                <div class="mobile-header-logo" style="flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.1;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <img src="logo.png" alt="Logo" style="height: 26px; border-radius: 50%;"> 
+                        <span>ICBT Ride</span>
+                    </div>
+                    <div style="font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; color: var(--primary-color); margin-top: 2px; margin-left: 32px;">PASSENGER</div>
+                </div>
+                <div class="avatar">P</div>
+            </div>
+        </header>
+
+        <div class="card" id="myRequestsCard">
+            <div class="card-header"><i class="fa-solid fa-bullhorn"></i> My Ride Requests</div>
+            <div id="myRequestsContainer">
+                <p style="text-align: center; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading requests...</p>
+            </div>
+        </div>
+
+        <div class="card" id="upcomingRidesCard">
+            <div class="card-header"><i class="fa-regular fa-calendar-check"></i> Upcoming Rides</div>
+            <div id="upcomingRidesContainer">
+                <p style="text-align: center; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading bookings...</p>
+            </div>
+        </div>
+
+        <div class="card" id="pastRidesCard">
+            <div class="card-header"><i class="fa-solid fa-clock-rotate-left"></i> Past Rides</div>
+            <div id="pastRidesContainer">
+                <!-- Past rides go here -->
+                <p style="text-align: center; color: var(--text-muted);">No past rides.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <ul class="bottom-nav-links">
+            <li><a href="passenger_dashboard.html"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
+            <li><a href="search_rides.html"><i class="fa-solid fa-magnifying-glass"></i><span>Find</span></a></li>
+            <li><a href="bookings.html" class="active"><i class="fa-solid fa-book-open"></i><span>Bookings</span></a></li>
+            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i><span>Profile</span></a></li>
+        </ul>
+    </nav>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('chatModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="margin-bottom: 15px; color: var(--primary-color);">Chat with <span id="chatDriverName">Driver</span></h3>
+            <div class="chat-messages" id="chatMessages">
+                <div class="msg received">Hi! I will be at the pickup location in 10 mins.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type a message...">
+                <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <button class="modal-close" onclick="closeModal('ratingModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color: var(--primary-color);">Rate <span id="ratingDriverName">Driver</span></h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">How was your ride?</p>
+            
+            <div class="star-rating" id="starRating">
+                <i class="fa-solid fa-star" data-val="1"></i>
+                <i class="fa-solid fa-star" data-val="2"></i>
+                <i class="fa-solid fa-star" data-val="3"></i>
+                <i class="fa-solid fa-star" data-val="4"></i>
+                <i class="fa-solid fa-star" data-val="5"></i>
+            </div>
+            
+            <textarea class="rating-textarea" rows="3" placeholder="Leave a review (optional)"></textarea>
+            <button class="btn btn-primary" onclick="submitRating()">Submit Rating</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/app-dialogs.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../js/map-service.js"></script>
+    <script src="../js/pwa-install.js"></script>
+    <script src="../js/in-app-notification-service.js"></script>
+    <script src="app.js"></script>
+    <script src="../js/chat-widget.js"></script>
+    <script>
+        // ─── Session (Isolated for Passenger) ─────────────────────────────────
+        function getPassengerSession() {
+            try {
+                const passRaw = localStorage.getItem('loggedInUser_passenger');
+                if (passRaw) return JSON.parse(passRaw);
+                const raw = localStorage.getItem('loggedInUser');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.role === 'passenger') return parsed;
+                }
+                const legacyId = localStorage.getItem('loggedInUserId');
+                const legacyRole = localStorage.getItem('loggedInUserRole');
+                if (legacyId && (!legacyRole || legacyRole === 'passenger')) return { uid: legacyId, name: 'Passenger', role: 'passenger' };
+            } catch (e) {
+                console.error("Error reading passenger session:", e);
+            }
+            return null;
+        }
+
+        const currentUser = getPassengerSession();
+        if (!currentUser || !currentUser.uid) window.location.href = '/main-login/login.html';
+
+        // ─── Populate Header ──────────────────────────────────────────────────
+        function loadHeaderUser() {
+            if (!currentUser) return;
+            const avatarEl = document.querySelector('.avatar');
+            if (avatarEl) {
+                const picUrl1 = currentUser.profileImageUrl || currentUser.profilePicUrl;
+                if (picUrl1) {
+                    avatarEl.innerHTML = `<img src="${picUrl1}" alt="${currentUser.name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    avatarEl.style.background = 'transparent';
+                } else {
+                    avatarEl.textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'P';
+                }
+            }
+
+            if (window.db && currentUser.uid) {
+                window.db.collection('users').doc(currentUser.uid).onSnapshot(snap => {
+                    if (snap.exists) {
+                        const data = snap.data();
+                        currentUser.name = data.name || currentUser.name;
+                        currentUser.profilePicUrl = data.profilePicUrl || currentUser.profilePicUrl || '';
+                        localStorage.setItem('loggedInUser_passenger', JSON.stringify({ ...currentUser, ...data }));
+                        if (avatarEl) {
+                            const picUrl2 = currentUser.profileImageUrl || currentUser.profilePicUrl;
+                            if (picUrl2) {
+                                avatarEl.innerHTML = `<img src="${picUrl2}" alt="${currentUser.name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                                avatarEl.style.background = 'transparent';
+                            } else {
+                                avatarEl.textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'P';
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ─── Modal helpers ────────────────────────────────────────────────────
+        function openChatModal(driverName) {
+            const widgetBtn = document.getElementById('chat-widget-btn');
+            if (widgetBtn) {
+                widgetBtn.click();
+                return;
+            }
+            document.getElementById('chatDriverName').innerText = driverName;
+            document.getElementById('chatModal').style.display = 'flex';
+        }
+        function openRatingModal(driverName) {
+            document.getElementById('ratingDriverName').innerText = driverName;
+            document.getElementById('ratingModal').style.display = 'flex';
+        }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // ─── Dummy Chat ───────────────────────────────────────────────────────
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (msg) {
+                const msgs = document.getElementById('chatMessages');
+                msgs.innerHTML += `<div class="msg sent">${msg}</div>`;
+                input.value = '';
+                msgs.scrollTop = msgs.scrollHeight;
+                setTimeout(() => {
+                    msgs.innerHTML += `<div class="msg received">Okay, noted!</div>`;
+                    msgs.scrollTop = msgs.scrollHeight;
+                }, 1500);
+            }
+        }
+
+        // ─── Rating ───────────────────────────────────────────────────────────
+        const stars = document.querySelectorAll('.star-rating i');
+        let selectedRating = 0;
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = this.getAttribute('data-val');
+                stars.forEach(s => s.classList.remove('active'));
+                for (let i = 0; i < selectedRating; i++) stars[i].classList.add('active');
+            });
+        });
+        function submitRating() {
+            if (selectedRating === 0) { alert("Please select a star rating first."); return; }
+            alert(`Thank you for rating ${selectedRating} stars! Review submitted.`);
+            closeModal('ratingModal');
+            selectedRating = 0;
+            stars.forEach(s => s.classList.remove('active'));
+        }
+
+        // ─── Cancel Booking ───────────────────────────────────────────────────
+        async function cancelBooking(bookingId, amount) {
+            const confirmed = await window.showAppConfirm({
+                title: "Cancel Booking?",
+                message: "Are you sure you want to cancel this booking? Any paid fare will be refunded to your wallet balance.",
+                confirmText: "Yes, Cancel Booking",
+                cancelText: "No, Keep Booking",
+                type: "danger"
+            });
+            if (!confirmed) return;
+
+            try {
+                // 1. Refund to wallet
+                if (amount > 0 && currentUser && currentUser.uid) {
+                    const userRef = window.db.collection('users').doc(currentUser.uid);
+                    const snap = await userRef.get();
+                    const currentBalance = snap.exists ? (snap.data().walletBalance || 0) : 0;
+                    await userRef.update({ walletBalance: currentBalance + Number(amount) });
+                    currentUser.walletBalance = currentBalance + Number(amount);
+                    localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+                }
+
+                // 2. Mark booking as cancelled
+                const bDocRef = window.db.collection('bookings').doc(bookingId);
+                const bSnap = await bDocRef.get();
+                if (bSnap.exists && bSnap.data().rideId) {
+                    const rId = bSnap.data().rideId;
+                    try {
+                        const rRef = window.db.collection('rides').doc(rId);
+                        const rSnap = await rRef.get();
+                        if (rSnap.exists) {
+                            const curSeats = rSnap.data().seats !== undefined ? Number(rSnap.data().seats) : (Number(rSnap.data().availableSeats) || 0);
+                            await rRef.update({
+                                seats: curSeats + 1,
+                                availableSeats: curSeats + 1
+                            });
+                        }
+                    } catch (rErr) {
+                        console.warn("Could not restore seat count on ride:", rErr);
+                    }
+                }
+                await bDocRef.update({ status: 'Cancelled' });
+                window.showAppToast("Booking cancelled & Rs. " + amount + " refunded to your wallet.", "success");
+            } catch (error) {
+                console.error("Error cancelling booking:", error);
+                window.showAppAlert({ title: "Cancellation Failed", message: "Could not cancel booking. Please try again.", type: "error" });
+            }
+        }
+
+        async function cancelRideRequest(reqId) {
+            const confirmed = await window.showAppConfirm({
+                title: "Cancel Ride Request?",
+                message: "Are you sure you want to cancel this ride request? Verified drivers will no longer see your schedule.",
+                confirmText: "Yes, Cancel Request",
+                cancelText: "No, Keep Request",
+                type: "danger"
+            });
+            if (!confirmed) return;
+
+            try {
+                await window.db.collection('RideRequests').doc(reqId).delete();
+                window.showAppToast("Ride request cancelled successfully.", "success");
+            } catch (error) {
+                console.error("Error cancelling request:", error);
+                window.showAppAlert({ title: "Error", message: "Could not cancel request. Please try again.", type: "error" });
+            }
+        }
+
+        // ─── Load Upcoming Bookings ───────────────────────────────────────────
+        function loadBookings() {
+            if (!currentUser || !window.db) return;
+            const upcomingContainer = document.getElementById('upcomingRidesContainer');
+            const pastContainer = document.getElementById('pastRidesContainer');
+
+            window.db.collection('bookings')
+                .where('passengerId', '==', currentUser.uid)
+                .onSnapshot(snapshot => {
+                    let upcoming = [];
+                    let past = [];
+                    const allBookings = [];
+
+                    snapshot.forEach(doc => {
+                        allBookings.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    // Sort client-side to prevent Firestore composite index errors
+                    allBookings.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+
+                    allBookings.forEach(b => {
+                        const st = (b.status || '').toLowerCase();
+                        if (st === 'completed' || st === 'cancelled') {
+                            past.push(b);
+                        } else {
+                            upcoming.push(b);
+                        }
+                    });
+
+                    // Render upcoming
+                    if (upcoming.length === 0) {
+                        upcomingContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 15px;">No upcoming rides.</p>';
+                    } else {
+                        upcomingContainer.innerHTML = upcoming.map(b => `
+                            <div class="booking-item">
+                                <div>
+                                    <div style="margin-bottom: 5px;"><span class="badge badge-upcoming">${b.status || 'Upcoming'}</span></div>
+                                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">
+                                        ${b.rideFrom || ''} → ${b.rideTo || ''} with ${b.driverName || 'Driver'}
+                                    </div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                        <i class="fa-solid fa-money-bill-wave"></i> Paid: Rs. ${b.amount || 0}
+                                    </div>
+                                </div>
+                                <div class="booking-actions" style="gap: 10px; flex-wrap: wrap;">
+                                    <button class="btn btn-sm" style="background: rgba(27, 94, 32, 0.1); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 7px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;" onclick="window.showRideRouteMap ? window.showRideRouteMap('${(b.rideFrom || 'Kandy').replace(/'/g, "\\'")}', '${(b.rideTo || 'Colombo').replace(/'/g, "\\'")}') : null">
+                                        <i class="fa-solid fa-map-location-dot"></i> View Route Map
+                                    </button>
+                                    <button class="btn btn-primary" style="background: rgba(27, 94, 32, 0.1); color: var(--primary-color); border: 1px solid var(--primary-color); box-shadow: none;" onclick="window.openDirectChat ? window.openDirectChat('${b.driverId || ''}', '${(b.driverName || 'Driver').replace(/'/g, "\\'")}') : openChatModal('${b.driverName || 'Driver'}')"><i class="fa-solid fa-comments"></i> Chat with Driver</button>
+                                    <button class="btn btn-outline" onclick="cancelBooking('${b.id}', ${b.amount || 0})">Cancel</button>
+                                </div>
+                            </div>`).join('');
+                    }
+
+                    // Render past
+                    if (past.length === 0) {
+                        pastContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 15px;">No past rides.</p>';
+                    } else {
+                        pastContainer.innerHTML = past.map(b => `
+                            <div class="booking-item">
+                                <div>
+                                    <div style="margin-bottom: 5px;"><span class="badge ${b.status === 'Completed' ? 'badge-completed' : ''}" style="${b.status === 'Cancelled' ? 'background:var(--danger-color);' : ''}">${b.status}</span></div>
+                                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">
+                                        ${b.rideFrom || ''} → ${b.rideTo || ''} with ${b.driverName || 'Driver'}
+                                    </div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                        <i class="fa-solid fa-money-bill-wave"></i> Paid: Rs. ${b.amount || 0}
+                                    </div>
+                                </div>
+                                <div class="booking-actions">
+                                    ${b.status === 'Completed' ? `<button class="btn btn-primary" onclick="openRatingModal('${b.driverName || 'Driver'}')"><i class="fa-solid fa-star"></i> Rate</button>` : ''}
+                                </div>
+                            </div>`).join('');
+                    }
+
+                }, error => {
+                    console.error("Error fetching bookings:", error);
+                    upcomingContainer.innerHTML = '<p style="text-align: center; color: var(--danger-color);">Error loading bookings.</p>';
+                });
+        }
+
+        // ─── Load Ride Requests with 20-Minute Live Expiration Engine ──────
+        const passReqIntervals = {};
+
+        function loadRideRequests() {
+            if (!currentUser || !window.db) return;
+            const container = document.getElementById('myRequestsContainer');
+
+            window.db.collection('RideRequests')
+                .where('passengerId', '==', currentUser.uid)
+                .onSnapshot(snapshot => {
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">You have no custom ride requests.</p>';
+                        return;
+                    }
+                    let html = '';
+                    const reqList = [];
+                    snapshot.forEach(doc => reqList.push({ id: doc.id, ...doc.data() }));
+                    reqList.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+
+                    const now = Date.now();
+
+                    reqList.forEach(req => {
+                        const isAccepted = req.status === 'accepted';
+                        const expiresAt = req.expiresAt || (req.createdAtMs ? req.createdAtMs + 20*60*1000 : (req.timestamp?.toMillis ? req.timestamp.toMillis() + 20*60*1000 : null));
+                        const remainingSec = expiresAt ? Math.max(0, Math.floor((expiresAt - now) / 1000)) : null;
+                        const isExpired = req.status === 'expired' || (!isAccepted && remainingSec !== null && remainingSec <= 0);
+
+                        let statusColor = isAccepted ? 'var(--success-color)' : (isExpired ? '#ef4444' : '#f59e0b');
+                        let statusText = (req.status || 'pending').toUpperCase();
+                        if (isExpired) statusText = 'EXPIRED (20M TIMEOUT)';
+
+                        let timerHtml = '';
+                        if (!isAccepted && !isExpired && remainingSec !== null) {
+                            const m = Math.floor(remainingSec / 60);
+                            const s = remainingSec % 60;
+                            timerHtml = `<span id="pass-countdown-${req.id}" class="badge" style="background: ${remainingSec <= 180 ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)'}; color: ${remainingSec <= 180 ? '#dc2626' : '#b45309'}; font-weight: 700; border: 1px solid ${remainingSec <= 180 ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)'}; margin-left: 8px;"><i class="fa-solid fa-stopwatch me-1"></i> <span id="pass-timer-${req.id}">${m}:${s < 10 ? '0' : ''}${s} left</span></span>`;
+                        }
+
+                        html += `
+                            <div class="booking-item" style="border-left: 4px solid ${statusColor};">
+                                <div>
+                                    <div style="margin-bottom: 5px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+                                        <span class="badge" style="background: ${statusColor};">${statusText}</span>
+                                        ${timerHtml}
+                                        <span style="color: var(--text-muted); font-size: 0.85rem;">${req.date || ''} • ${req.time || ''}</span>
+                                    </div>
+                                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">${req.origin || ''} → ${req.destination || ''}</div>
+                                    ${isAccepted && req.driverName 
+                                        ? `<div style="font-size: 0.95rem; color: var(--success-color); font-weight: 500;"><i class="fa-solid fa-circle-check"></i> Accepted by Driver: <strong>${req.driverName}</strong></div>`
+                                        : (isExpired 
+                                            ? `<div style="font-size: 0.85rem; color: var(--danger-color);"><i class="fa-solid fa-triangle-exclamation"></i> Request expired after 20 minutes with no drivers available. Please submit a new request if needed.</div>`
+                                            : `<div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-clock"></i> Waiting for available campus drivers to accept (20-minute window)...</div>`)}
+                                </div>
+                                <div class="booking-actions" style="gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                                    <button class="btn btn-sm" style="background: rgba(27, 94, 32, 0.1); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 7px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;" onclick="window.showRideRouteMap ? window.showRideRouteMap('${(req.origin || 'Kandy').replace(/'/g, "\\'")}', '${(req.destination || 'Colombo').replace(/'/g, "\\'")}') : null">
+                                        <i class="fa-solid fa-map-location-dot"></i> View Route
+                                    </button>
+                                    ${isAccepted ? `
+                                        <button class="btn btn-primary" style="background: rgba(27, 94, 32, 0.1); color: var(--primary-color); border: 1px solid var(--primary-color); box-shadow: none;" onclick="window.openDirectChat ? window.openDirectChat('${req.driverId}', '${(req.driverName || 'Driver').replace(/'/g, "\\'")}', '${req.id}') : openChatModal('${req.driverName || 'Driver'}')">
+                                            <i class="fa-solid fa-comments"></i> Chat with Driver
+                                        </button>
+                                    ` : ''}
+                                    ${!isAccepted && !isExpired ? `
+                                        <button class="btn btn-outline" onclick="cancelRideRequest('${req.id}')">Cancel</button>
+                                    ` : ''}
+                                </div>
+                            </div>`;
+
+                        // Attach live countdown interval
+                        if (!isAccepted && !isExpired && expiresAt) {
+                            setTimeout(() => {
+                                if (passReqIntervals[req.id]) clearInterval(passReqIntervals[req.id]);
+                                passReqIntervals[req.id] = setInterval(() => {
+                                    const timerEl = document.getElementById(`pass-timer-${req.id}`);
+                                    if (!timerEl) {
+                                        clearInterval(passReqIntervals[req.id]);
+                                        return;
+                                    }
+                                    const currRem = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+                                    if (currRem <= 0) {
+                                        clearInterval(passReqIntervals[req.id]);
+                                        timerEl.innerText = "0:00 Expired";
+                                        if (window.db) {
+                                            window.db.collection('RideRequests').doc(req.id).update({ status: 'expired' }).catch(() => {});
+                                        }
+                                        return;
+                                    }
+                                    const pm = Math.floor(currRem / 60);
+                                    const ps = currRem % 60;
+                                    timerEl.innerText = `${pm}:${ps < 10 ? '0' : ''}${ps} left`;
+                                }, 1000);
+                            }, 50);
+                        }
+                    });
+                    container.innerHTML = html;
+                }, error => {
+                    console.error("Error fetching requests:", error);
+                    container.innerHTML = '<p style="text-align: center; color: var(--danger-color);">Error loading requests.</p>';
+                });
+        }
+
+        // ─── Initialize ───────────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHeaderUser();
+            if (window.InAppNotificationService && window.db && currentUser && currentUser.uid) {
+                window.InAppNotificationService.startLiveListener(window.db, currentUser.uid, 'passenger');
+            }
+            if (window.db) {
+                loadBookings();
+                loadRideRequests();
+            } else {
+                setTimeout(() => { loadBookings(); loadRideRequests(); }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
+

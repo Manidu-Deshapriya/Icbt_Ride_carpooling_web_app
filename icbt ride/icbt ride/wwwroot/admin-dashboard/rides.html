@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICBT Ride - Ride Management</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { overflow-x: hidden; width: 100%; }
+        .wrapper { display: flex; width: 100%; }
+        
+        @media (min-width: 993px) {
+            #sidebar {
+                width: 250px;
+                min-height: 100vh;
+                flex-shrink: 0;
+                position: fixed;
+                z-index: 100;
+            }
+            
+            #content {
+                width: calc(100% - 250px);
+                margin-left: 250px;
+                padding: 30px;
+                min-height: 100vh;
+            }
+        }
+
+        .top-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+        .user-profile { display: flex; align-items: center; gap: 15px; }
+        .avatar { width: 45px; height: 45px; background-color: var(--accent-secondary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
+        .profile-text { font-size: 0.9rem; line-height: 1.2; }
+        .verified-badge { color: var(--accent-success); font-size: 0.8rem; }
+        .glass-box { background-color: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); padding: 25px; }
+        .box-title { color: var(--accent-primary); font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 25px; font-size: 1.1rem; }
+
+        /* Admin Bottom Navigation (Mobile Only) */
+        .admin-bottom-nav {
+            display: none;
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            height: 64px !important;
+            background: #ffffff !important;
+            border-top: 1px solid var(--border-color) !important;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.12) !important;
+            z-index: 999999 !important;
+            padding: 6px 6px !important;
+            justify-content: space-around !important;
+            align-items: center !important;
+        }
+
+        .admin-nav-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: var(--text-muted) !important;
+            text-decoration: none !important;
+            font-size: 1.15rem !important;
+            padding: 4px 2px !important;
+            flex: 1 !important;
+            text-align: center !important;
+            border-radius: 10px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .admin-nav-item span {
+            font-size: 0.65rem !important;
+            margin-top: 3px !important;
+            font-weight: 500 !important;
+            white-space: nowrap !important;
+        }
+
+        .admin-nav-item.active,
+        .admin-nav-item:hover {
+            color: var(--accent-primary) !important;
+            font-weight: 700 !important;
+            background: #E8F5E9 !important;
+        }
+
+        @media (max-width: 992px) {
+            #sidebar { display: none !important; }
+            .admin-bottom-nav { display: flex !important; }
+            #content {
+                width: 100% !important;
+                margin-left: 0 !important;
+                padding: 15px !important;
+                padding-bottom: 95px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-car-side"></i> ICBT Ride
+            </div>
+            
+            <ul class="list-unstyled">
+                <li><a href="dashboard.html" class="nav-link text-decoration-none"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                <li><a href="users.html" class="nav-link text-decoration-none"><i class="fa-solid fa-users"></i> Users & Drivers</a></li>
+                <li><a href="rides.html" class="nav-link active text-decoration-none"><i class="fa-solid fa-route"></i> Ride Management</a></li>
+                <li><a href="complaints.html" class="nav-link text-decoration-none"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</a></li>
+                <li><a href="announcements.html" class="nav-link text-decoration-none"><i class="fa-solid fa-bullhorn"></i> Announcements</a></li>
+            </ul>
+            
+            <div style="position: absolute; bottom: 30px; width: 100%;">
+                <a href="#" id="logoutBtn" class="nav-link text-decoration-none text-danger">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            
+            <div class="top-header">
+                <div>
+                    <h2 class=" fw-bold mb-1">Ride Management</h2>
+                    <p class="text-muted-custom">Monitor carpooling trips, check routes, and enforce Odd/Even rules.</p>
+                </div>
+                <div class="user-profile">
+                    <a href="users.html" class="position-relative me-3 text-decoration-none">
+                        <i class="fa-regular fa-bell  fs-5"></i>
+                        <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.6rem;">0</span>
+                    </a>
+                    <div class="avatar" id="userInitial">A</div>
+                    <div class="profile-text  text-end">
+                        <span id="userEmail" class="d-block fw-bold">Admin</span>
+                        <span class="verified-badge">Super Admin <i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="glass-box">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="box-title mb-0">
+                        <i class="fa-solid fa-car"></i> Active & Past Rides
+                    </div>
+                    <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="loadRides()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Driver Name</th>
+                                <th>Route</th>
+                                <th>Date/Time</th>
+                                <th>Seats</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ridesTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">Loading rides...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase Script (Module) -->
+    <script type="module">
+        import "./js/firebase-config.js";
+
+        // Auth State Check
+        window.onAuthStateChanged(window.firebaseAuth, (user) => {
+            const localAdmin = localStorage.getItem('loggedInAdmin');
+            if (!user && !localAdmin) {
+                window.location.href = 'admin-login.html';
+            } else {
+                const email = user ? user.email : (localAdmin || 'Admin');
+                document.getElementById('userEmail').textContent = email;
+                document.getElementById('userInitial').textContent = email.charAt(0).toUpperCase();
+                loadRides();
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            localStorage.removeItem('loggedInAdmin');
+            try {
+                await window.signOut(window.firebaseAuth);
+            } catch (error) {
+                console.error("Error signing out: ", error);
+            }
+            window.location.href = 'admin-login.html';
+        });
+
+        // Fetch Rides Logic (Sorted Newest First)
+        window.loadRides = async function() {
+            const tableBody = document.getElementById('ridesTableBody');
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm"></span> Loading...</td></tr>';
+            
+            try {
+                const ridesCol = window.fsCollection(window.firebaseDb, 'rides');
+                const ridesSnapshot = await window.fsGetDocs(ridesCol);
+                
+                if(ridesSnapshot.empty) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No rides found in database.</td></tr>';
+                    return;
+                }
+
+                let ridesList = [];
+                ridesSnapshot.forEach((docSnap) => {
+                    ridesList.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                // Sort descending (newest rides first)
+                ridesList.sort((a, b) => {
+                    const timeA = new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || `${a.date || ''}T${a.time || '00:00'}` || 0)).getTime();
+                    const timeB = new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || `${b.date || ''}T${b.time || '00:00'}` || 0)).getTime();
+                    return timeB - timeA;
+                });
+
+                tableBody.innerHTML = '';
+                ridesList.forEach((data) => {
+                    const id = data.id;
+                    
+                    const currentStatus = (data.status || 'active').toLowerCase();
+                    let statusBadge = currentStatus === 'active' ? '<span class="badge bg-success">Active</span>' : 
+                                      currentStatus === 'completed' ? '<span class="badge bg-secondary">Completed</span>' : 
+                                      '<span class="badge bg-danger">Cancelled</span>';
+
+                    let actions = '';
+                    if(currentStatus === 'active') {
+                        actions += `<button class="btn btn-warning btn-sm rounded-pill px-2 me-1 mb-1" onclick="cancelRide('${id}')"><i class="fa-solid fa-ban"></i> Cancel</button>`;
+                        actions += `<button class="btn btn-success btn-sm rounded-pill px-2 me-1 mb-1" onclick="completeRide('${id}')"><i class="fa-solid fa-check"></i> Complete</button>`;
+                    }
+                    actions += `<button class="btn btn-danger btn-sm rounded-pill px-2 mb-1" onclick="deleteRide('${id}')"><i class="fa-solid fa-trash"></i></button>`;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${data.driverName || 'Unknown Driver'}</strong></td>
+                        <td>${data.startLocation || data.start || data.origin || '?'} <i class="fa-solid fa-arrow-right mx-1 text-muted"></i> ${data.destination || data.dest || '?'}</td>
+                        <td>${data.date || 'N/A'} at ${data.time || 'N/A'}</td>
+                        <td>${data.availableSeats !== undefined ? data.availableSeats : (data.seats || 0)} left</td>
+                        <td>${statusBadge}</td>
+                        <td>${actions || '-'}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+
+            } catch(error) {
+                console.error("Error fetching rides: ", error);
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Error loading data. Check console.</td></tr>';
+            }
+        }
+
+        // Cancel Ride Logic
+        window.cancelRide = async function(docId) {
+            if(!(await window.customConfirm("Are you sure you want to cancel this ride? (e.g. For Odd/Even rule violation)"))) return;
+
+            try {
+                const rideRef = window.fsDoc(window.firebaseDb, 'rides', docId);
+                await window.fsUpdateDoc(rideRef, { status: 'cancelled' });
+                window.customAlert('Ride cancelled successfully!', 'success');
+                loadRides(); // Refresh table
+            } catch(error) {
+                console.error("Error cancelling ride: ", error);
+                window.customAlert("Error updating status.", "error");
+            }
+        }
+
+        // Complete Ride Logic
+        window.completeRide = async function(docId) {
+            if(!(await window.customConfirm("Mark this ride as completed?"))) return;
+
+            try {
+                const rideRef = window.fsDoc(window.firebaseDb, 'rides', docId);
+                await window.fsUpdateDoc(rideRef, { status: 'completed' });
+                window.customAlert('Ride marked as completed!', 'success');
+                loadRides();
+            } catch(error) {
+                console.error("Error completing ride: ", error);
+                window.customAlert("Error updating status.", "error");
+            }
+        }
+
+        // Delete Ride Logic
+        window.deleteRide = async function(docId) {
+            if(!(await window.customConfirm("Are you sure you want to permanently delete this ride?"))) return;
+
+            try {
+                const rideRef = window.fsDoc(window.firebaseDb, 'rides', docId);
+                await window.fsDeleteDoc(rideRef);
+                window.customAlert('Ride deleted successfully!', 'success');
+                loadRides();
+            } catch(error) {
+                console.error("Error deleting ride: ", error);
+                window.customAlert("Error deleting ride.", "error");
+            }
+        }
+    </script>
+    <!-- Admin Mobile Bottom Navigation -->
+    <nav class="admin-bottom-nav">
+        <a href="dashboard.html" class="admin-nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+        <a href="users.html" class="admin-nav-item"><i class="fa-solid fa-users"></i><span>Users</span></a>
+        <a href="rides.html" class="admin-nav-item active"><i class="fa-solid fa-route"></i><span>Rides</span></a>
+        <a href="complaints.html" class="admin-nav-item"><i class="fa-solid fa-triangle-exclamation"></i><span>Complaints</span></a>
+        <a href="announcements.html" class="admin-nav-item"><i class="fa-solid fa-bullhorn"></i><span>Announce</span></a>
+    </nav>
+
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="../js/pwa-install.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
