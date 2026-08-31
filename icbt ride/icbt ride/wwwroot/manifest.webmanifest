@@ -1,0 +1,32 @@
+{
+  "name": "ICBT Ride - Campus Carpooling",
+  "short_name": "ICBT Ride",
+  "id": "/main-login/login.html",
+  "start_url": "/main-login/login.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#1B5E20",
+  "description": "Smart Campus Carpooling Platform for ICBT Campus",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    }
+  ]
+}
