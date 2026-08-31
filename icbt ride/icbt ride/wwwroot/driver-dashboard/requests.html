@@ -3,9 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICBT Ride - Driver Dashboard</title>
+    <title>ICBT Ride - Passenger Requests</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/chat-widget.css">
     <style>
         :root {
             --bg-color: #E8F5E9;
@@ -280,6 +292,7 @@
             font-weight: 700;
             background: linear-gradient(135deg, var(--success-color), #34d399);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -406,15 +419,18 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo" style="flex-direction: column; align-items: flex-start; gap: 0;">
-            <div>ICBT Ride</div>
-            <div style="font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-top: -5px;">DRIVER</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="logo.png" alt="ICBT Ride" style="height: 40px; border-radius: 50%;">
+                <span>ICBT Ride</span>
+            </div>
+            <div style="font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; color: var(--text-muted); margin-top: 3px; margin-left: 50px;">DRIVER</div>
         </div>
         <ul class="nav-links">
             <li><a href="driver_dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="withdrawals.html"><i class="fa-solid fa-money-bill-transfer"></i> Withdrawals</a></li>
             <li><a href="profile.html"><i class="fa-solid fa-id-card"></i> Profile & Docs</a></li>
             <li><a href="rides.html"><i class="fa-solid fa-route"></i> My Rides</a></li>
             <li><a href="requests.html" class="active"><i class="fa-solid fa-users"></i> Requests</a></li>
-            <li><a href="sustainability.html"><i class="fa-solid fa-leaf"></i> Sustainability</a></li>
         </ul>
         <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
             <a href="/main-login/login.html" class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color); display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; width: 100%;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
@@ -427,14 +443,17 @@
             <a href="/main-login/login.html" class="mobile-logout-btn" style="position: absolute; top: 0; right: 0; padding: 10px;" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>
             <div class="greeting-container">
                 <div class="greeting">
-                    <h1 id="greeting">Hello, Driver</h1>
-                    <p>Welcome to your driver dashboard. Let's start carpooling!</p>
+                    <h1>Passenger Requests</h1>
+                    <p>View and manage all incoming ride requests.</p>
                 </div>
             </div>
             <div class="user-profile">
-                <div class="mobile-header-logo" style="flex-direction: column; align-items: flex-start; gap: 0; line-height: 1;">
-                    <div>ICBT Ride</div>
-                    <div style="font-size: 0.65rem; font-weight: 600; letter-spacing: 1.5px; color: var(--text-muted); margin-top: 2px;">DRIVER</div>
+                <div class="mobile-header-logo" style="flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.1;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <img src="logo.png" alt="Logo" style="height: 26px; border-radius: 50%;"> 
+                        <span>ICBT Ride</span>
+                    </div>
+                    <div style="font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; color: var(--primary-color); margin-top: 2px; margin-left: 32px;">DRIVER</div>
                 </div>
                 <i class="fa-regular fa-bell" style="font-size: 1.2rem; cursor: pointer;"></i>
                 
@@ -463,16 +482,22 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/app-dialogs.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../js/map-service.js"></script>
+    <script src="../js/pwa-install.js"></script>
     <script src="app.js"></script>
+    <script src="../js/chat-widget.js"></script>
 
     <!-- Bottom Navigation (Mobile Only) -->
     <nav class="bottom-nav">
         <ul class="bottom-nav-links">
             <li><a href="driver_dashboard.html"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
-            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i><span>Profile</span></a></li>
+            <li><a href="withdrawals.html"><i class="fa-solid fa-money-bill-transfer"></i><span>Withdrawals</span></a></li>
             <li><a href="rides.html"><i class="fa-solid fa-route"></i><span>Rides</span></a></li>
             <li><a href="requests.html" class="active"><i class="fa-solid fa-users"></i><span>Requests</span></a></li>
-            <li><a href="sustainability.html"><i class="fa-solid fa-leaf"></i><span>Eco</span></a></li>
+            <li><a href="profile.html"><i class="fa-solid fa-id-card"></i><span>Profile</span></a></li>
         </ul>
     </nav>
 </body>

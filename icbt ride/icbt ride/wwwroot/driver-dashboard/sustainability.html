@@ -3,9 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICBT Ride - Driver Dashboard</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1B5E20">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICBT Ride">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/chat-widget.css">
     <style>
         :root {
             --bg-color: #E8F5E9;
@@ -467,9 +477,12 @@
     </main>
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/pwa-install.js"></script>
     <script src="app.js"></script>
+    <script src="../js/chat-widget.js"></script>
 
     <!-- Bottom Navigation (Mobile Only) -->
     <nav class="bottom-nav">
