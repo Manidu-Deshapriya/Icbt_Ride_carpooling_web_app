@@ -1,0 +1,328 @@
+{
+  "info": {
+    "name": "ICBT Ride Carpooling REST API",
+    "_postman_id": "icbt-ride-api-v1",
+    "description": "Complete REST API Collection for ICBT Ride Carpooling System with Fuel Quota Management, Odd-Even Validation, Role Management, Rides, and In-App Messaging.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "System Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register User (Passenger/Driver/Owner)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@icbt.lk\",\n  \"password\": \"Password@123\",\n  \"name\": \"Kasun Perera\",\n  \"role\": \"passenger\",\n  \"phone\": \"0771234567\",\n  \"studentId\": \"ICBT-IT-2024-001\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@icbt.lk\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Profile (/me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "x-user-id", "value": "user_dev_1" },
+              { "key": "x-user-role", "value": "passenger" }
+            ],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "Verify ID Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"idToken\": \"sample_firebase_token_here\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/verify-token", "host": ["{{baseUrl}}"], "path": ["auth", "verify-token"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Rides & Carpooling",
+      "item": [
+        {
+          "name": "Get All Active Rides (With Filters)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rides?origin=Kandy&destination=ICBT",
+              "host": ["{{baseUrl}}"],
+              "path": ["rides"],
+              "query": [
+                { "key": "origin", "value": "Kandy" },
+                { "key": "destination", "value": "ICBT" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Ride (With Fuel Quota & Odd-Even Validation)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driverId\": \"driver_101\",\n  \"driverName\": \"Kamal Silva\",\n  \"startLocation\": \"Kandy\",\n  \"endLocation\": \"ICBT Campus Colombo\",\n  \"date\": \"2026-08-29\",\n  \"time\": \"07:30\",\n  \"seats\": 3,\n  \"price\": 850,\n  \"plateNumber\": \"WP CAB-4521\",\n  \"vehicleModel\": \"Toyota Prius (Hybrid)\",\n  \"estimatedDistanceKm\": 115.0\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/rides", "host": ["{{baseUrl}}"], "path": ["rides"] }
+          }
+        },
+        {
+          "name": "Get Ride Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/rides/sample_ride_id", "host": ["{{baseUrl}}"], "path": ["rides", "sample_ride_id"] }
+          }
+        },
+        {
+          "name": "Join Ride (Passenger Booking Request)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passengerId\": \"pass_202\",\n  \"passengerName\": \"Nimali Fonseka\",\n  \"pickupLocation\": \"Peradeniya Junction\",\n  \"seatsBooked\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/rides/sample_ride_id/join", "host": ["{{baseUrl}}"], "path": ["rides", "sample_ride_id", "join"] }
+          }
+        },
+        {
+          "name": "Accept Passenger Booking (Driver)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"bookingId\": \"sample_booking_id\"\n}" },
+            "url": { "raw": "{{baseUrl}}/rides/sample_ride_id/accept", "host": ["{{baseUrl}}"], "path": ["rides", "sample_ride_id", "accept"] }
+          }
+        },
+        {
+          "name": "Complete Ride (Deduct Fuel & Calculate Revenue Split)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actualDistanceKm\": 115.0,\n  \"totalFareCollected\": 2550,\n  \"isOwnerDriver\": false,\n  \"ownerPercentage\": 70\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/rides/sample_ride_id/complete", "host": ["{{baseUrl}}"], "path": ["rides", "sample_ride_id", "complete"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Fuel Quota & Odd-Even Engine",
+      "item": [
+        {
+          "name": "Check Odd-Even Eligibility For Plate",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/fuel/odd-even/WP-CAB-4521", "host": ["{{baseUrl}}"], "path": ["fuel", "odd-even", "WP-CAB-4521"] }
+          }
+        },
+        {
+          "name": "Validate Ride Feasibility (Fuel & Date Rule)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plateNumber\": \"WP-CAB-4521\",\n  \"date\": \"2026-08-29\",\n  \"distanceKm\": 38.0,\n  \"currentQuota\": 25.5\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/fuel/validate", "host": ["{{baseUrl}}"], "path": ["fuel", "validate"] }
+          }
+        },
+        {
+          "name": "Log Vehicle Refuel (Odd-Even Check & 30L Cap)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicleId\": \"veh_1\",\n  \"plateNumber\": \"WP-CAB-4521\",\n  \"litersAdded\": 10.0,\n  \"refuelDate\": \"2026-08-29\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/fuel/refuel", "host": ["{{baseUrl}}"], "path": ["fuel", "refuel"] }
+          }
+        },
+        {
+          "name": "Get Vehicle Quota Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/fuel/quota/veh_1", "host": ["{{baseUrl}}"], "path": ["fuel", "quota", "veh_1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Vehicles & Fleet (Owner)",
+      "item": [
+        {
+          "name": "Add Vehicle (With 30L Fuel Quota)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownerId\": \"owner_88\",\n  \"plateNumber\": \"CAA-8899\",\n  \"model\": \"Nissan Leaf Electric / Petrol Hybrid\",\n  \"seats\": 4,\n  \"fuelQuota\": 30.0\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/vehicles", "host": ["{{baseUrl}}"], "path": ["vehicles"] }
+          }
+        },
+        {
+          "name": "Get Owner Vehicles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/vehicles/owner/owner_88", "host": ["{{baseUrl}}"], "path": ["vehicles", "owner", "owner_88"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Driver Assignments (Fleet Owner)",
+      "item": [
+        {
+          "name": "Assign Driver to Vehicle",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownerId\": \"owner_88\",\n  \"driverId\": \"driver_101\",\n  \"driverName\": \"Kamal Silva\",\n  \"vehicleId\": \"veh_1\",\n  \"plateNumber\": \"CAA-8899\",\n  \"shift\": \"Morning 06:00 - 14:00\",\n  \"splitPercentage\": 70\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/assignments", "host": ["{{baseUrl}}"], "path": ["assignments"] }
+          }
+        },
+        {
+          "name": "Get Owner Driver Assignments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/assignments/owner/owner_88", "host": ["{{baseUrl}}"], "path": ["assignments", "owner", "owner_88"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Real-Time Chat & Messaging",
+      "item": [
+        {
+          "name": "Create Chat Room",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rideId\": \"ride_1\",\n  \"driverId\": \"driver_101\",\n  \"driverName\": \"Kamal\",\n  \"passengerId\": \"pass_202\",\n  \"passengerName\": \"Nimali\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/chats", "host": ["{{baseUrl}}"], "path": ["chats"] }
+          }
+        },
+        {
+          "name": "Send Chat Message",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senderId\": \"pass_202\",\n  \"senderName\": \"Nimali\",\n  \"text\": \"Hello! I am standing near the main gate.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/chats/sample_chat_id/messages", "host": ["{{baseUrl}}"], "path": ["chats", "sample_chat_id", "messages"] }
+          }
+        },
+        {
+          "name": "Get Chat Messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/chats/sample_chat_id/messages", "host": ["{{baseUrl}}"], "path": ["chats", "sample_chat_id", "messages"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Admin Dashboard & Governance",
+      "item": [
+        {
+          "name": "Get Dashboard Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/admin/stats", "host": ["{{baseUrl}}"], "path": ["admin", "stats"] }
+          }
+        },
+        {
+          "name": "Create Announcement",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"National Fuel Quota Odd-Even Advisory\",\n  \"content\": \"Please verify your vehicle plate ending digit before scheduling campus trips.\",\n  \"priority\": \"high\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/announcements", "host": ["{{baseUrl}}"], "path": ["admin", "announcements"] }
+          }
+        },
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/users", "host": ["{{baseUrl}}"], "path": ["users"] }
+          }
+        }
+      ]
+    }
+  ]
+}
