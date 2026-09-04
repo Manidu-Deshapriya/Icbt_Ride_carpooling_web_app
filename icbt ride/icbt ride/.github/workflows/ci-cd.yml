@@ -1,0 +1,41 @@
+name: ICBT Ride CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-verify:
+    name: Build, Test & Verify Container
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore .NET Dependencies
+      run: dotnet restore "icbt ride.csproj"
+
+    - name: Build .NET Application
+      run: dotnet build "icbt ride.csproj" --no-restore --configuration Release
+
+    - name: Setup Node.js Environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Verify Backend REST API Server
+      run: |
+        cd server
+        npm install
+        node -c server.js
+
+    - name: Build and Test Docker Container
+      run: docker build -t icbt-ride-app .
